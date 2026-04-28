@@ -161,6 +161,37 @@ th { background:#f9fafb; }
         <option value="">Wszyscy pracownicy</option>
       </select>
       <button onclick="loadReport()">Odśwież teraz</button>
+      async function countAllUniqueBags() {
+  const uniqueBags = new Set();
+  const pageSize = 1000;
+  let from = 0;
+
+  while (true) {
+    const to = from + pageSize - 1;
+
+    const { data, error } = await supabaseClient
+      .from("packing_plan")
+      .select("bag_qr")
+      .range(from, to);
+
+    if (error) {
+      console.error("Błąd liczenia toreb:", error);
+      return uniqueBags.size;
+    }
+
+    if (!data || data.length === 0) break;
+
+    data.forEach(row => {
+      if (row.bag_qr) uniqueBags.add(String(row.bag_qr).trim());
+    });
+
+    if (data.length < pageSize) break;
+
+    from += pageSize;
+  }
+
+  return uniqueBags.size;
+}
       <button onclick="exportCsv()">Eksport CSV</button>
     </div>
   </div>
@@ -262,13 +293,7 @@ async function loadReport() {
   }
 
   sessions = data || [];
-  const { data: planData } = await supabaseClient
-  .from("packing_plan")
-  .select("bag_qr");
-
-if (planData) {
-  totalBagsInPlan = [...new Set(planData.map(x => x.bag_qr))].length;
-}
+  totalBagsInPlan = await countAllUniqueBags();
   lastRefresh.innerText = new Date().toLocaleTimeString("pl-PL");
   refreshWorkerFilter();
   renderAll();
