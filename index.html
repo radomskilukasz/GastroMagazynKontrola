@@ -174,9 +174,6 @@ th { background:#f9fafb; }
 
   <div class="grid">
     <div class="card"><div class="label">Średni czas / torba</div><div class="stat" id="avgTime">0s</div></div>
-    <div class="card"><div class="label">Brakujące tacki</div><div class="stat warn" id="missingCount">0</div></div>
-    <div class="card"><div class="label">Błędne tacki</div><div class="stat bad" id="wrongCount">0</div></div>
-    <div class="card"><div class="label">Duplikaty</div><div class="stat bad" id="duplicateCount">0</div></div>
   </div>
 
   <div class="card">
@@ -210,7 +207,8 @@ const supabaseClient = window.supabase.createClient(
 
 const LOGIN_DOMAIN = "@pakowanie.local";
 let sessions = [];
-
+let totalBagsInPlan = 0;
+  
 function getLoginEmail(value) {
   const login = String(value || "").trim().toLowerCase();
   if (!login) return "";
@@ -264,6 +262,13 @@ async function loadReport() {
   }
 
   sessions = data || [];
+  const { data: planData } = await supabaseClient
+  .from("packing_plan")
+  .select("bag_qr");
+
+if (planData) {
+  totalBagsInPlan = [...new Set(planData.map(x => x.bag_qr))].length;
+}
   lastRefresh.innerText = new Date().toLocaleTimeString("pl-PL");
   refreshWorkerFilter();
   renderAll();
@@ -324,21 +329,15 @@ function renderAll() {
   const durations = today.map(x => x.duration_seconds).filter(x => typeof x === "number");
   const avg = durations.length ? Math.round(durations.reduce((a,b) => a+b, 0) / durations.length) : 0;
 
-  const missing = today.reduce((sum,x) => sum + splitItems(x.missing_trays).length, 0);
-  const wrong = today.reduce((sum,x) => sum + splitItems(x.wrong_trays).length, 0);
-  const dups = today.reduce((sum,x) => sum + splitItems(x.duplicate_trays).length, 0);
   const accuracy = today.length ? Math.round((correct.length / today.length) * 100) : 0;
 
-  totalToday.innerText = today.length;
+  totalToday.innerText = `${today.length} / ${totalBagsInPlan}`;
   correctToday.innerText = correct.length;
   badToday.innerText = bad.length;
   accuracyToday.innerText = accuracy + "%";
   avgTime.innerText = formatDuration(avg);
-  missingCount.innerText = missing;
-  wrongCount.innerText = wrong;
-  duplicateCount.innerText = dups;
 
-  renderAlerts(today, bad.length, wrong, missing, dups);
+  renderAlerts(today, bad.length, 0, 0, 0);
   renderWorkers(today);
   renderHistory(filteredHistory);
 }
