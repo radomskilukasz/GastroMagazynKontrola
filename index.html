@@ -8,6 +8,28 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 body { font-family: Arial; background:#f3f4f6; padding:20px; color:#111827; }
+  .dashboardLayout {
+  display:grid;
+  grid-template-columns: 1fr 520px;
+  gap:18px;
+  align-items:start;
+}
+
+.workersPanel {
+  min-height:260px;
+}
+
+.workerName {
+  cursor:pointer;
+  text-decoration:underline;
+  font-weight:bold;
+}
+
+@media(max-width:1100px){
+  .dashboardLayout {
+    grid-template-columns:1fr;
+  }
+}
 .hidden { display:none !important; }
   .progressBar {
   width:100%;
@@ -180,27 +202,34 @@ th { background:#f9fafb; }
     </div>
   </div>
 
-  <div class="grid">
-    <div class="card">
-  <div class="label">Spakowane dziś</div>
-  <div class="stat" id="totalToday">0 / 0</div>
-  <div class="progressBar">
-    <div class="progressFill" id="totalProgressFill"></div>
-  </div>
-</div>
-    <div class="card"><div class="label">Poprawne</div><div class="stat ok" id="correctToday">0</div></div>
-    <div class="card"><div class="label">Nieprawidłowe</div><div class="stat bad" id="badToday">0</div></div>
-    <div class="card"><div class="label">Poprawność</div><div class="stat" id="accuracyToday">0%</div></div>
+<div class="dashboardLayout">
+
+  <div>
+    <div class="grid">
+      <div class="card">
+        <div class="label">Spakowane dziś</div>
+        <div class="stat" id="totalToday">0 / 0</div>
+        <div class="progressBar">
+          <div class="progressFill" id="totalProgressFill"></div>
+        </div>
+      </div>
+
+      <div class="card"><div class="label">Poprawne</div><div class="stat ok" id="correctToday">0</div></div>
+      <div class="card"><div class="label">Nieprawidłowe</div><div class="stat bad" id="badToday">0</div></div>
+      <div class="card"><div class="label">Poprawność</div><div class="stat" id="accuracyToday">0%</div></div>
+    </div>
+
+    <div class="grid">
+      <div class="card"><div class="label">Średni czas / torba</div><div class="stat" id="avgTime">0s</div></div>
+    </div>
   </div>
 
-  <div class="grid">
-    <div class="card"><div class="label">Średni czas / torba</div><div class="stat" id="avgTime">0s</div></div>
-  </div>
-
-  <div class="card">
+  <div class="card workersPanel">
     <h2>🏆 Ranking pracowników</h2>
     <div id="workersTable"></div>
   </div>
+
+</div>
 
   <div class="card">
     <h2>🧾 Historia pakowania</h2>
@@ -396,12 +425,99 @@ function renderWorkers(today) {
 
   today.forEach(x => {
     const worker = x.user_login || "brak użytkownika";
+
     if (!workers[worker]) {
       workers[worker] = {
-        worker, total:0, correct:0, bad:0, wrong:0, missing:0, duplicates:0, duration:0, durationCount:0
+        worker,
+        total:0,
+        correct:0,
+        bad:0,
+        wrong:0,
+        missing:0,
+        duplicates:0,
+        duration:0,
+        durationCount:0
       };
     }
 
+    workers[worker].total++;
+
+    if (x.status === "POPRAWNA") workers[worker].correct++;
+    if (x.status === "NIEPRAWIDŁOWA") workers[worker].bad++;
+
+    workers[worker].wrong += splitItems(x.wrong_trays).length;
+    workers[worker].missing += splitItems(x.missing_trays).length;
+    workers[worker].duplicates += splitItems(x.duplicate_trays).length;
+
+    if (typeof x.duration_seconds === "number") {
+      workers[worker].duration += x.duration_seconds;
+      workers[worker].durationCount++;
+    }
+  });
+
+  const data = Object.values(workers).sort((a,b) => b.total - a.total);
+
+  window.workerStats = data;
+
+  workersTable.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Pracownik</th>
+          <th>Razem</th>
+          <th>Poprawne</th>
+          <th>Niepoprawne</th>
+          <th>Śr. czas</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${data.map((w, index) => {
+          const avg = w.durationCount ? Math.round(w.duration / w.durationCount) : 0;
+
+          return `
+            <tr class="${w.bad || w.wrong || w.missing || w.duplicates ? "problemRow" : "goodRow"}">
+              <td>
+                <span class="workerName" onclick="openWorkerDetails(${index})">
+                  ${escapeHtml(w.worker)}
+                </span>
+              </td>
+              <td>${w.total}</td>
+              <td class="ok">${w.correct}</td>
+              <td class="bad">${w.bad}</td>
+              <td>${formatDuration(avg)}</td>
+            </tr>
+          `;
+        }).join("")}
+      </tbody>
+    </table>
+  `;
+}
+function openWorkerDetails(index) {
+  const w = window.workerStats[index];
+  if (!w) return;
+
+  const avg = w.durationCount ? Math.round(w.duration / w.durationCount) : 0;
+  const accuracy = w.total ? Math.round((w.correct / w.total) * 100) : 0;
+
+  detailsContent.innerHTML = `
+    <div class="grid">
+      <div class="card"><div class="label">Pracownik</div><div style="font-size:20px"><b>${escapeHtml(w.worker)}</b></div></div>
+      <div class="card"><div class="label">Razem</div><div class="stat">${w.total}</div></div>
+      <div class="card"><div class="label">Poprawność</div><div class="stat">${accuracy}%</div></div>
+      <div class="card"><div class="label">Średni czas</div><div class="stat">${formatDuration(avg)}</div></div>
+    </div>
+
+    <table>
+      <tr><th>Poprawne</th><td class="ok">${w.correct}</td></tr>
+      <tr><th>Niepoprawne</th><td class="bad">${w.bad}</td></tr>
+      <tr><th>Błędne tacki</th><td>${w.wrong}</td></tr>
+      <tr><th>Brakujące tacki</th><td>${w.missing}</td></tr>
+      <tr><th>Duplikaty</th><td>${w.duplicates}</td></tr>
+    </table>
+  `;
+
+  detailsModal.classList.remove("hidden");
+}
     workers[worker].total++;
     if (x.status === "POPRAWNA") workers[worker].correct++;
     if (x.status === "NIEPRAWIDŁOWA") workers[worker].bad++;
