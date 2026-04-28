@@ -200,20 +200,6 @@ th { background:#f9fafb; }
 </div>
 
 <script>
-
-    if (!data || data.length === 0) break;
-
-    data.forEach(row => {
-      if (row.bag_qr) uniqueBags.add(String(row.bag_qr).trim());
-    });
-
-    if (data.length < pageSize) break;
-
-    from += pageSize;
-  }
-
-  return uniqueBags.size;
-}
 const supabaseClient = window.supabase.createClient(
   "https://lanmmbpqxmenyjwvwpkt.supabase.co",
   "sb_publishable_sYrinkI1u2zr9uXZwsERNg_HE0wQKsC"
