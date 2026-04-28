@@ -57,11 +57,29 @@ button { border:none; background:#2563eb; color:white; font-weight:bold; cursor:
 
 .dashboardLayout {
   display:grid;
-  grid-template-columns: 1fr 520px;
+  grid-template-columns: 1fr 440px;
   gap:18px;
   align-items:start;
 }
-.workersPanel { min-height:260px; }
+leftDashboard {
+  min-width:0;
+}
+
+.statsGrid {
+  display:grid;
+  grid-template-columns: 1.15fr 1fr 1fr .7fr;
+  gap:14px;
+}
+
+.avgGrid {
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap:14px;
+}
+  
+.workersPanel {
+  min-height:620px;
+}
 
 .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
 .stat { font-size:34px; font-weight:bold; }
@@ -139,6 +157,11 @@ th { background:#f9fafb; }
 
 @media(max-width:1100px){
   .dashboardLayout { grid-template-columns:1fr; }
+
+  .statsGrid,
+  .avgGrid {
+    grid-template-columns:1fr 1fr;
+  }
 }
 @media(max-width:900px){
   .grid { grid-template-columns:1fr 1fr; }
@@ -194,54 +217,56 @@ th { background:#f9fafb; }
     </div>
   </div>
 
-  <div class="dashboardLayout">
+<div class="dashboardLayout">
 
-    <div>
-      <div class="grid">
-        <div class="card">
-          <div class="label">Spakowane dziś</div>
-          <div class="stat" id="totalToday">0 / 0</div>
-          <div class="progressBar">
-            <div class="progressFill" id="totalProgressFill"></div>
-          </div>
-        </div>
+  <div class="leftDashboard">
 
-        <div class="card">
-          <div class="label">Poprawne</div>
-          <div class="stat ok" id="correctToday">0</div>
-        </div>
-
-        <div class="card">
-          <div class="label">Nieprawidłowe</div>
-          <div class="stat bad" id="badToday">0</div>
-        </div>
-
-        <div class="card">
-          <div class="label">Poprawność</div>
-          <div class="stat" id="accuracyToday">0%</div>
+    <div class="statsGrid">
+      <div class="card">
+        <div class="label">Spakowane dziś</div>
+        <div class="stat" id="totalToday">0 / 0</div>
+        <div class="progressBar">
+          <div class="progressFill" id="totalProgressFill"></div>
         </div>
       </div>
 
-      <div class="grid">
-        <div class="card">
-          <div class="label">Średni czas / torba</div>
-          <div class="stat" id="avgTime">0s</div>
-        </div>
+      <div class="card">
+        <div class="label">Poprawne</div>
+        <div class="stat ok" id="correctToday">0</div>
+      </div>
+
+      <div class="card">
+        <div class="label">Nieprawidłowe</div>
+        <div class="stat bad" id="badToday">0</div>
+      </div>
+
+      <div class="card">
+        <div class="label">Poprawność</div>
+        <div class="stat" id="accuracyToday">0%</div>
       </div>
     </div>
 
-    <div class="card workersPanel">
-      <h2>🏆 Ranking pracowników</h2>
-      <div id="workersTable"></div>
+    <div class="avgGrid">
+      <div class="card">
+        <div class="label">Średni czas / torba</div>
+        <div class="stat" id="avgTime">0s</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🧾 Historia pakowania</h2>
+      <p class="small">Kliknij QR torby, żeby zobaczyć szczegóły.</p>
+      <div id="historyTable"></div>
     </div>
 
   </div>
 
-  <div class="card">
-    <h2>🧾 Historia pakowania</h2>
-    <p class="small">Kliknij QR torby, żeby zobaczyć szczegóły.</p>
-    <div id="historyTable"></div>
+  <div class="card workersPanel">
+    <h2>🏆 Ranking pracowników</h2>
+    <div id="workersTable"></div>
   </div>
+
+</div>
 
 </div>
 
