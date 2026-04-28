@@ -539,44 +539,6 @@ function openWorkerDetails(index) {
     return b.total - a.total;
   });
 
-  workersTable.innerHTML = `
-    <table>
-      <thead>
-        <tr>
-          <th>Pracownik</th>
-          <th>Razem</th>
-          <th>Poprawne</th>
-          <th>Nieprawidłowe</th>
-          <th>% poprawności</th>
-          <th>Błędne tacki</th>
-          <th>Brakujące</th>
-          <th>Duplikaty</th>
-          <th>Śr. czas</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${data.map(w => {
-          const avg = w.durationCount ? Math.round(w.duration / w.durationCount) : 0;
-          const acc = w.total ? Math.round((w.correct / w.total) * 100) : 0;
-          return `
-            <tr class="${w.bad || w.wrong || w.missing || w.duplicates ? "problemRow" : "goodRow"}">
-              <td><b>${escapeHtml(w.worker)}</b></td>
-              <td>${w.total}</td>
-              <td class="ok">${w.correct}</td>
-              <td class="bad">${w.bad}</td>
-              <td><b>${acc}%</b></td>
-              <td>${w.wrong}</td>
-              <td>${w.missing}</td>
-              <td>${w.duplicates}</td>
-              <td>${formatDuration(avg)}</td>
-            </tr>
-          `;
-        }).join("")}
-      </tbody>
-    </table>
-  `;
-}
-
 function renderHistory(data) {
   historyTable.innerHTML = `
     <table>
