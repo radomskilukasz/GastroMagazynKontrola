@@ -57,7 +57,7 @@ button { border:none; background:#2563eb; color:white; font-weight:bold; cursor:
 
 .dashboardLayout {
   display:grid;
-  grid-template-columns: 1fr 440px;
+  grid-template-columns: 1fr 616px;
   gap:18px;
   align-items:start;
 }
@@ -596,11 +596,7 @@ function renderHistory(data) {
           <th>Torba</th>
           <th>Status</th>
           <th>Pracownik</th>
-          <th>Postęp</th>
           <th>Czas pakowania</th>
-          <th>Brakujące</th>
-          <th>Błędne</th>
-          <th>Duplikaty</th>
         </tr>
       </thead>
       <tbody>
@@ -623,11 +619,7 @@ function renderHistory(data) {
               </td>
               <td class="${x.status === "POPRAWNA" ? "ok" : "bad"}">${escapeHtml(x.status || "-")}</td>
               <td>${escapeHtml(x.user_login || "-")}</td>
-              <td>${x.correct_count || 0}/${x.expected_count || 0}</td>
               <td>${formatDuration(x.duration_seconds)}</td>
-              <td class="${splitItems(x.missing_trays).length ? "warn" : ""}">${escapeHtml(x.missing_trays || "-")}</td>
-              <td class="${splitItems(x.wrong_trays).length ? "bad" : ""}">${escapeHtml(x.wrong_trays || "-")}</td>
-              <td class="${splitItems(x.duplicate_trays).length ? "bad" : ""}">${escapeHtml(x.duplicate_trays || "-")}</td>
             </tr>
           `;
         }).join("")}
