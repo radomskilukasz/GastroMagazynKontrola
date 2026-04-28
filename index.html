@@ -9,6 +9,21 @@
 <style>
 body { font-family: Arial; background:#f3f4f6; padding:20px; color:#111827; }
 .hidden { display:none !important; }
+  .progressBar {
+  width:100%;
+  height:14px;
+  background:#e5e7eb;
+  border-radius:999px;
+  overflow:hidden;
+  margin-top:10px;
+}
+
+.progressFill {
+  height:100%;
+  width:0%;
+  background:#16a34a;
+  transition:width .3s ease;
+}
 .card { background:white; border-radius:18px; padding:22px; margin-bottom:18px; box-shadow:0 4px 18px rgba(0,0,0,.05); }
 h1,h2 { margin-top:0; }
 input,button,select { font-size:16px; padding:11px; border-radius:10px; margin:4px; }
@@ -166,7 +181,13 @@ th { background:#f9fafb; }
   </div>
 
   <div class="grid">
-    <div class="card"><div class="label">Spakowane dziś</div><div class="stat" id="totalToday">0</div></div>
+    <div class="card">
+  <div class="label">Spakowane dziś</div>
+  <div class="stat" id="totalToday">0 / 0</div>
+  <div class="progressBar">
+    <div class="progressFill" id="totalProgressFill"></div>
+  </div>
+</div>
     <div class="card"><div class="label">Poprawne</div><div class="stat ok" id="correctToday">0</div></div>
     <div class="card"><div class="label">Nieprawidłowe</div><div class="stat bad" id="badToday">0</div></div>
     <div class="card"><div class="label">Poprawność</div><div class="stat" id="accuracyToday">0%</div></div>
@@ -336,6 +357,11 @@ function renderAll() {
   const accuracy = today.length ? Math.round((correct.length / today.length) * 100) : 0;
 
   totalToday.innerText = `${today.length} / ${totalBagsInPlan}`;
+  const totalPercent = totalBagsInPlan
+  ? Math.min(100, Math.round((today.length / totalBagsInPlan) * 100))
+  : 0;
+
+totalProgressFill.style.width = totalPercent + "%";
   correctToday.innerText = correct.length;
   badToday.innerText = bad.length;
   accuracyToday.innerText = accuracy + "%";
