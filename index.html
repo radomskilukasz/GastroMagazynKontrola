@@ -1156,6 +1156,70 @@ function closeDetails() {
 function exportCsv() {
   const data = getFilteredSessions();
 
+  const total = data.length;
+  const correct = data.filter(x => x.status === "POPRAWNA").length;
+  const bad = data.filter(x => x.status === "NIEPOPRAWNA").length;
+
+  const accuracy = total
+    ? Math.round((correct / total) * 100)
+    : 0;
+
+  const durations = data
+    .map(x => x.duration_seconds)
+    .filter(x => typeof x === "number");
+
+  const avgDuration = durations.length
+    ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length)
+    : 0;
+
+  const workers = {};
+
+  data.forEach(x => {
+    const worker = displayLogin(x.user_login || "brak użytkownika");
+
+    if (!workers[worker]) {
+      workers[worker] = {
+        worker,
+        total: 0,
+        correct: 0,
+        bad: 0,
+        duration: 0,
+        durationCount: 0
+      };
+    }
+
+    workers[worker].total++;
+
+    if (x.status === "POPRAWNA") workers[worker].correct++;
+    if (x.status === "NIEPOPRAWNA") workers[worker].bad++;
+
+    if (typeof x.duration_seconds === "number") {
+      workers[worker].duration += x.duration_seconds;
+      workers[worker].durationCount++;
+    }
+  });
+
+  const workersRows = Object.values(workers)
+    .sort((a, b) => b.total - a.total)
+    .map(w => {
+      const workerAccuracy = w.total
+        ? Math.round((w.correct / w.total) * 100)
+        : 0;
+
+      const workerAvg = w.durationCount
+        ? Math.round(w.duration / w.durationCount)
+        : 0;
+
+      return [
+        w.worker,
+        w.total,
+        w.correct,
+        w.bad,
+        workerAccuracy + "%",
+        formatDuration(workerAvg)
+      ];
+    });
+
   const header = [
     "Data zamknięcia",
     "QR torby",
@@ -1170,11 +1234,11 @@ function exportCsv() {
     "Wszystkie skany"
   ];
 
-  const rows = data.map(x => [
+  const detailRows = data.map(x => [
     x.closed_at ? new Date(x.closed_at).toLocaleString("pl-PL") : "",
     x.bag_qr || "",
     x.status || "",
-    x.user_login || "",
+    displayLogin(x.user_login || ""),
     x.expected_count || 0,
     x.correct_count || 0,
     formatDuration(x.duration_seconds),
@@ -1184,9 +1248,30 @@ function exportCsv() {
     x.all_scans || ""
   ]);
 
-  const csv = [header, ...rows]
+  const reportRows = [
+    ["RAPORT PAKOWANIA"],
+    ["Wygenerowano", new Date().toLocaleString("pl-PL")],
+    ["Liczba pozycji w raporcie", total],
+    [],
+    ["PODSUMOWANIE"],
+    ["Spakowane torby", total],
+    ["Poprawne", correct],
+    ["Niepoprawne", bad],
+    ["Poprawność", accuracy + "%"],
+    ["Średni czas pakowania", formatDuration(avgDuration)],
+    [],
+    ["RANKING PRACOWNIKÓW"],
+    ["Pracownik", "Razem", "Poprawne", "Niepoprawne", "Poprawność", "Średni czas"],
+    ...workersRows,
+    [],
+    ["SZCZEGÓŁOWA HISTORIA PAKOWANIA"],
+    header,
+    ...detailRows
+  ];
+
+  const csv = reportRows
     .map(row => row.map(cell => {
-      return `"${String(cell).replaceAll('"', '""')}"`;
+      return `"${String(cell ?? "").replaceAll('"', '""')}"`;
     }).join(";"))
     .join("\n");
 
