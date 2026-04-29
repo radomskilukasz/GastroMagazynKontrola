@@ -698,20 +698,46 @@ function exportCsv() {
   const data = getFilteredSessions();
 
   const header = [
-    "closed_at","bag_qr","status","user_login","expected_count","correct_count",
-    "duration_seconds","missing_trays","wrong_trays","duplicate_trays","all_scans"
+    "Data zamknięcia",
+    "QR torby",
+    "Status",
+    "Pracownik",
+    "Oczekiwane tacki",
+    "Poprawne tacki",
+    "Czas pakowania",
+    "Brakujące tacki",
+    "Błędne tacki",
+    "Duplikaty",
+    "Wszystkie skany"
   ];
 
-  const rows = data.map(x => header.map(h => x[h] ?? ""));
+  const rows = data.map(x => [
+    x.closed_at ? new Date(x.closed_at).toLocaleString("pl-PL") : "",
+    x.bag_qr || "",
+    x.status || "",
+    x.user_login || "",
+    x.expected_count || 0,
+    x.correct_count || 0,
+    formatDuration(x.duration_seconds),
+    x.missing_trays || "",
+    x.wrong_trays || "",
+    x.duplicate_trays || "",
+    x.all_scans || ""
+  ]);
 
   const csv = [header, ...rows]
-    .map(row => row.map(cell => `"${String(cell).replaceAll('"','""')}"`).join(";"))
+    .map(row => row.map(cell => {
+      return `"${String(cell).replaceAll('"', '""')}"`;
+    }).join(";"))
     .join("\n");
 
-  const blob = new Blob(["\ufeff" + csv], { type:"text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
+  const blob = new Blob(["\ufeff" + csv], {
+    type: "text/csv;charset=utf-8;"
+  });
 
+  const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
+
   a.href = url;
   a.download = "raport_pakowania_" + new Date().toISOString().slice(0,10) + ".csv";
   a.click();
