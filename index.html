@@ -287,6 +287,23 @@ const supabaseClient = window.supabase.createClient(
 );
 
 const LOGIN_DOMAIN = "@pakowanie.local";
+  async function getUserRole(userId) {
+  const { data, error } = await supabaseClient
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", userId)
+    .single();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return data.role;
+}
+
+function hasAccess(role, allowedRoles) {
+  return allowedRoles.includes(role);
+}
 let sessions = [];
 let totalBagsInPlan = 0;
 let refreshTimer = null;
@@ -318,14 +335,21 @@ async function login() {
     return;
   }
 
-  const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
-  if (error) {
-    loginStatus.innerText = "Nieprawidłowy login lub hasło.";
-    return;
-  }
+if (error) {
+  loginStatus.innerText = "Nieprawidłowy login lub hasło.";
+  return;
+}
 
-  loginScreen.classList.add("hidden");
+const role = await getUserRole(data.user.id);
+
+if (!hasAccess(role, ["manager", "admin"])) {
+  loginStatus.innerText = "Brak dostępu do raportu.";
+  return;
+}
+
+loginScreen.classList.add("hidden");
   reportScreen.classList.remove("hidden");
 
   await loadReport();
