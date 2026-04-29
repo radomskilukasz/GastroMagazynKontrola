@@ -142,6 +142,11 @@
       letter-spacing:-.03em;
     }
 
+    /* mniejsze staty dla kart bocznych */
+    .statsGrid .card:not(:first-child) .stat {
+      font-size:32px;
+    }
+
     .card {
       background:var(--card);
       border-radius:24px;
@@ -543,7 +548,7 @@
       <select id="statusFilter" onchange="renderAll()">
         <option value="">Wszystkie statusy</option>
         <option value="POPRAWNA">Tylko poprawne</option>
-        <option value="NIEPRAWIDŁOWA">Tylko nieprawidłowe</option>
+        <option value="NIEPRAWIDŁOWA">Tylko niepoprawne</option>
       </select>
       <select id="workerFilter" onchange="renderAll()">
         <option value="">Wszyscy pracownicy</option>
@@ -572,7 +577,7 @@
         </div>
 
         <div class="card">
-          <div class="label">Nieprawidłowe</div>
+          <div class="label">Niepoprawne</div>
           <div class="stat bad" id="badToday">0</div>
         </div>
 
