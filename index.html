@@ -932,7 +932,7 @@ function renderWorkers(today) {
             : 0;
 
           return `
-            <tr class="${w.bad || w.wrong || w.missing || w.duplicates ? "problemRow" : "goodRow"}">
+            <tr>
               <td>
                 <span class="workerName" onclick="openWorkerDetails(${index})">
                   ${escapeHtml(w.worker)}
@@ -1013,11 +1013,10 @@ function renderHistory(data) {
             || splitItems(x.missing_trays).length;
 
           const hasWarn = splitItems(x.duplicate_trays).length;
-          const rowClass = hasBad ? "problemRow" : hasWarn ? "warnRow" : "goodRow";
           const globalIndex = sessions.findIndex(s => s.id === x.id);
 
           return `
-            <tr class="${rowClass}">
+            <tr>
               <td>
                 <span class="clickable" onclick="openDetails(${globalIndex})">
                   ${escapeHtml(x.bag_qr || "-")}
