@@ -1032,41 +1032,34 @@ function openWorkerDetails(index) {
     ? Math.round((w.correct / w.total) * 100)
     : 0;
 
- detailsContent.innerHTML = `
-  <div class="detailsGrid">
-    <div class="detailsCard">
-      <div class="label">QR torby</div>
-      <div class="detailsValue">${escapeHtml(x.bag_qr || "-")}</div>
-    </div>
-
-    <div class="detailsCard">
-      <div class="label">Status</div>
-      <div class="detailsStatus ${x.status === "POPRAWNA" ? "ok" : "bad"}">
-        ${escapeHtml(x.status || "-")}
+  detailsContent.innerHTML = `
+    <div class="detailsGrid">
+      <div class="detailsCard">
+        <div class="label">Pracownik</div>
+        <div class="detailsValue">${escapeHtml(w.worker)}</div>
+      </div>
+      <div class="detailsCard">
+        <div class="label">Razem</div>
+        <div class="detailsValue">${w.total}</div>
+      </div>
+      <div class="detailsCard">
+        <div class="label">Poprawność</div>
+        <div class="detailsValue">${accuracy}%</div>
+      </div>
+      <div class="detailsCard">
+        <div class="label">Średni czas</div>
+        <div class="detailsValue">${formatDuration(avg)}</div>
       </div>
     </div>
 
-    <div class="detailsCard">
-      <div class="label">Pracownik</div>
-      <div class="detailsValue">${escapeHtml(displayLogin(x.user_login || "-"))}</div>
-    </div>
-
-    <div class="detailsCard">
-      <div class="label">Czas pakowania</div>
-      <div class="detailsValue">${formatDuration(x.duration_seconds)}</div>
-    </div>
-  </div>
-
-  <table class="detailsTable">
-    <tr><th>Start</th><td>${x.started_at ? new Date(x.started_at).toLocaleString("pl-PL") : "-"}</td></tr>
-    <tr><th>Koniec</th><td>${x.closed_at ? new Date(x.closed_at).toLocaleString("pl-PL") : "-"}</td></tr>
-    <tr><th>Postęp</th><td>${x.correct_count || 0}/${x.expected_count || 0}</td></tr>
-    <tr><th>Wszystkie skany</th><td>${escapeHtml(x.all_scans || "-")}</td></tr>
-    <tr><th>Brakujące</th><td class="${splitItems(x.missing_trays).length ? "badCell" : ""}">${escapeHtml(x.missing_trays || "-")}</td></tr>
-    <tr><th>Błędne</th><td class="${splitItems(x.wrong_trays).length ? "badCell" : ""}">${escapeHtml(x.wrong_trays || "-")}</td></tr>
-    <tr><th>Duplikaty</th><td class="${splitItems(x.duplicate_trays).length ? "warnCell" : ""}">${escapeHtml(x.duplicate_trays || "-")}</td></tr>
-  </table>
-`;
+    <table class="detailsTable">
+      <tr><th>Poprawne</th><td class="ok">${w.correct}</td></tr>
+      <tr><th>Niepoprawne</th><td class="bad">${w.bad}</td></tr>
+      <tr><th>Błędne tacki</th><td>${w.wrong}</td></tr>
+      <tr><th>Brakujące tacki</th><td>${w.missing}</td></tr>
+      <tr><th>Duplikaty</th><td>${w.duplicates}</td></tr>
+    </table>
+  `;
 
   detailsModal.classList.remove("hidden");
 }
@@ -1118,33 +1111,38 @@ function openDetails(index) {
   if (!x) return;
 
   detailsContent.innerHTML = `
-    <div class="grid">
-      <div class="card">
-        <div class="label">QR Torby</div>
+    <div class="detailsGrid">
+      <div class="detailsCard">
+        <div class="label">QR torby</div>
         <div class="detailsValue">${escapeHtml(x.bag_qr || "-")}</div>
       </div>
-      <div class="card">
+
+      <div class="detailsCard">
         <div class="label">Status</div>
-        <div class="stat ${x.status === "POPRAWNA" ? "ok" : "bad"}">${escapeHtml(x.status || "-")}</div>
+        <div class="detailsStatus ${x.status === "POPRAWNA" ? "ok" : "bad"}">
+          ${escapeHtml(x.status || "-")}
+        </div>
       </div>
-      <div class="card">
+
+      <div class="detailsCard">
         <div class="label">Pracownik</div>
-        <div style="font-size:24px"><b>${escapeHtml(displayLogin(x.user_login || "-"))}</b></div>
+        <div class="detailsValue">${escapeHtml(displayLogin(x.user_login || "-"))}</div>
       </div>
-      <div class="card">
+
+      <div class="detailsCard">
         <div class="label">Czas pakowania</div>
-        <div class="stat">${formatDuration(x.duration_seconds)}</div>
+        <div class="detailsValue">${formatDuration(x.duration_seconds)}</div>
       </div>
     </div>
 
-    <table>
+    <table class="detailsTable">
       <tr><th>Start</th><td>${x.started_at ? new Date(x.started_at).toLocaleString("pl-PL") : "-"}</td></tr>
       <tr><th>Koniec</th><td>${x.closed_at ? new Date(x.closed_at).toLocaleString("pl-PL") : "-"}</td></tr>
       <tr><th>Postęp</th><td>${x.correct_count || 0}/${x.expected_count || 0}</td></tr>
       <tr><th>Wszystkie skany</th><td>${escapeHtml(x.all_scans || "-")}</td></tr>
       <tr><th>Brakujące</th><td class="${splitItems(x.missing_trays).length ? "badCell" : ""}">${escapeHtml(x.missing_trays || "-")}</td></tr>
       <tr><th>Błędne</th><td class="${splitItems(x.wrong_trays).length ? "badCell" : ""}">${escapeHtml(x.wrong_trays || "-")}</td></tr>
-      <tr><th>Duplikaty</th><td class="${splitItems(x.duplicate_trays).length ? "badCell" : ""}">${escapeHtml(x.duplicate_trays || "-")}</td></tr>
+      <tr><th>Duplikaty</th><td class="${splitItems(x.duplicate_trays).length ? "warnCell" : ""}">${escapeHtml(x.duplicate_trays || "-")}</td></tr>
     </table>
   `;
 
