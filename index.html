@@ -1,172 +1,505 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-<link rel="icon" type="image/png" sizes="32x32" href="logo-removebg-preview.png">
-<link rel="icon" type="image/png" sizes="16x16" href="logo-removebg-preview.png">
-<meta charset="UTF-8">
-<title>Raport pakowania</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="icon" type="image/png" sizes="32x32" href="logo-removebg-preview.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="logo-removebg-preview.png">
+  <meta charset="UTF-8">
+  <title>Raport pakowania</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<style>
-body { font-family: Arial; background:#f3f4f6; padding:20px; color:#111827; }
-.hidden { display:none !important; }
+  <style>
+    :root {
+      --bg:#eef2f7;
+      --card:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --border:#e5e7eb;
+      --blue:#2563eb;
+      --blue-dark:#1d4ed8;
+      --green:#16a34a;
+      --red:#dc2626;
+      --orange:#f59e0b;
+      --shadow:0 10px 35px rgba(15,23,42,.08);
+    }
 
-.card { background:white; border-radius:18px; padding:22px; margin-bottom:18px; box-shadow:0 4px 18px rgba(0,0,0,.05); }
-h1,h2 { margin-top:0; }
+    * {
+      box-sizing:border-box;
+    }
 
-input,button,select { font-size:16px; padding:11px; border-radius:10px; margin:4px; }
-input,select { border:2px solid #d1d5db; background:white; }
-button { border:none; background:#2563eb; color:white; font-weight:bold; cursor:pointer; }
+    body {
+      font-family: Arial, sans-serif;
+      background:var(--bg);
+      padding:22px;
+      margin:0;
+      color:var(--text);
+    }
 
-.loginCard {
-  background:white;
-  padding:36px;
-  border-radius:24px;
-  width:100%;
-  max-width:520px;
-  margin:40px auto;
-  box-shadow:0 10px 35px rgba(0,0,0,.08);
-  box-sizing:border-box;
-}
-.loginLogo { text-align:center; margin-bottom:15px; }
-.loginLogo img { width:90px; height:auto; display:block; margin:0 auto; }
-.loginCard h1 { text-align:center; margin:0; font-size:32px; }
-.loginSubtitle { text-align:center; color:#6b7280; margin-bottom:28px; }
-.loginCard label { display:block; font-weight:bold; margin-top:16px; margin-bottom:6px; }
-.loginInput {
-  width:100%;
-  font-size:22px;
-  padding:14px;
-  border-radius:12px;
-  border:2px solid #d1d5db;
-  box-sizing:border-box;
-}
-.loginInput:focus { outline:none; border-color:#2563eb; }
-.loginBtn {
-  width:100%;
-  margin-top:24px;
-  font-size:24px;
-  padding:16px;
-  border-radius:14px;
-  border:none;
-  background:#2563eb;
-  color:white;
-  font-weight:bold;
-}
-.loginStatus { margin-top:18px; padding:12px; border-radius:12px; font-weight:bold; }
+    .hidden {
+      display:none !important;
+    }
 
-.dashboardLayout {
-  display:grid;
-  grid-template-columns: 1fr 616px;
-  gap:18px;
-  align-items:start;
-}
-leftDashboard {
-  min-width:0;
-}
+    h1,
+    h2 {
+      margin-top:0;
+    }
 
-.statsGrid {
-  display:grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap:14px;
-}
+    button {
+      border:none;
+      background:var(--blue);
+      color:white;
+      font-weight:bold;
+      cursor:pointer;
+      border-radius:12px;
+      transition:.15s ease;
+    }
 
-.avgGrid {
-  display:grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap:14px;
-}
-  
-.workersPanel {
-  min-height:620px;
-}
+    button:hover {
+      background:var(--blue-dark);
+    }
 
-.grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
-.stat { font-size:34px; font-weight:bold; }
-.label { color:#6b7280; font-size:14px; }
+    input,
+    select,
+    button {
+      font-size:17px;
+      padding:13px 14px;
+      margin:0;
+    }
 
-.progressBar {
-  width:100%;
-  height:14px;
-  background:#e5e7eb;
-  border-radius:999px;
-  overflow:hidden;
-  margin-top:10px;
-}
-.progressFill {
-  height:100%;
-  width:0%;
-  background:#16a34a;
-  transition:width .3s ease;
-}
+    input,
+    select {
+      border:2px solid #d1d5db;
+      background:white;
+      border-radius:12px;
+      min-height:48px;
+    }
 
-.ok { color:#16a34a; font-weight:bold; }
-.bad { color:#dc2626; font-weight:bold; }
-.warn { color:#f59e0b; font-weight:bold; }
+    input:focus,
+    select:focus {
+      outline:none;
+      border-color:var(--blue);
+      box-shadow:0 0 0 4px rgba(37,99,235,.15);
+    }
 
-table { width:100%; border-collapse:collapse; font-size:15px; }
-th,td { border-bottom:1px solid #e5e7eb; padding:9px; text-align:left; vertical-align:top; }
-th { background:#f9fafb; }
+    table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:17px;
+    }
 
-.small { color:#6b7280; font-size:13px; }
-.topbar { display:flex; justify-content:space-between; gap:12px; align-items:center; flex-wrap:wrap; }
-.filters { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    th,
+    td {
+      border-bottom:1px solid var(--border);
+      padding:13px 12px;
+      text-align:left;
+      vertical-align:middle;
+    }
 
-.problemRow { background:#fff1f2; }
-.warnRow { background:#fffbeb; }
-.goodRow { background:#f0fdf4; }
+    th {
+      background:#f9fafb;
+      color:#374151;
+      font-size:14px;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+    }
 
-.clickable, .workerName {
-  cursor:pointer;
-  text-decoration:underline;
-  font-weight:bold;
-}
+    tbody tr:hover {
+      filter:brightness(.98);
+    }
 
-.alertBox {
-  background:#fee2e2;
-  color:#991b1b;
-  border:2px solid #fecaca;
-  border-radius:16px;
-  padding:16px;
-  font-weight:bold;
-  margin-bottom:18px;
-}
+    .ok {
+      color:var(--green);
+      font-weight:bold;
+    }
 
-.modalBg {
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.55);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:999;
-}
-.modal {
-  background:white;
-  border-radius:18px;
-  padding:26px;
-  width:90%;
-  max-width:900px;
-  max-height:85vh;
-  overflow:auto;
-}
-.modalHeader { display:flex; justify-content:space-between; align-items:center; gap:12px; }
-.closeBtn { background:#ef4444; }
-.badCell { background:#fee2e2; }
-.warnCell { background:#fffbeb; }
+    .bad {
+      color:var(--red);
+      font-weight:bold;
+    }
 
-@media(max-width:1100px){
-  .dashboardLayout { grid-template-columns:1fr; }
+    .warn {
+      color:var(--orange);
+      font-weight:bold;
+    }
 
-  .statsGrid,
-  .avgGrid {
-    grid-template-columns:1fr 1fr;
-  }
-}
-@media(max-width:900px){
-  .grid { grid-template-columns:1fr 1fr; }
-}
-</style>
+    .small {
+      color:var(--muted);
+      font-size:15px;
+    }
+
+    .label {
+      color:var(--muted);
+      font-size:15px;
+      font-weight:bold;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+      margin-bottom:8px;
+    }
+
+    .stat {
+      font-size:42px;
+      line-height:1;
+      font-weight:bold;
+      letter-spacing:-.03em;
+    }
+
+    .card {
+      background:var(--card);
+      border-radius:24px;
+      padding:24px;
+      margin-bottom:18px;
+      box-shadow:var(--shadow);
+      border:1px solid rgba(255,255,255,.7);
+    }
+
+    /* EKRAN LOGOWANIA */
+    .loginCard {
+      background:white;
+      padding:36px;
+      border-radius:24px;
+      width:100%;
+      max-width:520px;
+      margin:40px auto;
+      box-shadow:var(--shadow);
+      box-sizing:border-box;
+    }
+
+    .loginLogo {
+      text-align:center;
+      margin-bottom:15px;
+    }
+
+    .loginLogo img {
+      width:90px;
+      height:auto;
+      display:block;
+      margin:0 auto;
+    }
+
+    .loginCard h1 {
+      text-align:center;
+      margin:0;
+      font-size:32px;
+    }
+
+    .loginSubtitle {
+      text-align:center;
+      color:var(--muted);
+      margin-bottom:28px;
+    }
+
+    .loginCard label {
+      display:block;
+      font-weight:bold;
+      margin-top:16px;
+      margin-bottom:6px;
+    }
+
+    .loginInput {
+      width:100%;
+      font-size:22px;
+      padding:14px;
+      border-radius:12px;
+      border:2px solid #d1d5db;
+    }
+
+    .loginBtn {
+      width:100%;
+      margin-top:24px;
+      font-size:24px;
+      padding:16px;
+      border-radius:14px;
+      background:var(--blue);
+      color:white;
+      font-weight:bold;
+    }
+
+    .loginStatus {
+      margin-top:18px;
+      padding:12px;
+      border-radius:12px;
+      font-weight:bold;
+      min-height:44px;
+    }
+
+    /* DASHBOARD TV */
+    .dashboardShell {
+      width:100%;
+      max-width:1920px;
+      margin:0 auto;
+    }
+
+    .topbar {
+      display:flex;
+      justify-content:space-between;
+      gap:20px;
+      align-items:center;
+      flex-wrap:wrap;
+      background:white;
+      border-radius:26px;
+      padding:22px 26px;
+      margin-bottom:20px;
+      box-shadow:var(--shadow);
+    }
+
+    .topbarTitle {
+      display:flex;
+      align-items:center;
+      gap:18px;
+    }
+
+    .topbarLogo {
+      width:70px;
+      height:auto;
+      display:block;
+    }
+
+    .topbar h1 {
+      margin:0;
+      font-size:38px;
+      letter-spacing:-.03em;
+    }
+
+    .filters {
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+    }
+
+    .filters input {
+      min-width:230px;
+    }
+
+    .filters button {
+      min-height:48px;
+      padding-left:18px;
+      padding-right:18px;
+    }
+
+    .secondaryBtn {
+      background:#111827;
+    }
+
+    .secondaryBtn:hover {
+      background:#030712;
+    }
+
+    .dashboardLayout {
+      display:grid;
+      grid-template-columns:minmax(0, 1fr) 520px;
+      gap:20px;
+      align-items:start;
+    }
+
+    .leftDashboard {
+      min-width:0;
+    }
+
+    .statsGrid {
+      display:grid;
+      grid-template-columns:2fr 1fr 1fr 1fr;
+      gap:16px;
+    }
+
+    .statsGrid .card {
+      min-height:150px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+    }
+
+    .avgGrid {
+      display:grid;
+      grid-template-columns:repeat(4, 1fr);
+      gap:16px;
+    }
+
+    .workersPanel {
+      min-height:700px;
+      position:sticky;
+      top:22px;
+    }
+
+    .workersPanel h2,
+    .historyPanel h2 {
+      font-size:28px;
+      margin-bottom:8px;
+    }
+
+    .progressBar {
+      width:100%;
+      height:18px;
+      background:#e5e7eb;
+      border-radius:999px;
+      overflow:hidden;
+      margin-top:18px;
+    }
+
+    .progressFill {
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg, #22c55e, #16a34a);
+      transition:width .3s ease;
+    }
+
+    .problemRow {
+      background:#fff1f2;
+    }
+
+    .warnRow {
+      background:#fffbeb;
+    }
+
+    .goodRow {
+      background:#f0fdf4;
+    }
+
+    .clickable,
+    .workerName {
+      cursor:pointer;
+      text-decoration:underline;
+      text-underline-offset:4px;
+      font-weight:bold;
+    }
+
+    .alertBox {
+      background:#fee2e2;
+      color:#991b1b;
+      border:2px solid #fecaca;
+      border-radius:20px;
+      padding:18px 22px;
+      font-weight:bold;
+      font-size:24px;
+      margin-bottom:20px;
+      box-shadow:var(--shadow);
+    }
+
+    .grid {
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+    }
+
+    .modalBg {
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.55);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:999;
+    }
+
+    .modal {
+      background:white;
+      border-radius:24px;
+      padding:28px;
+      width:92%;
+      max-width:1050px;
+      max-height:85vh;
+      overflow:auto;
+      box-shadow:0 25px 80px rgba(0,0,0,.25);
+    }
+
+    .modalHeader {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:16px;
+    }
+
+    .modalHeader h2 {
+      font-size:30px;
+      margin:0;
+    }
+
+    .closeBtn {
+      background:#ef4444;
+      font-size:18px;
+      padding:12px 18px;
+    }
+
+    .closeBtn:hover {
+      background:#dc2626;
+    }
+
+    .badCell {
+      background:#fee2e2;
+    }
+
+    .warnCell {
+      background:#fffbeb;
+    }
+
+    @media(max-width:1300px){
+      .dashboardLayout {
+        grid-template-columns:1fr;
+      }
+
+      .workersPanel {
+        position:static;
+        min-height:auto;
+      }
+
+      .statsGrid,
+      .avgGrid {
+        grid-template-columns:1fr 1fr;
+      }
+    }
+
+    @media(max-width:900px){
+      body {
+        padding:12px;
+      }
+
+      .topbar {
+        padding:18px;
+      }
+
+      .topbarTitle {
+        width:100%;
+      }
+
+      .topbar h1 {
+        font-size:30px;
+      }
+
+      .topbarLogo {
+        width:56px;
+      }
+
+      .filters {
+        width:100%;
+      }
+
+      .filters input,
+      .filters select,
+      .filters button {
+        width:100%;
+      }
+
+      .statsGrid,
+      .avgGrid,
+      .grid {
+        grid-template-columns:1fr;
+      }
+
+      .stat {
+        font-size:34px;
+      }
+
+      table {
+        font-size:14px;
+      }
+
+      th,
+      td {
+        padding:10px 8px;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -189,16 +522,19 @@ th { background:#f9fafb; }
   <p id="loginStatus" class="loginStatus bad"></p>
 </div>
 
-<div id="reportScreen" class="hidden">
+<div id="reportScreen" class="hidden dashboardShell">
 
   <div id="alertBox" class="alertBox hidden"></div>
 
   <div class="topbar">
-    <div>
-      <h1>Raport pakowania LIVE</h1>
-      <div class="small">
-        Ostatnie odświeżenie: <span id="lastRefresh">-</span> |
-        Auto odświeżanie: co 30 sekund
+    <div class="topbarTitle">
+      <img src="logo.png" class="topbarLogo" alt="logo">
+      <div>
+        <h1>Raport pakowania LIVE</h1>
+        <div class="small">
+          Ostatnie odświeżenie: <span id="lastRefresh">-</span> |
+          Auto odświeżanie: co 30 sekund
+        </div>
       </div>
     </div>
 
@@ -213,60 +549,60 @@ th { background:#f9fafb; }
         <option value="">Wszyscy pracownicy</option>
       </select>
       <button onclick="loadReport()">Odśwież teraz</button>
-      <button onclick="exportCsv()">Eksport CSV</button>
+      <button class="secondaryBtn" onclick="exportCsv()">Eksport CSV</button>
     </div>
   </div>
 
-<div class="dashboardLayout">
+  <div class="dashboardLayout">
 
-  <div class="leftDashboard">
+    <div class="leftDashboard">
 
-    <div class="statsGrid">
-      <div class="card">
-        <div class="label">Spakowane dziś</div>
-        <div class="stat" id="totalToday">0 / 0</div>
-        <div class="progressBar">
-          <div class="progressFill" id="totalProgressFill"></div>
+      <div class="statsGrid">
+        <div class="card">
+          <div class="label">Spakowane dziś</div>
+          <div class="stat" id="totalToday">0 / 0</div>
+          <div class="progressBar">
+            <div class="progressFill" id="totalProgressFill"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="label">Poprawne</div>
+          <div class="stat ok" id="correctToday">0</div>
+        </div>
+
+        <div class="card">
+          <div class="label">Nieprawidłowe</div>
+          <div class="stat bad" id="badToday">0</div>
+        </div>
+
+        <div class="card">
+          <div class="label">Poprawność</div>
+          <div class="stat" id="accuracyToday">0%</div>
         </div>
       </div>
 
-      <div class="card">
-        <div class="label">Poprawne</div>
-        <div class="stat ok" id="correctToday">0</div>
+      <div class="avgGrid">
+        <div class="card">
+          <div class="label">Średni czas / torba</div>
+          <div class="stat" id="avgTime">0s</div>
+        </div>
       </div>
 
-      <div class="card">
-        <div class="label">Nieprawidłowe</div>
-        <div class="stat bad" id="badToday">0</div>
+      <div class="card historyPanel">
+        <h2>🧾 Historia pakowania</h2>
+        <p class="small">Kliknij QR torby, żeby zobaczyć szczegóły.</p>
+        <div id="historyTable"></div>
       </div>
 
-      <div class="card">
-        <div class="label">Poprawność</div>
-        <div class="stat" id="accuracyToday">0%</div>
-      </div>
     </div>
 
-    <div class="avgGrid">
-      <div class="card">
-        <div class="label">Średni czas / torba</div>
-        <div class="stat" id="avgTime">0s</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>🧾 Historia pakowania</h2>
-      <p class="small">Kliknij QR torby, żeby zobaczyć szczegóły.</p>
-      <div id="historyTable"></div>
+    <div class="card workersPanel">
+      <h2>🏆 Ranking pracowników</h2>
+      <div id="workersTable"></div>
     </div>
 
   </div>
-
-  <div class="card workersPanel">
-    <h2>🏆 Ranking pracowników</h2>
-    <div id="workersTable"></div>
-  </div>
-
-</div>
 
 </div>
 
@@ -287,7 +623,8 @@ const supabaseClient = window.supabase.createClient(
 );
 
 const LOGIN_DOMAIN = "@pakowanie.local";
-  async function getUserRole(userId) {
+
+async function getUserRole(userId) {
   const { data, error } = await supabaseClient
     .from("user_roles")
     .select("role")
@@ -304,6 +641,7 @@ const LOGIN_DOMAIN = "@pakowanie.local";
 function hasAccess(role, allowedRoles) {
   return allowedRoles.includes(role);
 }
+
 let sessions = [];
 let totalBagsInPlan = 0;
 let refreshTimer = null;
@@ -337,19 +675,19 @@ async function login() {
 
   const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
-if (error) {
-  loginStatus.innerText = "Nieprawidłowy login lub hasło.";
-  return;
-}
+  if (error) {
+    loginStatus.innerText = "Nieprawidłowy login lub hasło.";
+    return;
+  }
 
-const role = await getUserRole(data.user.id);
+  const role = await getUserRole(data.user.id);
 
-if (!hasAccess(role, ["manager", "admin"])) {
-  loginStatus.innerText = "Brak dostępu do raportu.";
-  return;
-}
+  if (!hasAccess(role, ["manager", "admin"])) {
+    loginStatus.innerText = "Brak dostępu do raportu.";
+    return;
+  }
 
-loginScreen.classList.add("hidden");
+  loginScreen.classList.add("hidden");
   reportScreen.classList.remove("hidden");
 
   await loadReport();
@@ -419,7 +757,7 @@ function refreshWorkerFilter() {
   const workers = [...new Set(sessions.map(x => x.user_login).filter(Boolean))].sort();
 
   workerFilter.innerHTML = `<option value="">Wszyscy pracownicy</option>` +
-    workers.map(w => `<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`).join("");
+    workers.map(w => `<option value="${escapeHtml(w)}">${escapeHtml(displayLogin(w))}</option>`).join("");
 
   workerFilter.value = current;
 }
@@ -537,8 +875,8 @@ function renderWorkers(today) {
         <tr>
           <th>Pracownik</th>
           <th>Razem</th>
-          <th>Poprawne</th>
-          <th>Niepoprawne</th>
+          <th>OK</th>
+          <th>Źle</th>
           <th>Śr. czas</th>
         </tr>
       </thead>
@@ -555,7 +893,7 @@ function renderWorkers(today) {
                   ${escapeHtml(w.worker)}
                 </span>
               </td>
-              <td>${w.total}</td>
+              <td><b>${w.total}</b></td>
               <td class="ok">${w.correct}</td>
               <td class="bad">${w.bad}</td>
               <td>${formatDuration(avg)}</td>
@@ -583,7 +921,7 @@ function openWorkerDetails(index) {
     <div class="grid">
       <div class="card">
         <div class="label">Pracownik</div>
-        <div style="font-size:20px"><b>${escapeHtml(w.worker)}</b></div>
+        <div style="font-size:24px"><b>${escapeHtml(w.worker)}</b></div>
       </div>
       <div class="card">
         <div class="label">Razem</div>
@@ -668,7 +1006,7 @@ function openDetails(index) {
       </div>
       <div class="card">
         <div class="label">Pracownik</div>
-        <div style="font-size:20px"><b>${escapeHtml(displayLogin(x.user_login || "-"))}</b></div>
+        <div style="font-size:24px"><b>${escapeHtml(displayLogin(x.user_login || "-"))}</b></div>
       </div>
       <div class="card">
         <div class="label">Czas pakowania</div>
@@ -744,11 +1082,13 @@ function exportCsv() {
 
   URL.revokeObjectURL(url);
 }
+
 function displayLogin(value) {
   return String(value || "")
     .toLowerCase()
     .replace("@pakowanie.local", "");
 }
+
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, m => ({
     "&":"&amp;",
