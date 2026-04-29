@@ -546,6 +546,64 @@
         padding:10px 8px;
       }
     }
+    .detailsGrid {
+  display:grid;
+  grid-template-columns:repeat(4, minmax(0, 1fr));
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.detailsCard {
+  background:#f9fafb;
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:18px;
+  min-width:0;
+}
+
+.detailsValue {
+  font-size:24px;
+  font-weight:bold;
+  word-break:break-word;
+}
+
+.detailsStatus {
+  font-size:24px;
+  font-weight:bold;
+}
+
+.detailsTable {
+  width:100%;
+  table-layout:fixed;
+}
+
+.detailsTable th {
+  width:180px;
+}
+
+.detailsTable td {
+  word-break:break-word;
+}
+
+.modal {
+  overflow-x:hidden;
+}
+
+@media(max-width:900px){
+  .detailsGrid {
+    grid-template-columns:1fr 1fr;
+  }
+
+  .detailsTable th {
+    width:130px;
+  }
+}
+
+@media(max-width:600px){
+  .detailsGrid {
+    grid-template-columns:1fr;
+  }
+}
   </style>
 </head>
 
@@ -962,34 +1020,41 @@ function openWorkerDetails(index) {
     ? Math.round((w.correct / w.total) * 100)
     : 0;
 
-  detailsContent.innerHTML = `
-    <div class="grid">
-      <div class="card">
-        <div class="label">Pracownik</div>
-        <div style="font-size:24px"><b>${escapeHtml(w.worker)}</b></div>
-      </div>
-      <div class="card">
-        <div class="label">Razem</div>
-        <div class="stat">${w.total}</div>
-      </div>
-      <div class="card">
-        <div class="label">Poprawność</div>
-        <div class="stat">${accuracy}%</div>
-      </div>
-      <div class="card">
-        <div class="label">Średni czas</div>
-        <div class="stat">${formatDuration(avg)}</div>
+ detailsContent.innerHTML = `
+  <div class="detailsGrid">
+    <div class="detailsCard">
+      <div class="label">QR torby</div>
+      <div class="detailsValue">${escapeHtml(x.bag_qr || "-")}</div>
+    </div>
+
+    <div class="detailsCard">
+      <div class="label">Status</div>
+      <div class="detailsStatus ${x.status === "POPRAWNA" ? "ok" : "bad"}">
+        ${escapeHtml(x.status || "-")}
       </div>
     </div>
 
-    <table>
-      <tr><th>Poprawne</th><td class="ok">${w.correct}</td></tr>
-      <tr><th>Niepoprawne</th><td class="bad">${w.bad}</td></tr>
-      <tr><th>Błędne tacki</th><td>${w.wrong}</td></tr>
-      <tr><th>Brakujące tacki</th><td>${w.missing}</td></tr>
-      <tr><th>Duplikaty</th><td>${w.duplicates}</td></tr>
-    </table>
-  `;
+    <div class="detailsCard">
+      <div class="label">Pracownik</div>
+      <div class="detailsValue">${escapeHtml(displayLogin(x.user_login || "-"))}</div>
+    </div>
+
+    <div class="detailsCard">
+      <div class="label">Czas pakowania</div>
+      <div class="detailsValue">${formatDuration(x.duration_seconds)}</div>
+    </div>
+  </div>
+
+  <table class="detailsTable">
+    <tr><th>Start</th><td>${x.started_at ? new Date(x.started_at).toLocaleString("pl-PL") : "-"}</td></tr>
+    <tr><th>Koniec</th><td>${x.closed_at ? new Date(x.closed_at).toLocaleString("pl-PL") : "-"}</td></tr>
+    <tr><th>Postęp</th><td>${x.correct_count || 0}/${x.expected_count || 0}</td></tr>
+    <tr><th>Wszystkie skany</th><td>${escapeHtml(x.all_scans || "-")}</td></tr>
+    <tr><th>Brakujące</th><td class="${splitItems(x.missing_trays).length ? "badCell" : ""}">${escapeHtml(x.missing_trays || "-")}</td></tr>
+    <tr><th>Błędne</th><td class="${splitItems(x.wrong_trays).length ? "badCell" : ""}">${escapeHtml(x.wrong_trays || "-")}</td></tr>
+    <tr><th>Duplikaty</th><td class="${splitItems(x.duplicate_trays).length ? "warnCell" : ""}">${escapeHtml(x.duplicate_trays || "-")}</td></tr>
+  </table>
+`;
 
   detailsModal.classList.remove("hidden");
 }
