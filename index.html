@@ -18,21 +18,30 @@
       --blue-dark:#1d4ed8;
       --green:#16a34a;
       --red:#dc2626;
+      --orange:#f59e0b;
       --shadow:0 10px 35px rgba(15,23,42,.08);
     }
 
-    * { box-sizing:border-box; }
+    * {
+      box-sizing:border-box;
+    }
 
     body {
-      font-family:Arial, sans-serif;
+      font-family: Arial, sans-serif;
       background:var(--bg);
       padding:22px;
       margin:0;
       color:var(--text);
     }
 
-    .hidden { display:none !important; }
-    h1,h2 { margin-top:0; }
+    .hidden {
+      display:none !important;
+    }
+
+    h1,
+    h2 {
+      margin-top:0;
+    }
 
     button {
       border:none;
@@ -44,22 +53,28 @@
       transition:.15s ease;
     }
 
-    button:hover { background:var(--blue-dark); }
+    button:hover {
+      background:var(--blue-dark);
+    }
 
-    input, select, button {
+    input,
+    select,
+    button {
       font-size:17px;
       padding:13px 14px;
       margin:0;
     }
 
-    input, select {
+    input,
+    select {
       border:2px solid #d1d5db;
       background:white;
       border-radius:12px;
       min-height:48px;
     }
 
-    input:focus, select:focus {
+    input:focus,
+    select:focus {
       outline:none;
       border-color:var(--blue);
       box-shadow:0 0 0 4px rgba(37,99,235,.15);
@@ -71,12 +86,12 @@
       font-size:17px;
     }
 
-    th, td {
+    th,
+    td {
       border-bottom:1px solid var(--border);
       padding:13px 12px;
       text-align:left;
       vertical-align:middle;
-      background:white;
     }
 
     th {
@@ -87,8 +102,24 @@
       letter-spacing:.04em;
     }
 
-    .ok { color:var(--green); font-weight:bold; }
-    .bad { color:var(--red); font-weight:bold; }
+    tbody tr:hover {
+      filter:brightness(.98);
+    }
+
+    .ok {
+      color:var(--green);
+      font-weight:bold;
+    }
+
+    .bad {
+      color:var(--red);
+      font-weight:bold;
+    }
+
+    .warn {
+      color:var(--orange);
+      font-weight:bold;
+    }
 
     .small {
       color:var(--muted);
@@ -111,6 +142,11 @@
       letter-spacing:-.03em;
     }
 
+    /* mniejsze staty dla kart bocznych */
+    .statsGrid .card:not(:first-child) .stat {
+      font-size:32px;
+    }
+
     .card {
       background:var(--card);
       border-radius:24px;
@@ -120,7 +156,7 @@
       border:1px solid rgba(255,255,255,.7);
     }
 
-    /* LOGOWANIE */
+    /* EKRAN LOGOWANIA */
     .loginCard {
       background:white;
       padding:36px;
@@ -129,13 +165,39 @@
       max-width:520px;
       margin:40px auto;
       box-shadow:var(--shadow);
+      box-sizing:border-box;
     }
 
-    .loginLogo { text-align:center; margin-bottom:15px; }
-    .loginLogo img { width:90px; height:auto; display:block; margin:0 auto; }
-    .loginCard h1 { text-align:center; margin:0; font-size:32px; }
-    .loginSubtitle { text-align:center; color:var(--muted); margin-bottom:28px; }
-    .loginCard label { display:block; font-weight:bold; margin-top:16px; margin-bottom:6px; }
+    .loginLogo {
+      text-align:center;
+      margin-bottom:15px;
+    }
+
+    .loginLogo img {
+      width:90px;
+      height:auto;
+      display:block;
+      margin:0 auto;
+    }
+
+    .loginCard h1 {
+      text-align:center;
+      margin:0;
+      font-size:32px;
+    }
+
+    .loginSubtitle {
+      text-align:center;
+      color:var(--muted);
+      margin-bottom:28px;
+    }
+
+    .loginCard label {
+      display:block;
+      font-weight:bold;
+      margin-top:16px;
+      margin-bottom:6px;
+    }
 
     .loginInput {
       width:100%;
@@ -152,6 +214,8 @@
       padding:16px;
       border-radius:14px;
       background:var(--blue);
+      color:white;
+      font-weight:bold;
     }
 
     .loginStatus {
@@ -162,7 +226,7 @@
       min-height:44px;
     }
 
-    /* DASHBOARD */
+    /* DASHBOARD TV */
     .dashboardShell {
       width:100%;
       max-width:1920px;
@@ -208,10 +272,23 @@
       justify-content:flex-end;
     }
 
-    .filters input { min-width:230px; }
-    .filters button { min-height:48px; padding-left:18px; padding-right:18px; }
-    .secondaryBtn { background:#111827; }
-    .secondaryBtn:hover { background:#030712; }
+    .filters input {
+      min-width:230px;
+    }
+
+    .filters button {
+      min-height:48px;
+      padding-left:18px;
+      padding-right:18px;
+    }
+
+    .secondaryBtn {
+      background:#111827;
+    }
+
+    .secondaryBtn:hover {
+      background:#030712;
+    }
 
     .dashboardLayout {
       display:grid;
@@ -220,7 +297,9 @@
       align-items:start;
     }
 
-    .leftDashboard { min-width:0; }
+    .leftDashboard {
+      min-width:0;
+    }
 
     .statsGrid {
       display:grid;
@@ -228,20 +307,19 @@
       gap:16px;
     }
 
+    .totalCard {
+      grid-column:1 / -1;
+    }
+
     .statsGrid .card {
-      min-height:135px;
+      min-height:150px;
       display:flex;
       flex-direction:column;
       justify-content:center;
     }
 
     .totalCard {
-      grid-column:1 / -1;
       min-height:130px;
-    }
-
-    .statsGrid .card:not(.totalCard) .stat {
-      font-size:32px;
     }
 
     .workersPanel {
@@ -272,7 +350,20 @@
       transition:width .3s ease;
     }
 
-    .clickable, .workerName {
+    .problemRow {
+      background:#fff1f2;
+    }
+
+    .warnRow {
+      background:#fffbeb;
+    }
+
+    .goodRow {
+      background:#f0fdf4;
+    }
+
+    .clickable,
+    .workerName {
       cursor:pointer;
       text-decoration:underline;
       text-underline-offset:4px;
@@ -337,39 +428,123 @@
       padding:12px 18px;
     }
 
-    .closeBtn:hover { background:#dc2626; }
-    .badCell { background:#fee2e2; }
+    .closeBtn:hover {
+      background:#dc2626;
+    }
+
+    .badCell {
+      background:#fee2e2;
+    }
+
+    .warnCell {
+      background:#fffbeb;
+    }
 
     @media(max-width:1500px){
-      .dashboardLayout { grid-template-columns:1fr; }
-      .workersPanel { position:static; min-height:auto; }
-      .topbar { align-items:flex-start; }
-      .topbar h1 { font-size:30px; }
-      .topbarLogo { width:60px; }
-      .filters { width:100%; justify-content:flex-start; }
-      .filters input { min-width:200px; }
-      .stat { font-size:34px; }
-      .statsGrid .card:not(.totalCard) .stat { font-size:28px; }
+      .dashboardLayout {
+        grid-template-columns:1fr;
+      }
+
+      .workersPanel {
+        position:static;
+        min-height:auto;
+        max-height:none;
+      }
+
+      .statsGrid {
+        grid-template-columns:repeat(4, minmax(0, 1fr));
+      }
+
+      .statsGrid .card {
+        min-height:120px;
+        padding:18px;
+      }
+
+      .stat {
+        font-size:30px;
+      }
+
+      .statsGrid .card:not(:first-child) .stat {
+        font-size:26px;
+      }
+
+      .topbar {
+        align-items:flex-start;
+      }
+
+      .topbar h1 {
+        font-size:30px;
+      }
+
+      .topbarLogo {
+        width:60px;
+      }
+
+      .filters {
+        width:100%;
+        justify-content:flex-start;
+      }
+
+      .filters input {
+        min-width:200px;
+      }
     }
 
     @media(max-width:1100px){
-      .statsGrid { grid-template-columns:1fr 1fr; }
-      .totalCard { grid-column:1 / -1; }
+      .statsGrid {
+        grid-template-columns:1fr 1fr;
+      }
     }
 
     @media(max-width:900px){
-      body { padding:12px; }
-      .topbar { padding:18px; }
-      .topbarTitle { width:100%; }
-      .topbar h1 { font-size:30px; }
-      .topbarLogo { width:56px; }
-      .filters { width:100%; }
-      .filters input, .filters select, .filters button { width:100%; }
-      .statsGrid, .grid { grid-template-columns:1fr; }
-      .totalCard { grid-column:auto; }
-      .stat { font-size:34px; }
-      table { font-size:14px; }
-      th, td { padding:10px 8px; }
+      body {
+        padding:12px;
+      }
+
+      .topbar {
+        padding:18px;
+      }
+
+      .topbarTitle {
+        width:100%;
+      }
+
+      .topbar h1 {
+        font-size:30px;
+      }
+
+      .topbarLogo {
+        width:56px;
+      }
+
+      .filters {
+        width:100%;
+      }
+
+      .filters input,
+      .filters select,
+      .filters button {
+        width:100%;
+      }
+
+      .statsGrid,
+      .avgGrid,
+      .grid {
+        grid-template-columns:1fr;
+      }
+
+      .stat {
+        font-size:34px;
+      }
+
+      table {
+        font-size:14px;
+      }
+
+      th,
+      td {
+        padding:10px 8px;
+      }
     }
   </style>
 </head>
@@ -426,6 +601,7 @@
   </div>
 
   <div class="dashboardLayout">
+
     <div class="leftDashboard">
 
       <div class="statsGrid">
@@ -470,7 +646,9 @@
       <h2>🏆 Ranking pracowników</h2>
       <div id="workersTable"></div>
     </div>
+
   </div>
+
 </div>
 
 <div id="detailsModal" class="modalBg hidden">
@@ -491,11 +669,6 @@ const supabaseClient = window.supabase.createClient(
 
 const LOGIN_DOMAIN = "@pakowanie.local";
 
-let sessions = [];
-let totalBagsInPlan = 0;
-let refreshTimer = null;
-window.workerStats = [];
-
 async function getUserRole(userId) {
   const { data, error } = await supabaseClient
     .from("user_roles")
@@ -503,7 +676,10 @@ async function getUserRole(userId) {
     .eq("user_id", userId)
     .single();
 
-  if (error || !data) return null;
+  if (error || !data) {
+    return null;
+  }
+
   return data.role;
 }
 
@@ -511,22 +687,16 @@ function hasAccess(role, allowedRoles) {
   return allowedRoles.includes(role);
 }
 
+let sessions = [];
+let totalBagsInPlan = 0;
+let refreshTimer = null;
+window.workerStats = [];
+
 function getLoginEmail(value) {
   const login = String(value || "").trim().toLowerCase();
   if (!login) return "";
   if (login.includes("@")) return login;
   return login + LOGIN_DOMAIN;
-}
-
-function normalizeStatus(value) {
-  const status = String(value || "").toUpperCase().trim();
-  if (status === "NIEPRAWIDŁOWA") return "NIEPOPRAWNA";
-  return status;
-}
-
-function displayStatus(value) {
-  const status = normalizeStatus(value);
-  return status || "-";
 }
 
 loginInput.addEventListener("keydown", e => {
@@ -586,7 +756,8 @@ async function loadReport() {
 
   sessions = data || [];
 
-  const { data: bagCount, error: bagCountError } = await supabaseClient.rpc("count_unique_bags");
+  const { data: bagCount, error: bagCountError } = await supabaseClient
+    .rpc("count_unique_bags");
 
   if (bagCountError) {
     console.error("Błąd liczenia toreb:", bagCountError);
@@ -643,7 +814,7 @@ function getFilteredSessions() {
 
   return sessions.filter(x => {
     if (search && !String(x.bag_qr || "").toLowerCase().includes(search)) return false;
-    if (status && normalizeStatus(x.status) !== status) return false;
+    if (status && x.status !== status) return false;
     if (worker && x.user_login !== worker) return false;
     return true;
   });
@@ -653,8 +824,8 @@ function renderAll() {
   const today = sessions.filter(x => isToday(x.closed_at));
   const filteredHistory = getFilteredSessions();
 
-  const correct = today.filter(x => normalizeStatus(x.status) === "POPRAWNA");
-  const bad = today.filter(x => normalizeStatus(x.status) === "NIEPOPRAWNA");
+  const correct = today.filter(x => x.status === "POPRAWNA");
+  const bad = today.filter(x => x.status === "NIEPOPRAWNA");
 
   const durations = today
     .map(x => x.duration_seconds)
@@ -675,20 +846,29 @@ function renderAll() {
     : 0;
 
   totalProgressFill.style.width = totalPercent + "%";
+
   correctToday.innerText = correct.length;
   badToday.innerText = bad.length;
   accuracyToday.innerText = accuracy + "%";
   avgTime.innerText = formatDuration(avg);
 
-  renderAlerts(bad.length);
+  renderAlerts(today, bad.length, 0, 0, 0);
   renderWorkers(today);
   renderHistory(filteredHistory);
 }
 
-function renderAlerts(badCount) {
+function renderAlerts(today, badCount, wrong, missing, dups) {
+  const errorTotal = badCount + wrong + missing + dups;
+
+  if (errorTotal >= 8) {
+    alertBox.classList.remove("hidden");
+    alertBox.innerText = `🚨 UWAGA: wysoka liczba problemów dzisiaj — łącznie ${errorTotal}.`;
+    return;
+  }
+
   if (badCount >= 5) {
     alertBox.classList.remove("hidden");
-    alertBox.innerText = `⚠️ UWAGA: ${badCount} niepoprawnych toreb dzisiaj.`;
+    alertBox.innerText = `⚠️ UWAGA: ${badCount} nieprawidłowych toreb dzisiaj.`;
     return;
   }
 
@@ -718,8 +898,8 @@ function renderWorkers(today) {
 
     workers[worker].total++;
 
-    if (normalizeStatus(x.status) === "POPRAWNA") workers[worker].correct++;
-    if (normalizeStatus(x.status) === "NIEPOPRAWNA") workers[worker].bad++;
+    if (x.status === "POPRAWNA") workers[worker].correct++;
+    if (x.status === "NIEPOPRAWNA") workers[worker].bad++;
 
     workers[worker].wrong += splitItems(x.wrong_trays).length;
     workers[worker].missing += splitItems(x.missing_trays).length;
@@ -747,11 +927,17 @@ function renderWorkers(today) {
       </thead>
       <tbody>
         ${data.map((w, index) => {
-          const avg = w.durationCount ? Math.round(w.duration / w.durationCount) : 0;
+          const avg = w.durationCount
+            ? Math.round(w.duration / w.durationCount)
+            : 0;
 
           return `
-            <tr>
-              <td><span class="workerName" onclick="openWorkerDetails(${index})">${escapeHtml(w.worker)}</span></td>
+            <tr class="${w.bad || w.wrong || w.missing || w.duplicates ? "problemRow" : "goodRow"}">
+              <td>
+                <span class="workerName" onclick="openWorkerDetails(${index})">
+                  ${escapeHtml(w.worker)}
+                </span>
+              </td>
               <td><b>${w.total}</b></td>
               <td class="ok">${w.correct}</td>
               <td class="bad">${w.bad}</td>
@@ -768,8 +954,13 @@ function openWorkerDetails(index) {
   const w = window.workerStats[index];
   if (!w) return;
 
-  const avg = w.durationCount ? Math.round(w.duration / w.durationCount) : 0;
-  const accuracy = w.total ? Math.round((w.correct / w.total) * 100) : 0;
+  const avg = w.durationCount
+    ? Math.round(w.duration / w.durationCount)
+    : 0;
+
+  const accuracy = w.total
+    ? Math.round((w.correct / w.total) * 100)
+    : 0;
 
   detailsContent.innerHTML = `
     <div class="grid">
@@ -817,13 +1008,24 @@ function renderHistory(data) {
       </thead>
       <tbody>
         ${data.slice(0, 700).map(x => {
+          const hasBad = x.status === "NIEPOPRAWNA"
+            || splitItems(x.wrong_trays).length
+            || splitItems(x.missing_trays).length;
+
+          const hasWarn = splitItems(x.duplicate_trays).length;
+          const rowClass = hasBad ? "problemRow" : hasWarn ? "warnRow" : "goodRow";
           const globalIndex = sessions.findIndex(s => s.id === x.id);
-          const st = normalizeStatus(x.status);
 
           return `
-            <tr>
-              <td><span class="clickable" onclick="openDetails(${globalIndex})">${escapeHtml(x.bag_qr || "-")}</span></td>
-              <td class="${st === "POPRAWNA" ? "ok" : "bad"}">${escapeHtml(displayStatus(x.status))}</td>
+            <tr class="${rowClass}">
+              <td>
+                <span class="clickable" onclick="openDetails(${globalIndex})">
+                  ${escapeHtml(x.bag_qr || "-")}
+                </span>
+              </td>
+              <td class="${x.status === "POPRAWNA" ? "ok" : "bad"}">
+                ${x.status === "NIEPOPRAWNA" ? "NIEPOPRAWNA" : escapeHtml(x.status || "-")}
+              </td>
               <td>${escapeHtml(displayLogin(x.user_login || "-"))}</td>
               <td>${formatDuration(x.duration_seconds)}</td>
               <td>${x.closed_at ? new Date(x.closed_at).toLocaleString("pl-PL") : "-"}</td>
@@ -839,8 +1041,6 @@ function openDetails(index) {
   const x = sessions[index];
   if (!x) return;
 
-  const st = normalizeStatus(x.status);
-
   detailsContent.innerHTML = `
     <div class="grid">
       <div class="card">
@@ -849,7 +1049,7 @@ function openDetails(index) {
       </div>
       <div class="card">
         <div class="label">Status</div>
-        <div class="stat ${st === "POPRAWNA" ? "ok" : "bad"}">${escapeHtml(displayStatus(x.status))}</div>
+        <div class="stat ${x.status === "POPRAWNA" ? "ok" : "bad"}">${escapeHtml(x.status || "-")}</div>
       </div>
       <div class="card">
         <div class="label">Pracownik</div>
@@ -899,7 +1099,7 @@ function exportCsv() {
   const rows = data.map(x => [
     x.closed_at ? new Date(x.closed_at).toLocaleString("pl-PL") : "",
     x.bag_qr || "",
-    displayStatus(x.status),
+    x.status || "",
     x.user_login || "",
     x.expected_count || 0,
     x.correct_count || 0,
@@ -911,11 +1111,15 @@ function exportCsv() {
   ]);
 
   const csv = [header, ...rows]
-    .map(row => row.map(cell => `"${String(cell).replaceAll('"', '""')}"`).join(";"))
-    .join("
-");
+    .map(row => row.map(cell => {
+      return `"${String(cell).replaceAll('"', '""')}"`;
+    }).join(";"))
+    .join("\n");
 
-  const blob = new Blob(["﻿" + csv], { type:"text/csv;charset=utf-8;" });
+  const blob = new Blob(["\ufeff" + csv], {
+    type: "text/csv;charset=utf-8;"
+  });
+
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
 
@@ -927,7 +1131,9 @@ function exportCsv() {
 }
 
 function displayLogin(value) {
-  return String(value || "").toLowerCase().replace("@pakowanie.local", "");
+  return String(value || "")
+    .toLowerCase()
+    .replace("@pakowanie.local", "");
 }
 
 function escapeHtml(value) {
