@@ -316,7 +316,7 @@
 
     .avgGrid {
       display:grid;
-      grid-template-columns:repeat(4, 1fr);
+      grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
       gap:16px;
     }
 
@@ -438,7 +438,7 @@
       background:#fffbeb;
     }
 
-    @media(max-width:1300px){
+    @media(max-width:1500px){
       .dashboardLayout {
         grid-template-columns:1fr;
       }
@@ -446,10 +446,50 @@
       .workersPanel {
         position:static;
         min-height:auto;
+        max-height:none;
       }
 
-      .statsGrid,
-      .avgGrid {
+      .statsGrid {
+        grid-template-columns:repeat(4, minmax(0, 1fr));
+      }
+
+      .statsGrid .card {
+        min-height:120px;
+        padding:18px;
+      }
+
+      .stat {
+        font-size:30px;
+      }
+
+      .statsGrid .card:not(:first-child) .stat {
+        font-size:26px;
+      }
+
+      .topbar {
+        align-items:flex-start;
+      }
+
+      .topbar h1 {
+        font-size:30px;
+      }
+
+      .topbarLogo {
+        width:60px;
+      }
+
+      .filters {
+        width:100%;
+        justify-content:flex-start;
+      }
+
+      .filters input {
+        min-width:200px;
+      }
+    }
+
+    @media(max-width:1100px){
+      .statsGrid {
         grid-template-columns:1fr 1fr;
       }
     }
