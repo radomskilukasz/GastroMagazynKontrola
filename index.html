@@ -303,8 +303,12 @@
 
     .statsGrid {
       display:grid;
-      grid-template-columns:2fr 1fr 1fr 1fr;
+      grid-template-columns:repeat(4, minmax(0, 1fr));
       gap:16px;
+    }
+
+    .totalCard {
+      grid-column:1 / -1;
     }
 
     .statsGrid .card {
@@ -314,10 +318,8 @@
       justify-content:center;
     }
 
-    .avgGrid {
-      display:grid;
-      grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
-      gap:16px;
+    .totalCard {
+      min-height:130px;
     }
 
     .workersPanel {
@@ -603,36 +605,8 @@
     <div class="leftDashboard">
 
       <div class="statsGrid">
-
-      <div class="card" style="grid-column:1/-1;">
-        <div class="label">Spakowane dziś</div>
-        <div class="stat" id="totalToday">0 / 0</div>
-        <div class="progressBar">
-          <div class="progressFill" id="totalProgressFill"></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="label">Poprawne</div>
-        <div class="stat ok" id="correctToday">0</div>
-      </div>
-
-      <div class="card">
-        <div class="label">Niepoprawne</div>
-        <div class="stat bad" id="badToday">0</div>
-      </div>
-
-      <div class="card">
-        <div class="label">Poprawność</div>
-        <div class="stat" id="accuracyToday">0%</div>
-      </div>
-
-      <div class="card">
-        <div class="label">Średni czas / torba</div>
-        <div class="stat" id="avgTime">0s</div>
-      </div>
-
-    </div>
+        <div class="card totalCard">
+          <div class="label">Spakowane dziś</div>
           <div class="stat" id="totalToday">0 / 0</div>
           <div class="progressBar">
             <div class="progressFill" id="totalProgressFill"></div>
@@ -653,9 +627,7 @@
           <div class="label">Poprawność</div>
           <div class="stat" id="accuracyToday">0%</div>
         </div>
-      </div>
 
-      <div class="avgGrid">
         <div class="card">
           <div class="label">Średni czas / torba</div>
           <div class="stat" id="avgTime">0s</div>
