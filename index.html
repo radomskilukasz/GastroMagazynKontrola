@@ -350,22 +350,11 @@
       transition:width .3s ease;
     }
 
-    .problemRow {
-      background:#fff1f2;
-    }
-
-    .warnRow {
-      background:#fffbeb;
-    }
-
+    .problemRow,
+    .warnRow,
     .goodRow {
-      background:#f0fdf4;
-    }
-
-    .clickable,
-    .workerName {
-      cursor:pointer;
-      text-decoration:underline;
+      background:white;
+    }ecoration:underline;
       text-underline-offset:4px;
       font-weight:bold;
     }
@@ -814,25 +803,17 @@ function getFilteredSessions() {
 
   return sessions.filter(x => {
     if (search && !String(x.bag_qr || "").toLowerCase().includes(search)) return false;
-    if (status && x.status !== status) return false;
+    
     if (worker && x.user_login !== worker) return false;
-    return true;
-  });
-}
-
-function renderAll() {
-  const today = sessions.filter(x => isToday(x.closed_at));
+    return tif (status && normalizeStatus(x.status) !== status) return false;ay = sessions.filter(x => isToday(x.closed_at));
   const filteredHistory = getFilteredSessions();
 
   const correct = today.filter(x => x.status === "POPRAWNA");
   const bad = today.filter(x => x.status === "NIEPOPRAWNA");
 
-  const durations = today
-    .map(x => x.duration_seconds)
-    .filter(x => typeof x === "number");
+  con .filter(x => typeof x === "number");
 
-  const avg = durations.length
-    ? Math.round(durations.reduce((a,b) => a + b, 0) / durations.length)
+  const avg = const bad = today.filter(x => normalizeStatus(x.status) === "NIEPOPRAWNA");> a + b, 0) / durations.length)
     : 0;
 
   const accuracy = today.length
@@ -901,12 +882,8 @@ function renderWorkers(today) {
     if (x.status === "POPRAWNA") workers[worker].correct++;
     if (x.status === "NIEPOPRAWNA") workers[worker].bad++;
 
-    workers[worker].wrong += splitItems(x.wrong_trays).length;
-    workers[worker].missing += splitItems(x.missing_trays).length;
-    workers[worker].duplicates += splitItems(x.duplicate_trays).length;
-
-    if (typeof x.duration_seconds === "number") {
-      workers[worker].duration += x.duration_seconds;
+    workers[worker].wroners[worker].duplicates += splitItemsif (normalizeStatus(x.status) === "POPRAWNA") workers[worker].correct++;
+    if (normalizeStatus(x.status) === "NIEPOPRAWNA") workers[worker].bad++;.duration_seconds;
       workers[worker].durationCount++;
     }
   });
@@ -1013,10 +990,7 @@ function renderHistory(data) {
             || splitItems(x.missing_trays).length;
 
           const hasWarn = splitItems(x.duplicate_trays).length;
-          const rowClass = hasBad ? "problemRow" : hasWarn ? "warnRow" : "goodRow";
-          const globalIndex = sessions.findIndex(s => s.id === x.id);
-
-          return `
+          const rowClass = hasBad ? "problemRow" : hasWarn ? "warnRow" : "goodRow"ficonst hasBad = normalizeStatus(x.status) === "NIEPOPRAWNA"eturn `
             <tr class="${rowClass}">
               <td>
                 <span class="clickable" onclick="openDetails(${globalIndex})">
@@ -1028,23 +1002,7 @@ function renderHistory(data) {
               </td>
               <td>${escapeHtml(displayLogin(x.user_login || "-"))}</td>
               <td>${formatDuration(x.duration_seconds)}</td>
-              <td>${x.closed_at ? new Date(x.closed_at).toLocaleString("pl-PL") : "-"}</td>
-            </tr>
-          `;
-        }).join("")}
-      </tbody>
-    </table>
-  `;
-}
-
-function openDetails(index) {
-  const x = sessions[index];
-  if (!x) return;
-
-  detailsContent.innerHTML = `
-    <div class="grid">
-      <div class="card">
-        <div class="label">QR Torby</div>
+              <td>${x.closed_at<td class="${normalizeStatus(x.status) === "POPRAWNA" ? "ok" : "bad"}">${escapeHtml(displayStatus(x.status))}</td>>QR Torby</div>
         <div class="stat">${escapeHtml(x.bag_qr || "-")}</div>
       </div>
       <div class="card">
@@ -1061,10 +1019,8 @@ function openDetails(index) {
       </div>
     </div>
 
-    <table>
-      <tr><th>Start</th><td>${x.started_at ? new Date(x.started_at).toLocaleString("pl-PL") : "-"}</td></tr>
-      <tr><th>Koniec</th><td>${x.closed_at ? new Date(x.closed_at).toLocaleString("pl-PL") : "-"}</td></tr>
-      <tr><th>Postęp</th><td>${x.correct_count || 0}/${x.expected_count || 0}</td></tr>
+   PL") : "-"}</td></tr>
+      <tr><th>K<div class="stat ${normalizeStatus(x.status) === "POPRAWNA" ? "ok" : "bad"}">${escapeHtml(displayStatus(x.status))}</div>   <tr><th>Postęp</th><td>${x.correct_count || 0}/${x.expected_count || 0}</td></tr>
       <tr><th>Wszystkie skany</th><td>${escapeHtml(x.all_scans || "-")}</td></tr>
       <tr><th>Brakujące</th><td class="${splitItems(x.missing_trays).length ? "badCell" : ""}">${escapeHtml(x.missing_trays || "-")}</td></tr>
       <tr><th>Błędne</th><td class="${splitItems(x.wrong_trays).length ? "badCell" : ""}">${escapeHtml(x.wrong_trays || "-")}</td></tr>
@@ -1149,3 +1105,16 @@ function escapeHtml(value) {
 
 </body>
 </html>
+function normalizeStatus(value) {
+  const status = String(value || "").toUpperCase().trim();
+  if (status === "NIEPRAWIDŁOWA") return "NIEPOPRAWNA";
+  return status;
+}
+
+function displayStatus(value) {
+  const status = normalizeStatus(value);
+  if (!status) return "-";
+  return status;
+}
+
+function displayLogin(value) {
