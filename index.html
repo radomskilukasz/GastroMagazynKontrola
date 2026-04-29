@@ -497,7 +497,7 @@ function renderWorkers(today) {
   const workers = {};
 
   today.forEach(x => {
-    const worker = x.user_login || "brak użytkownika";
+    const worker = displayLogin(x.user_login || "brak użytkownika");
 
     if (!workers[worker]) {
       workers[worker] = {
@@ -642,7 +642,7 @@ function renderHistory(data) {
                 </span>
               </td>
               <td class="${x.status === "POPRAWNA" ? "ok" : "bad"}">${escapeHtml(x.status || "-")}</td>
-              <td>${escapeHtml(x.user_login || "-")}</td>
+              <td>${escapeHtml(displayLogin(x.user_login || "-"))}</td>
               <td>${formatDuration(x.duration_seconds)}</td>
             </tr>
           `;
@@ -668,7 +668,7 @@ function openDetails(index) {
       </div>
       <div class="card">
         <div class="label">Pracownik</div>
-        <div style="font-size:20px"><b>${escapeHtml(x.user_login || "-")}</b></div>
+        <div style="font-size:20px"><b>${escapeHtml(displayLogin(x.user_login || "-"))}</b></div>
       </div>
       <div class="card">
         <div class="label">Czas pakowania</div>
@@ -744,7 +744,11 @@ function exportCsv() {
 
   URL.revokeObjectURL(url);
 }
-
+function displayLogin(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace("@pakowanie.local", "");
+}
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, m => ({
     "&":"&amp;",
