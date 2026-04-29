@@ -590,7 +590,7 @@
       <select id="statusFilter" onchange="renderAll()">
         <option value="">Wszystkie statusy</option>
         <option value="POPRAWNA">Tylko poprawne</option>
-        <option value="NIEPRAWIDŁOWA">Tylko niepoprawne</option>
+        <option value="NIEPOPRAWNA">Tylko niepoprawne</option>
       </select>
       <select id="workerFilter" onchange="renderAll()">
         <option value="">Wszyscy pracownicy</option>
@@ -825,7 +825,7 @@ function renderAll() {
   const filteredHistory = getFilteredSessions();
 
   const correct = today.filter(x => x.status === "POPRAWNA");
-  const bad = today.filter(x => x.status === "NIEPRAWIDŁOWA");
+  const bad = today.filter(x => x.status === "NIEPOPRAWNA");
 
   const durations = today
     .map(x => x.duration_seconds)
@@ -899,7 +899,7 @@ function renderWorkers(today) {
     workers[worker].total++;
 
     if (x.status === "POPRAWNA") workers[worker].correct++;
-    if (x.status === "NIEPRAWIDŁOWA") workers[worker].bad++;
+    if (x.status === "NIEPOPRAWNA") workers[worker].bad++;
 
     workers[worker].wrong += splitItems(x.wrong_trays).length;
     workers[worker].missing += splitItems(x.missing_trays).length;
@@ -999,16 +999,16 @@ function renderHistory(data) {
     <table>
       <thead>
         <tr>
-          <th>Czas</th>
           <th>Torba</th>
           <th>Status</th>
           <th>Pracownik</th>
           <th>Czas pakowania</th>
+          <th>Zapakowana</th>
         </tr>
       </thead>
       <tbody>
         ${data.slice(0, 700).map(x => {
-          const hasBad = x.status === "NIEPRAWIDŁOWA"
+          const hasBad = x.status === "NIEPOPRAWNA"
             || splitItems(x.wrong_trays).length
             || splitItems(x.missing_trays).length;
 
@@ -1018,15 +1018,17 @@ function renderHistory(data) {
 
           return `
             <tr class="${rowClass}">
-              <td>${x.closed_at ? new Date(x.closed_at).toLocaleString("pl-PL") : "-"}</td>
               <td>
                 <span class="clickable" onclick="openDetails(${globalIndex})">
                   ${escapeHtml(x.bag_qr || "-")}
                 </span>
               </td>
-              <td class="${x.status === "POPRAWNA" ? "ok" : "bad"}">${escapeHtml(x.status || "-")}</td>
+              <td class="${x.status === "POPRAWNA" ? "ok" : "bad"}">
+                ${x.status === "NIEPOPRAWNA" ? "NIEPOPRAWNA" : escapeHtml(x.status || "-")}
+              </td>
               <td>${escapeHtml(displayLogin(x.user_login || "-"))}</td>
               <td>${formatDuration(x.duration_seconds)}</td>
+              <td>${x.closed_at ? new Date(x.closed_at).toLocaleString("pl-PL") : "-"}</td>
             </tr>
           `;
         }).join("")}
