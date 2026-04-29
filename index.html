@@ -603,8 +603,36 @@
     <div class="leftDashboard">
 
       <div class="statsGrid">
-        <div class="card">
-          <div class="label">Spakowane dziś</div>
+
+      <div class="card" style="grid-column:1/-1;">
+        <div class="label">Spakowane dziś</div>
+        <div class="stat" id="totalToday">0 / 0</div>
+        <div class="progressBar">
+          <div class="progressFill" id="totalProgressFill"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="label">Poprawne</div>
+        <div class="stat ok" id="correctToday">0</div>
+      </div>
+
+      <div class="card">
+        <div class="label">Niepoprawne</div>
+        <div class="stat bad" id="badToday">0</div>
+      </div>
+
+      <div class="card">
+        <div class="label">Poprawność</div>
+        <div class="stat" id="accuracyToday">0%</div>
+      </div>
+
+      <div class="card">
+        <div class="label">Średni czas / torba</div>
+        <div class="stat" id="avgTime">0s</div>
+      </div>
+
+    </div>
           <div class="stat" id="totalToday">0 / 0</div>
           <div class="progressBar">
             <div class="progressFill" id="totalProgressFill"></div>
