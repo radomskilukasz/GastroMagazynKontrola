@@ -1229,7 +1229,6 @@ function exportExcel() {
     });
 
   const historyRows = data.map(x => [
-    x.closed_at ? new Date(x.closed_at).toLocaleString("pl-PL") : "",
     x.bag_qr || "",
     x.status || "",
     displayLogin(x.user_login || ""),
@@ -1239,30 +1238,18 @@ function exportExcel() {
     x.missing_trays || "",
     x.wrong_trays || "",
     x.duplicate_trays || "",
-    x.all_scans || ""
+    x.all_scans || "",
+    x.closed_at ? new Date(x.closed_at).toLocaleString("pl-PL") : ""
   ]);
 
   const summaryRows = [
-    ["RAPORT PAKOWANIA"],
-    [],
-    ["Wygenerowano", new Date().toLocaleString("pl-PL")],
-    ["Filtr statusu", statusFilter.value || "Wszystkie statusy"],
-    ["Filtr pracownika", workerFilter.value ? displayLogin(workerFilter.value) : "Wszyscy pracownicy"],
-    ["Filtr QR torby", bagSearch.value.trim() || "Brak"],
-    [],
     ["PODSUMOWANIE"],
-    ["Spakowane torby", total],
+    [],
+    ["Spakowane torby", `${total} / ${totalBagsInPlan}`],
     ["Poprawne", correct],
     ["Niepoprawne", bad],
     ["Poprawność", accuracy + "%"],
-    ["Średni czas pakowania", formatDuration(avgDuration)],
-    [],
-    ["Co oznaczają pola?"],
-    ["Poprawne", "Torby zamknięte statusem POPRAWNA"],
-    ["Niepoprawne", "Torby zamknięte statusem NIEPOPRAWNA"],
-    ["Brakujące tacki", "Tacki oczekiwane w torbie, ale niezeskanowane"],
-    ["Błędne tacki", "Tacki zeskanowane, których nie powinno być w tej torbie"],
-    ["Duplikaty", "Tacki zeskanowane więcej niż jeden raz"]
+    ["Średni czas pakowania", formatDuration(avgDuration)]
   ];
 
   const workersSheetRows = [
@@ -1274,7 +1261,6 @@ function exportExcel() {
 
   const historySheetRows = [
     [
-      "Data zamknięcia",
       "QR torby",
       "Status",
       "Pracownik",
@@ -1284,7 +1270,8 @@ function exportExcel() {
       "Brakujące tacki",
       "Błędne tacki",
       "Duplikaty",
-      "Wszystkie skany"
+      "Wszystkie skany",
+      "Data zamknięcia"
     ],
     ...historyRows
   ];
@@ -1300,7 +1287,7 @@ function exportExcel() {
   workersSheet["!freeze"] = { xSplit: 0, ySplit: 3 };
 
   const historySheet = sheetFromRows(historySheetRows);
-  setColumnWidths(historySheet, [22, 24, 16, 24, 18, 16, 18, 35, 35, 35, 60]);
+  setColumnWidths(historySheet, [24, 16, 24, 18, 16, 18, 35, 35, 35, 60, 22]);
   setAutoFilter(historySheet, "A1:K1");
   historySheet["!freeze"] = { xSplit: 0, ySplit: 1 };
 
