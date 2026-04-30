@@ -621,7 +621,7 @@
     <div class="topbarTitle">
       <img src="logo.png" class="topbarLogo" alt="logo">
       <div>
-        <h1>Raport pakowania LIVE</h1>
+        <h1 id="reportTitle">Raport pakowania</h1>
         <div class="small">
           Ostatnie odświeżenie: <span id="lastRefresh">-</span> |
           Auto odświeżanie: co 30 sekund
@@ -733,6 +733,7 @@ function hasAccess(role, allowedRoles) {
 
 let sessions = [];
 let totalBagsInPlan = 0;
+let mealDate = "";
 let refreshTimer = null;
 window.workerStats = [];
 
@@ -756,7 +757,25 @@ loginInput.addEventListener("keydown", e => {
 passwordInput.addEventListener("keydown", e => {
   if (e.key === "Enter") login();
 });
+function formatMealDate(dateText) {
+  if (!dateText) return "";
 
+  const d = new Date(dateText);
+  if (Number.isNaN(d.getTime())) return dateText;
+
+  return d.toLocaleDateString("pl-PL", {
+    day: "2-digit",
+    month: "2-digit"
+  });
+}
+
+function updateReportTitle() {
+  const formatted = formatMealDate(mealDate);
+
+  reportTitle.innerText = formatted
+    ? `Raport pakowania ${formatted}`
+    : "Raport pakowania";
+}
 async function login() {
   loginStatus.innerText = "";
 
@@ -810,16 +829,29 @@ async function loadReport() {
     .rpc("count_unique_bags");
 
   if (bagCountError) {
-    console.error("Błąd liczenia toreb:", bagCountError);
-    totalBagsInPlan = 0;
-  } else {
-    totalBagsInPlan = bagCount || 0;
-  }
-
-  lastRefresh.innerText = new Date().toLocaleTimeString("pl-PL");
-  refreshWorkerFilter();
-  renderAll();
+  console.error("Błąd liczenia toreb:", bagCountError);
+  totalBagsInPlan = 0;
+} else {
+  totalBagsInPlan = bagCount || 0;
 }
+
+const { data: mealDateData, error: mealDateError } = await supabaseClient
+  .from("app_settings")
+  .select("value")
+  .eq("key", "meal_date")
+  .maybeSingle();
+
+if (!mealDateError && mealDateData) {
+  mealDate = mealDateData.value || "";
+} else {
+  mealDate = "";
+}
+
+updateReportTitle();
+
+lastRefresh.innerText = new Date().toLocaleTimeString("pl-PL");
+refreshWorkerFilter();
+renderAll();
 
 function splitItems(text) {
   if (!text || text === "-") return [];
