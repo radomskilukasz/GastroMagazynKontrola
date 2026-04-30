@@ -916,15 +916,15 @@ function renderAll() {
 function renderAlerts(today, badCount, wrong, missing, dups) {
   const errorTotal = badCount + wrong + missing + dups;
 
-  if (errorTotal >= 8) {
+  if (errorTotal >= 50) {
     alertBox.classList.remove("hidden");
     alertBox.innerText = `🚨 UWAGA: wysoka liczba problemów dzisiaj — łącznie ${errorTotal}.`;
     return;
   }
 
-  if (badCount >= 5) {
+  if (badCount >= 20) {
     alertBox.classList.remove("hidden");
-    alertBox.innerText = `⚠️ UWAGA: ${badCount} niepoprawnych toreb dzisiaj.`;
+    alertBox.innerText = `⚠️ UWAGA: Liczba niepoprawnych toreb ${badCount} `;
     return;
   }
 
