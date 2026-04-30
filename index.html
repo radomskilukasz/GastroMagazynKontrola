@@ -908,19 +908,13 @@ function renderAll() {
   accuracyToday.innerText = accuracy + "%";
   avgTime.innerText = formatDuration(avg);
 
-  renderAlerts(today, bad.length, 0, 0, 0);
+  renderAlerts(bad.length);
   renderWorkers(today);
   renderHistory(filteredHistory);
 }
 
 function renderAlerts(today, badCount, wrong, missing, dups) {
   const errorTotal = badCount + wrong + missing + dups;
-
-  if (errorTotal >= 50) {
-    alertBox.classList.remove("hidden");
-    alertBox.innerText = `🚨 UWAGA: wysoka liczba problemów dzisiaj — łącznie ${errorTotal}.`;
-    return;
-  }
 
   if (badCount >= 20) {
     alertBox.classList.remove("hidden");
@@ -931,7 +925,6 @@ function renderAlerts(today, badCount, wrong, missing, dups) {
   alertBox.classList.add("hidden");
   alertBox.innerText = "";
 }
-
 function renderWorkers(today) {
   const workers = {};
 
