@@ -932,56 +932,206 @@ function renderAll() {
   renderHistory(filtered);
 }
 
+<script>
 /* ================= TABLES ================= */
 
 function renderWorkers(data) {
   const map = {};
 
-  data.forEach(x=>{
-    const w = displayLogin(x.user_login||"brak");
+  data.forEach(x => {
+    const w = displayLogin(x.user_login || "brak użytkownika");
 
-    if(!map[w]) map[w]={worker:w,total:0,correct:0,bad:0,time:0,count:0};
+    if (!map[w]) {
+      map[w] = {
+        worker: w,
+        total: 0,
+        correct: 0,
+        bad: 0,
+        wrong: 0,
+        missing: 0,
+        duplicates: 0,
+        time: 0,
+        count: 0
+      };
+    }
 
     map[w].total++;
-    if(normalizeStatus(x.status)==="POPRAWNA") map[w].correct++;
-    if(normalizeStatus(x.status)==="NIEPOPRAWNA") map[w].bad++;
 
-    if(x.duration_seconds){
-      map[w].time+=x.duration_seconds;
+    if (normalizeStatus(x.status) === "POPRAWNA") map[w].correct++;
+    if (normalizeStatus(x.status) === "NIEPOPRAWNA") map[w].bad++;
+
+    map[w].wrong += splitItems(x.wrong_trays).length;
+    map[w].missing += splitItems(x.missing_trays).length;
+    map[w].duplicates += splitItems(x.duplicate_trays).length;
+
+    if (typeof x.duration_seconds === "number") {
+      map[w].time += x.duration_seconds;
       map[w].count++;
     }
   });
 
-  const rows = Object.values(map).sort((a,b)=>b.total-a.total);
+  const rows = Object.values(map).sort((a, b) => b.total - a.total);
+  window.workerStats = rows;
 
   workersTable.innerHTML = `
     <table>
-      <tr><th>Pracownik</th><th>Razem</th><th>OK</th><th>Źle</th><th>Czas</th></tr>
-      ${rows.map(w=>`
+      <thead>
         <tr>
-          <td>${w.worker}</td>
-          <td>${w.total}</td>
-          <td class="ok">${w.correct}</td>
-          <td class="bad">${w.bad}</td>
-          <td>${formatDuration(Math.round(w.time/(w.count||1)))}</td>
+          <th>Pracownik</th>
+          <th>Razem</th>
+          <th>OK</th>
+          <th>Źle</th>
+          <th>Śr. czas</th>
         </tr>
-      `).join("")}
-    </table>`;
+      </thead>
+      <tbody>
+        ${rows.map((w, index) => {
+          const avg = w.count ? Math.round(w.time / w.count) : 0;
+
+          return `
+            <tr>
+              <td>
+                <span class="workerName" onclick="openWorkerDetails(${index})">
+                  ${escapeHtml(w.worker)}
+                </span>
+              </td>
+              <td><b>${w.total}</b></td>
+              <td class="ok">${w.correct}</td>
+              <td class="bad">${w.bad}</td>
+              <td>${formatDuration(avg)}</td>
+            </tr>
+          `;
+        }).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function openWorkerDetails(index) {
+  const w = window.workerStats[index];
+  if (!w) return;
+
+  const avg = w.count ? Math.round(w.time / w.count) : 0;
+  const accuracy = w.total ? Math.round((w.correct / w.total) * 100) : 0;
+
+  detailsContent.innerHTML = `
+    <div class="detailsGrid">
+      <div class="detailsCard">
+        <div class="label">Pracownik</div>
+        <div class="detailsValue">${escapeHtml(w.worker)}</div>
+      </div>
+
+      <div class="detailsCard">
+        <div class="label">Razem</div>
+        <div class="detailsValue">${w.total}</div>
+      </div>
+
+      <div class="detailsCard">
+        <div class="label">Poprawność</div>
+        <div class="detailsValue">${accuracy}%</div>
+      </div>
+
+      <div class="detailsCard">
+        <div class="label">Średni czas</div>
+        <div class="detailsValue">${formatDuration(avg)}</div>
+      </div>
+    </div>
+
+    <table class="detailsTable">
+      <tr><th>Poprawne</th><td class="ok">${w.correct}</td></tr>
+      <tr><th>Niepoprawne</th><td class="bad">${w.bad}</td></tr>
+      <tr><th>Błędne tacki</th><td>${w.wrong}</td></tr>
+      <tr><th>Brakujące tacki</th><td>${w.missing}</td></tr>
+      <tr><th>Duplikaty</th><td>${w.duplicates}</td></tr>
+    </table>
+  `;
+
+  detailsModal.classList.remove("hidden");
 }
 
 function renderHistory(data) {
   historyTable.innerHTML = `
     <table>
-      <tr><th>Torba</th><th>Status</th><th>Pracownik</th><th>Czas</th></tr>
-      ${data.slice(0,500).map(x=>`
+      <thead>
         <tr>
-          <td>${x.bag_qr}</td>
-          <td class="${normalizeStatus(x.status)==='POPRAWNA'?'ok':'bad'}">${normalizeStatus(x.status)}</td>
-          <td>${displayLogin(x.user_login)}</td>
-          <td>${formatDuration(x.duration_seconds)}</td>
+          <th>Torba</th>
+          <th>Status</th>
+          <th>Pracownik</th>
+          <th>Czas pakowania</th>
+          <th>Zapakowana</th>
         </tr>
-      `).join("")}
-    </table>`;
+      </thead>
+      <tbody>
+        ${data.slice(0, 700).map(x => {
+          const status = normalizeStatus(x.status);
+          const globalIndex = sessions.findIndex(s => s.id === x.id);
+
+          return `
+            <tr>
+              <td>
+                <span class="clickable" onclick="openDetails(${globalIndex})">
+                  ${escapeHtml(x.bag_qr || "-")}
+                </span>
+              </td>
+              <td class="${status === "POPRAWNA" ? "ok" : "bad"}">${escapeHtml(status || "-")}</td>
+              <td>${escapeHtml(displayLogin(x.user_login || "-"))}</td>
+              <td>${formatDuration(x.duration_seconds)}</td>
+              <td>${x.closed_at ? new Date(x.closed_at).toLocaleString("pl-PL") : "-"}</td>
+            </tr>
+          `;
+        }).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function openDetails(index) {
+  const x = sessions[index];
+  if (!x) return;
+
+  const status = normalizeStatus(x.status);
+
+  detailsContent.innerHTML = `
+    <div class="detailsGrid">
+      <div class="detailsCard">
+        <div class="label">QR torby</div>
+        <div class="detailsValue">${escapeHtml(x.bag_qr || "-")}</div>
+      </div>
+
+      <div class="detailsCard">
+        <div class="label">Status</div>
+        <div class="detailsStatus ${status === "POPRAWNA" ? "ok" : "bad"}">
+          ${escapeHtml(status || "-")}
+        </div>
+      </div>
+
+      <div class="detailsCard">
+        <div class="label">Pracownik</div>
+        <div class="detailsValue">${escapeHtml(displayLogin(x.user_login || "-"))}</div>
+      </div>
+
+      <div class="detailsCard">
+        <div class="label">Czas pakowania</div>
+        <div class="detailsValue">${formatDuration(x.duration_seconds)}</div>
+      </div>
+    </div>
+
+    <table class="detailsTable">
+      <tr><th>Start</th><td>${x.started_at ? new Date(x.started_at).toLocaleString("pl-PL") : "-"}</td></tr>
+      <tr><th>Koniec</th><td>${x.closed_at ? new Date(x.closed_at).toLocaleString("pl-PL") : "-"}</td></tr>
+      <tr><th>Postęp</th><td>${x.correct_count || 0}/${x.expected_count || 0}</td></tr>
+      <tr><th>Wszystkie skany</th><td>${escapeHtml(x.all_scans || "-")}</td></tr>
+      <tr><th>Brakujące</th><td class="${splitItems(x.missing_trays).length ? "badCell" : ""}">${escapeHtml(x.missing_trays || "-")}</td></tr>
+      <tr><th>Błędne</th><td class="${splitItems(x.wrong_trays).length ? "badCell" : ""}">${escapeHtml(x.wrong_trays || "-")}</td></tr>
+      <tr><th>Duplikaty</th><td class="${splitItems(x.duplicate_trays).length ? "warnCell" : ""}">${escapeHtml(x.duplicate_trays || "-")}</td></tr>
+    </table>
+  `;
+
+  detailsModal.classList.remove("hidden");
+}
+
+function closeDetails() {
+  detailsModal.classList.add("hidden");
 }
 </script>
 
