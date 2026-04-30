@@ -713,29 +713,13 @@ const supabaseClient = window.supabase.createClient(
 
 const LOGIN_DOMAIN = "@pakowanie.local";
 
-async function getUserRole(userId) {
-  const { data, error } = await supabaseClient
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", userId)
-    .single();
-
-  if (error || !data) {
-    return null;
-  }
-
-  return data.role;
-}
-
-function hasAccess(role, allowedRoles) {
-  return allowedRoles.includes(role);
-}
-
 let sessions = [];
 let totalBagsInPlan = 0;
 let mealDate = "";
 let refreshTimer = null;
 window.workerStats = [];
+
+/* ================= LOGIN ================= */
 
 function getLoginEmail(value) {
   const login = String(value || "").trim().toLowerCase();
@@ -744,10 +728,18 @@ function getLoginEmail(value) {
   return login + LOGIN_DOMAIN;
 }
 
-function normalizeStatus(status) {
-  const value = String(status || "").toUpperCase().trim();
-  if (value === "NIEPRAWIDŁOWA") return "NIEPOPRAWNA";
-  return value;
+async function getUserRole(userId) {
+  const { data } = await supabaseClient
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", userId)
+    .single();
+
+  return data?.role || null;
+}
+
+function hasAccess(role, allowedRoles) {
+  return allowedRoles.includes(role);
 }
 
 loginInput.addEventListener("keydown", e => {
@@ -757,25 +749,7 @@ loginInput.addEventListener("keydown", e => {
 passwordInput.addEventListener("keydown", e => {
   if (e.key === "Enter") login();
 });
-function formatMealDate(dateText) {
-  if (!dateText) return "";
 
-  const d = new Date(dateText);
-  if (Number.isNaN(d.getTime())) return dateText;
-
-  return d.toLocaleDateString("pl-PL", {
-    day: "2-digit",
-    month: "2-digit"
-  });
-}
-
-function updateReportTitle() {
-  const formatted = formatMealDate(mealDate);
-
-  reportTitle.innerText = formatted
-    ? `Raport pakowania ${formatted}`
-    : "Raport pakowania";
-}
 async function login() {
   loginStatus.innerText = "";
 
@@ -797,7 +771,7 @@ async function login() {
   const role = await getUserRole(data.user.id);
 
   if (!hasAccess(role, ["manager", "admin"])) {
-    loginStatus.innerText = "Brak dostępu do raportu.";
+    loginStatus.innerText = "Brak dostępu.";
     return;
   }
 
@@ -811,6 +785,8 @@ async function login() {
   }
 }
 
+/* ================= DATA ================= */
+
 async function loadReport() {
   const { data, error } = await supabaseClient
     .from("packing_sessions")
@@ -819,503 +795,193 @@ async function loadReport() {
     .limit(5000);
 
   if (error) {
-    alert("Błąd pobierania raportu: " + error.message);
+    alert("Błąd: " + error.message);
     return;
   }
 
   sessions = data || [];
 
-  const { data: bagCount, error: bagCountError } = await supabaseClient
-    .rpc("count_unique_bags");
-
-  if (bagCountError) {
-  console.error("Błąd liczenia toreb:", bagCountError);
-  totalBagsInPlan = 0;
-} else {
+  const { data: bagCount } = await supabaseClient.rpc("count_unique_bags");
   totalBagsInPlan = bagCount || 0;
+
+  const { data: mealRow } = await supabaseClient
+    .from("app_settings")
+    .select("value")
+    .eq("key", "meal_date")
+    .maybeSingle();
+
+  mealDate = mealRow?.value || "";
+
+  updateTitle();
+
+  lastRefresh.innerText = new Date().toLocaleTimeString("pl-PL");
+
+  refreshWorkerFilter();
+  renderAll();
 }
 
-const { data: mealDateData, error: mealDateError } = await supabaseClient
-  .from("app_settings")
-  .select("value")
-  .eq("key", "meal_date")
-  .maybeSingle();
+/* ================= TITLE ================= */
 
-if (!mealDateError && mealDateData) {
-  mealDate = mealDateData.value || "";
-} else {
-  mealDate = "";
+function formatMealDate(dateText) {
+  if (!dateText) return "";
+
+  const d = new Date(dateText);
+  if (isNaN(d)) return "";
+
+  return d.toLocaleDateString("pl-PL", {
+    day: "2-digit",
+    month: "2-digit"
+  });
 }
 
-updateReportTitle();
+function updateTitle() {
+  const formatted = formatMealDate(mealDate);
 
-lastRefresh.innerText = new Date().toLocaleTimeString("pl-PL");
-refreshWorkerFilter();
-renderAll();
+  reportTitle.innerText = formatted
+    ? `Raport pakowania ${formatted}`
+    : "Raport pakowania";
+}
+
+/* ================= HELPERS ================= */
+
+function normalizeStatus(status) {
+  const value = String(status || "").toUpperCase();
+  if (value === "NIEPRAWIDŁOWA") return "NIEPOPRAWNA";
+  return value;
+}
 
 function splitItems(text) {
   if (!text || text === "-") return [];
-  return String(text).split("|").map(x => x.trim()).filter(Boolean);
+  return text.split("|").map(x => x.trim()).filter(Boolean);
 }
 
-function formatDuration(seconds) {
-  if (!seconds && seconds !== 0) return "-";
-  if (seconds < 60) return seconds + "s";
+function formatDuration(sec) {
+  if (!sec && sec !== 0) return "-";
+  if (sec < 60) return sec + "s";
 
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-
-  return m + "m " + s + "s";
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${m}m ${s}s`;
 }
 
-function refreshWorkerFilter() {
-  const current = workerFilter.value;
-  const workers = [...new Set(sessions.map(x => x.user_login).filter(Boolean))].sort();
-
-  workerFilter.innerHTML = `<option value="">Wszyscy pracownicy</option>` +
-    workers.map(w => `<option value="${escapeHtml(w)}">${escapeHtml(displayLogin(w))}</option>`).join("");
-
-  workerFilter.value = current;
+function displayLogin(v) {
+  return String(v || "").replace("@pakowanie.local", "");
 }
 
-function getFilteredSessions() {
-  const search = bagSearch.value.trim().toLowerCase();
-  const status = statusFilter.value;
-  const worker = workerFilter.value;
-
-  return sessions.filter(x => {
-    if (search && !String(x.bag_qr || "").toLowerCase().includes(search)) return false;
-    if (status && normalizeStatus(x.status) !== status) return false;
-    if (worker && x.user_login !== worker) return false;
-    return true;
-  });
-}
-
-function renderAll() {
-  const allSessions = sessions;
-  const filteredHistory = getFilteredSessions();
-
-  const correct = allSessions.filter(x => normalizeStatus(x.status) === "POPRAWNA");
-  const bad = allSessions.filter(x => normalizeStatus(x.status) === "NIEPOPRAWNA");
-
-  const durations = allSessions
-    .map(x => x.duration_seconds)
-    .filter(x => typeof x === "number");
-
-  const avg = durations.length
-    ? Math.round(durations.reduce((a,b) => a + b, 0) / durations.length)
-    : 0;
-
-  const accuracy = allSessions.length
-    ? Math.round((correct.length / allSessions.length) * 100)
-    : 0;
-
-  totalToday.innerText = `${allSessions.length} / ${totalBagsInPlan}`;
-
-  const totalPercent = totalBagsInPlan
-    ? Math.min(100, Math.round((allSessions.length / totalBagsInPlan) * 100))
-    : 0;
-
-  totalProgressFill.style.width = totalPercent + "%";
-
-  correctToday.innerText = correct.length;
-  badToday.innerText = bad.length;
-  accuracyToday.innerText = accuracy + "%";
-  avgTime.innerText = formatDuration(avg);
-
-  renderAlerts(bad.length);
-  renderWorkers(allSessions);
-  renderHistory(filteredHistory);
-}
-
-function renderAlerts(badCount) {
-  if (badCount >= 20) {
-    alertBox.classList.remove("hidden");
-    alertBox.innerText = `⚠️ UWAGA: Liczba niepoprawnych toreb: ${badCount}`;
-    return;
-  }
-
-  alertBox.classList.add("hidden");
-  alertBox.innerText = "";
-}
-
-function renderWorkers(data) {
-  const workers = {};
-
-  data.forEach(x => {
-    const worker = displayLogin(x.user_login || "brak użytkownika");
-
-    if (!workers[worker]) {
-      workers[worker] = {
-        worker,
-        total:0,
-        correct:0,
-        bad:0,
-        wrong:0,
-        missing:0,
-        duplicates:0,
-        duration:0,
-        durationCount:0
-      };
-    }
-
-    workers[worker].total++;
-
-    if (normalizeStatus(x.status) === "POPRAWNA") workers[worker].correct++;
-    if (normalizeStatus(x.status) === "NIEPOPRAWNA") workers[worker].bad++;
-
-    workers[worker].wrong += splitItems(x.wrong_trays).length;
-    workers[worker].missing += splitItems(x.missing_trays).length;
-    workers[worker].duplicates += splitItems(x.duplicate_trays).length;
-
-    if (typeof x.duration_seconds === "number") {
-      workers[worker].duration += x.duration_seconds;
-      workers[worker].durationCount++;
-    }
-  });
-
-  const dataRows = Object.values(workers).sort((a,b) => b.total - a.total);
-  window.workerStats = dataRows;
-
-  workersTable.innerHTML = `
-    <table>
-      <thead>
-        <tr>
-          <th>Pracownik</th>
-          <th>Razem</th>
-          <th>OK</th>
-          <th>Źle</th>
-          <th>Śr. czas</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${dataRows.map((w, index) => {
-          const avg = w.durationCount
-            ? Math.round(w.duration / w.durationCount)
-            : 0;
-
-          return `
-            <tr>
-              <td>
-                <span class="workerName" onclick="openWorkerDetails(${index})">
-                  ${escapeHtml(w.worker)}
-                </span>
-              </td>
-              <td><b>${w.total}</b></td>
-              <td class="ok">${w.correct}</td>
-              <td class="bad">${w.bad}</td>
-              <td>${formatDuration(avg)}</td>
-            </tr>
-          `;
-        }).join("")}
-      </tbody>
-    </table>
-  `;
-}
-
-function openWorkerDetails(index) {
-  const w = window.workerStats[index];
-  if (!w) return;
-
-  const avg = w.durationCount
-    ? Math.round(w.duration / w.durationCount)
-    : 0;
-
-  const accuracy = w.total
-    ? Math.round((w.correct / w.total) * 100)
-    : 0;
-
-  detailsContent.innerHTML = `
-    <div class="detailsGrid">
-      <div class="detailsCard">
-        <div class="label">Pracownik</div>
-        <div class="detailsValue">${escapeHtml(w.worker)}</div>
-      </div>
-      <div class="detailsCard">
-        <div class="label">Razem</div>
-        <div class="detailsValue">${w.total}</div>
-      </div>
-      <div class="detailsCard">
-        <div class="label">Poprawność</div>
-        <div class="detailsValue">${accuracy}%</div>
-      </div>
-      <div class="detailsCard">
-        <div class="label">Średni czas</div>
-        <div class="detailsValue">${formatDuration(avg)}</div>
-      </div>
-    </div>
-
-    <table class="detailsTable">
-      <tr><th>Poprawne</th><td class="ok">${w.correct}</td></tr>
-      <tr><th>Niepoprawne</th><td class="bad">${w.bad}</td></tr>
-      <tr><th>Błędne tacki</th><td>${w.wrong}</td></tr>
-      <tr><th>Brakujące tacki</th><td>${w.missing}</td></tr>
-      <tr><th>Duplikaty</th><td>${w.duplicates}</td></tr>
-    </table>
-  `;
-
-  detailsModal.classList.remove("hidden");
-}
-
-function renderHistory(data) {
-  historyTable.innerHTML = `
-    <table>
-      <thead>
-        <tr>
-          <th>Torba</th>
-          <th>Status</th>
-          <th>Pracownik</th>
-          <th>Czas pakowania</th>
-          <th>Zapakowana</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${data.slice(0, 700).map(x => {
-          const status = normalizeStatus(x.status);
-          const globalIndex = sessions.findIndex(s => s.id === x.id);
-
-          return `
-            <tr>
-              <td>
-                <span class="clickable" onclick="openDetails(${globalIndex})">
-                  ${escapeHtml(x.bag_qr || "-")}
-                </span>
-              </td>
-              <td class="${status === "POPRAWNA" ? "ok" : "bad"}">${escapeHtml(status || "-")}</td>
-              <td>${escapeHtml(displayLogin(x.user_login || "-"))}</td>
-              <td>${formatDuration(x.duration_seconds)}</td>
-              <td>${x.closed_at ? new Date(x.closed_at).toLocaleString("pl-PL") : "-"}</td>
-            </tr>
-          `;
-        }).join("")}
-      </tbody>
-    </table>
-  `;
-}
-
-function openDetails(index) {
-  const x = sessions[index];
-  if (!x) return;
-
-  const status = normalizeStatus(x.status);
-
-  detailsContent.innerHTML = `
-    <div class="detailsGrid">
-      <div class="detailsCard">
-        <div class="label">QR torby</div>
-        <div class="detailsValue">${escapeHtml(x.bag_qr || "-")}</div>
-      </div>
-
-      <div class="detailsCard">
-        <div class="label">Status</div>
-        <div class="detailsStatus ${status === "POPRAWNA" ? "ok" : "bad"}">
-          ${escapeHtml(status || "-")}
-        </div>
-      </div>
-
-      <div class="detailsCard">
-        <div class="label">Pracownik</div>
-        <div class="detailsValue">${escapeHtml(displayLogin(x.user_login || "-"))}</div>
-      </div>
-
-      <div class="detailsCard">
-        <div class="label">Czas pakowania</div>
-        <div class="detailsValue">${formatDuration(x.duration_seconds)}</div>
-      </div>
-    </div>
-
-    <table class="detailsTable">
-      <tr><th>Start</th><td>${x.started_at ? new Date(x.started_at).toLocaleString("pl-PL") : "-"}</td></tr>
-      <tr><th>Koniec</th><td>${x.closed_at ? new Date(x.closed_at).toLocaleString("pl-PL") : "-"}</td></tr>
-      <tr><th>Postęp</th><td>${x.correct_count || 0}/${x.expected_count || 0}</td></tr>
-      <tr><th>Wszystkie skany</th><td>${escapeHtml(x.all_scans || "-")}</td></tr>
-      <tr><th>Brakujące</th><td class="${splitItems(x.missing_trays).length ? "badCell" : ""}">${escapeHtml(x.missing_trays || "-")}</td></tr>
-      <tr><th>Błędne</th><td class="${splitItems(x.wrong_trays).length ? "badCell" : ""}">${escapeHtml(x.wrong_trays || "-")}</td></tr>
-      <tr><th>Duplikaty</th><td class="${splitItems(x.duplicate_trays).length ? "warnCell" : ""}">${escapeHtml(x.duplicate_trays || "-")}</td></tr>
-    </table>
-  `;
-
-  detailsModal.classList.remove("hidden");
-}
-
-function closeDetails() {
-  detailsModal.classList.add("hidden");
-}
-
-function sheetFromRows(rows) {
-  return XLSX.utils.aoa_to_sheet(rows);
-}
-
-function setColumnWidths(sheet, widths) {
-  sheet["!cols"] = widths.map(width => ({ wch: width }));
-}
-
-function setAutoFilter(sheet, range) {
-  sheet["!autofilter"] = { ref: range };
-}
-
-function exportExcel() {
-  const data = getFilteredSessions();
-
-  const total = data.length;
-  const correct = data.filter(x => normalizeStatus(x.status) === "POPRAWNA").length;
-  const bad = data.filter(x => normalizeStatus(x.status) === "NIEPOPRAWNA").length;
-
-  const accuracy = total
-    ? Math.round((correct / total) * 100)
-    : 0;
-
-  const durations = data
-    .map(x => x.duration_seconds)
-    .filter(x => typeof x === "number");
-
-  const avgDuration = durations.length
-    ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length)
-    : 0;
-
-  const workers = {};
-
-  data.forEach(x => {
-    const worker = displayLogin(x.user_login || "brak użytkownika");
-
-    if (!workers[worker]) {
-      workers[worker] = {
-        worker,
-        total: 0,
-        correct: 0,
-        bad: 0,
-        wrong: 0,
-        missing: 0,
-        duplicates: 0,
-        duration: 0,
-        durationCount: 0
-      };
-    }
-
-    workers[worker].total++;
-
-    if (normalizeStatus(x.status) === "POPRAWNA") workers[worker].correct++;
-    if (normalizeStatus(x.status) === "NIEPOPRAWNA") workers[worker].bad++;
-
-    workers[worker].wrong += splitItems(x.wrong_trays).length;
-    workers[worker].missing += splitItems(x.missing_trays).length;
-    workers[worker].duplicates += splitItems(x.duplicate_trays).length;
-
-    if (typeof x.duration_seconds === "number") {
-      workers[worker].duration += x.duration_seconds;
-      workers[worker].durationCount++;
-    }
-  });
-
-  const workersRows = Object.values(workers)
-    .sort((a, b) => b.total - a.total)
-    .map(w => {
-      const workerAccuracy = w.total
-        ? Math.round((w.correct / w.total) * 100)
-        : 0;
-
-      const workerAvg = w.durationCount
-        ? Math.round(w.duration / w.durationCount)
-        : 0;
-
-      return [
-        w.worker,
-        w.total,
-        w.correct,
-        w.bad,
-        workerAccuracy + "%",
-        formatDuration(workerAvg),
-        w.missing,
-        w.wrong,
-        w.duplicates
-      ];
-    });
-
-  const historyRows = data.map(x => [
-    x.bag_qr || "",
-    normalizeStatus(x.status) || "",
-    displayLogin(x.user_login || ""),
-    x.expected_count || 0,
-    x.correct_count || 0,
-    formatDuration(x.duration_seconds),
-    x.missing_trays || "",
-    x.wrong_trays || "",
-    x.duplicate_trays || "",
-    x.all_scans || "",
-    x.closed_at ? new Date(x.closed_at).toLocaleString("pl-PL") : ""
-  ]);
-
-  const summaryRows = [
-    ["PODSUMOWANIE"],
-    [],
-    ["Spakowane torby", `${total} / ${totalBagsInPlan}`],
-    ["Poprawne", correct],
-    ["Niepoprawne", bad],
-    ["Poprawność", accuracy + "%"],
-    ["Średni czas pakowania", formatDuration(avgDuration)]
-  ];
-
-  const workersSheetRows = [
-    ["RANKING PRACOWNIKÓW"],
-    [],
-    ["Pracownik", "Razem", "Poprawne", "Niepoprawne", "Poprawność", "Średni czas", "Brakujące tacki", "Błędne tacki", "Duplikaty"],
-    ...workersRows
-  ];
-
-  const historySheetRows = [
-    [
-      "QR torby",
-      "Status",
-      "Pracownik",
-      "Oczekiwane tacki",
-      "Poprawne tacki",
-      "Czas pakowania",
-      "Brakujące tacki",
-      "Błędne tacki",
-      "Duplikaty",
-      "Wszystkie skany",
-      "Data zamknięcia"
-    ],
-    ...historyRows
-  ];
-
-  const workbook = XLSX.utils.book_new();
-
-  const summarySheet = sheetFromRows(summaryRows);
-  setColumnWidths(summarySheet, [28, 55]);
-
-  const workersSheet = sheetFromRows(workersSheetRows);
-  setColumnWidths(workersSheet, [28, 12, 12, 14, 14, 16, 18, 16, 14]);
-  setAutoFilter(workersSheet, "A3:I3");
-  workersSheet["!freeze"] = { xSplit: 0, ySplit: 3 };
-
-  const historySheet = sheetFromRows(historySheetRows);
-  setColumnWidths(historySheet, [24, 16, 24, 18, 16, 18, 35, 35, 35, 60, 22]);
-  setAutoFilter(historySheet, "A1:K1");
-  historySheet["!freeze"] = { xSplit: 0, ySplit: 1 };
-
-  XLSX.utils.book_append_sheet(workbook, summarySheet, "Podsumowanie");
-  XLSX.utils.book_append_sheet(workbook, workersSheet, "Pracownicy");
-  XLSX.utils.book_append_sheet(workbook, historySheet, "Historia");
-
-  const date = new Date().toISOString().slice(0, 10);
-  XLSX.writeFile(workbook, `raport_pakowania_${date}.xlsx`);
-}
-
-function displayLogin(value) {
-  return String(value || "")
-    .toLowerCase()
-    .replace("@pakowanie.local", "");
-}
-
-function escapeHtml(value) {
-  return String(value ?? "").replace(/[&<>"']/g, m => ({
+function escapeHtml(v) {
+  return String(v ?? "").replace(/[&<>"']/g, m => ({
     "&":"&amp;",
     "<":"&lt;",
     ">":"&gt;",
     '"':"&quot;",
     "'":"&#039;"
   }[m]));
+}
+
+/* ================= FILTER ================= */
+
+function refreshWorkerFilter() {
+  const current = workerFilter.value;
+
+  const workers = [...new Set(sessions.map(x => x.user_login).filter(Boolean))].sort();
+
+  workerFilter.innerHTML =
+    `<option value="">Wszyscy</option>` +
+    workers.map(w => `<option value="${w}">${displayLogin(w)}</option>`).join("");
+
+  workerFilter.value = current;
+}
+
+function getFilteredSessions() {
+  const search = bagSearch.value.toLowerCase();
+  const status = statusFilter.value;
+  const worker = workerFilter.value;
+
+  return sessions.filter(x => {
+    if (search && !String(x.bag_qr).toLowerCase().includes(search)) return false;
+    if (status && normalizeStatus(x.status) !== status) return false;
+    if (worker && x.user_login !== worker) return false;
+    return true;
+  });
+}
+
+/* ================= RENDER ================= */
+
+function renderAll() {
+  const data = sessions;
+  const filtered = getFilteredSessions();
+
+  const correct = data.filter(x => normalizeStatus(x.status) === "POPRAWNA");
+  const bad = data.filter(x => normalizeStatus(x.status) === "NIEPOPRAWNA");
+
+  const avg = data.length
+    ? Math.round(data.reduce((a,b)=>a+(b.duration_seconds||0),0)/data.length)
+    : 0;
+
+  totalToday.innerText = `${data.length} / ${totalBagsInPlan}`;
+
+  totalProgressFill.style.width =
+    totalBagsInPlan ? Math.round((data.length / totalBagsInPlan)*100)+"%" : "0%";
+
+  correctToday.innerText = correct.length;
+  badToday.innerText = bad.length;
+  accuracyToday.innerText = data.length ? Math.round(correct.length/data.length*100)+"%" : "0%";
+  avgTime.innerText = formatDuration(avg);
+
+  renderWorkers(data);
+  renderHistory(filtered);
+}
+
+/* ================= TABLES ================= */
+
+function renderWorkers(data) {
+  const map = {};
+
+  data.forEach(x=>{
+    const w = displayLogin(x.user_login||"brak");
+
+    if(!map[w]) map[w]={worker:w,total:0,correct:0,bad:0,time:0,count:0};
+
+    map[w].total++;
+    if(normalizeStatus(x.status)==="POPRAWNA") map[w].correct++;
+    if(normalizeStatus(x.status)==="NIEPOPRAWNA") map[w].bad++;
+
+    if(x.duration_seconds){
+      map[w].time+=x.duration_seconds;
+      map[w].count++;
+    }
+  });
+
+  const rows = Object.values(map).sort((a,b)=>b.total-a.total);
+
+  workersTable.innerHTML = `
+    <table>
+      <tr><th>Pracownik</th><th>Razem</th><th>OK</th><th>Źle</th><th>Czas</th></tr>
+      ${rows.map(w=>`
+        <tr>
+          <td>${w.worker}</td>
+          <td>${w.total}</td>
+          <td class="ok">${w.correct}</td>
+          <td class="bad">${w.bad}</td>
+          <td>${formatDuration(Math.round(w.time/(w.count||1)))}</td>
+        </tr>
+      `).join("")}
+    </table>`;
+}
+
+function renderHistory(data) {
+  historyTable.innerHTML = `
+    <table>
+      <tr><th>Torba</th><th>Status</th><th>Pracownik</th><th>Czas</th></tr>
+      ${data.slice(0,500).map(x=>`
+        <tr>
+          <td>${x.bag_qr}</td>
+          <td class="${normalizeStatus(x.status)==='POPRAWNA'?'ok':'bad'}">${normalizeStatus(x.status)}</td>
+          <td>${displayLogin(x.user_login)}</td>
+          <td>${formatDuration(x.duration_seconds)}</td>
+        </tr>
+      `).join("")}
+    </table>`;
 }
 </script>
 
