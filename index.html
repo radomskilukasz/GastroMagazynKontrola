@@ -4,6 +4,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="logo-removebg-preview.png">
   <link rel="icon" type="image/png" sizes="16x16" href="logo-removebg-preview.png">
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Raport pakowania</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
@@ -23,9 +24,7 @@
       --shadow:0 10px 35px rgba(15,23,42,.08);
     }
 
-    * {
-      box-sizing:border-box;
-    }
+    * { box-sizing:border-box; }
 
     body {
       font-family: Arial, sans-serif;
@@ -35,14 +34,8 @@
       color:var(--text);
     }
 
-    .hidden {
-      display:none !important;
-    }
-
-    h1,
-    h2 {
-      margin-top:0;
-    }
+    .hidden { display:none !important; }
+    h1, h2 { margin-top:0; }
 
     button {
       border:none;
@@ -54,28 +47,22 @@
       transition:.15s ease;
     }
 
-    button:hover {
-      background:var(--blue-dark);
-    }
+    button:hover { background:var(--blue-dark); }
 
-    input,
-    select,
-    button {
+    input, select, button {
       font-size:17px;
       padding:13px 14px;
       margin:0;
     }
 
-    input,
-    select {
+    input, select {
       border:2px solid #d1d5db;
       background:white;
       border-radius:12px;
       min-height:48px;
     }
 
-    input:focus,
-    select:focus {
+    input:focus, select:focus {
       outline:none;
       border-color:var(--blue);
       box-shadow:0 0 0 4px rgba(37,99,235,.15);
@@ -87,8 +74,7 @@
       font-size:17px;
     }
 
-    th,
-    td {
+    th, td {
       border-bottom:1px solid var(--border);
       padding:13px 12px;
       text-align:left;
@@ -103,29 +89,12 @@
       letter-spacing:.04em;
     }
 
-    tbody tr:hover {
-      filter:brightness(.98);
-    }
+    tbody tr:hover { filter:brightness(.98); }
 
-    .ok {
-      color:var(--green);
-      font-weight:bold;
-    }
-
-    .bad {
-      color:var(--red);
-      font-weight:bold;
-    }
-
-    .warn {
-      color:var(--orange);
-      font-weight:bold;
-    }
-
-    .small {
-      color:var(--muted);
-      font-size:15px;
-    }
+    .ok { color:var(--green); font-weight:bold; }
+    .bad { color:var(--red); font-weight:bold; }
+    .warn { color:var(--orange); font-weight:bold; }
+    .small { color:var(--muted); font-size:15px; }
 
     .label {
       color:var(--muted);
@@ -143,9 +112,7 @@
       letter-spacing:-.03em;
     }
 
-    .statsGrid .card:not(:first-child) .stat {
-      font-size:32px;
-    }
+    .statsGrid .card:not(:first-child) .stat { font-size:32px; }
 
     .card {
       background:var(--card);
@@ -167,36 +134,11 @@
       box-sizing:border-box;
     }
 
-    .loginLogo {
-      text-align:center;
-      margin-bottom:15px;
-    }
-
-    .loginLogo img {
-      width:90px;
-      height:auto;
-      display:block;
-      margin:0 auto;
-    }
-
-    .loginCard h1 {
-      text-align:center;
-      margin:0;
-      font-size:32px;
-    }
-
-    .loginSubtitle {
-      text-align:center;
-      color:var(--muted);
-      margin-bottom:28px;
-    }
-
-    .loginCard label {
-      display:block;
-      font-weight:bold;
-      margin-top:16px;
-      margin-bottom:6px;
-    }
+    .loginLogo { text-align:center; margin-bottom:15px; }
+    .loginLogo img { width:90px; height:auto; display:block; margin:0 auto; }
+    .loginCard h1 { text-align:center; margin:0; font-size:32px; }
+    .loginSubtitle { text-align:center; color:var(--muted); margin-bottom:28px; }
+    .loginCard label { display:block; font-weight:bold; margin-top:16px; margin-bottom:6px; }
 
     .loginInput {
       width:100%;
@@ -270,23 +212,11 @@
       justify-content:flex-end;
     }
 
-    .filters input {
-      min-width:230px;
-    }
+    .filters input { min-width:230px; }
+    .filters button { min-height:48px; padding-left:18px; padding-right:18px; }
 
-    .filters button {
-      min-height:48px;
-      padding-left:18px;
-      padding-right:18px;
-    }
-
-    .secondaryBtn {
-      background:#111827;
-    }
-
-    .secondaryBtn:hover {
-      background:#030712;
-    }
+    .secondaryBtn { background:#111827; }
+    .secondaryBtn:hover { background:#030712; }
 
     .dashboardLayout {
       display:grid;
@@ -295,9 +225,7 @@
       align-items:start;
     }
 
-    .leftDashboard {
-      min-width:0;
-    }
+    .leftDashboard { min-width:0; }
 
     .statsGrid {
       display:grid;
@@ -305,9 +233,7 @@
       gap:16px;
     }
 
-    .totalCard {
-      grid-column:1 / -1;
-    }
+    .totalCard { grid-column:1 / -1; }
 
     .statsGrid .card {
       min-height:150px;
@@ -316,9 +242,7 @@
       justify-content:center;
     }
 
-    .totalCard {
-      min-height:130px;
-    }
+    .totalCard { min-height:130px; }
 
     .workersPanel {
       min-height:700px;
@@ -326,8 +250,7 @@
       top:22px;
     }
 
-    .workersPanel h2,
-    .historyPanel h2 {
+    .workersPanel h2, .historyPanel h2 {
       font-size:28px;
       margin-bottom:8px;
     }
@@ -348,8 +271,7 @@
       transition:width .3s ease;
     }
 
-    .clickable,
-    .workerName {
+    .clickable, .workerName {
       cursor:pointer;
       text-decoration:underline;
       text-underline-offset:4px;
@@ -366,12 +288,6 @@
       font-size:24px;
       margin-bottom:20px;
       box-shadow:var(--shadow);
-    }
-
-    .grid {
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:14px;
     }
 
     .modalBg {
@@ -415,17 +331,10 @@
       padding:12px 18px;
     }
 
-    .closeBtn:hover {
-      background:#dc2626;
-    }
+    .closeBtn:hover { background:#dc2626; }
 
-    .badCell {
-      background:#fee2e2;
-    }
-
-    .warnCell {
-      background:#fffbeb;
-    }
+    .badCell { background:#fee2e2; }
+    .warnCell { background:#fffbeb; }
 
     .detailsGrid {
       display:grid;
@@ -453,142 +362,52 @@
       font-weight:bold;
     }
 
-    .detailsGrid .label {
-      font-size:13px;
-    }
+    .detailsGrid .label { font-size:13px; }
 
     .detailsTable {
       width:100%;
       table-layout:fixed;
     }
 
-    .detailsTable th {
-      width:180px;
-    }
-
-    .detailsTable td {
-      word-break:break-word;
-    }
+    .detailsTable th { width:180px; }
+    .detailsTable td { word-break:break-word; }
 
     @media(max-width:1500px){
-      .dashboardLayout {
-        grid-template-columns:1fr;
-      }
-
-      .workersPanel {
-        position:static;
-        min-height:auto;
-        max-height:none;
-      }
-
-      .statsGrid {
-        grid-template-columns:repeat(4, minmax(0, 1fr));
-      }
-
-      .statsGrid .card {
-        min-height:120px;
-        padding:18px;
-      }
-
-      .stat {
-        font-size:30px;
-      }
-
-      .statsGrid .card:not(:first-child) .stat {
-        font-size:26px;
-      }
-
-      .topbar {
-        align-items:flex-start;
-      }
-
-      .topbar h1 {
-        font-size:30px;
-      }
-
-      .topbarLogo {
-        width:60px;
-      }
-
-      .filters {
-        width:100%;
-        justify-content:flex-start;
-      }
-
-      .filters input {
-        min-width:200px;
-      }
+      .dashboardLayout { grid-template-columns:1fr; }
+      .workersPanel { position:static; min-height:auto; max-height:none; }
+      .statsGrid { grid-template-columns:repeat(4, minmax(0, 1fr)); }
+      .statsGrid .card { min-height:120px; padding:18px; }
+      .stat { font-size:30px; }
+      .statsGrid .card:not(:first-child) .stat { font-size:26px; }
+      .topbar { align-items:flex-start; }
+      .topbar h1 { font-size:30px; }
+      .topbarLogo { width:60px; }
+      .filters { width:100%; justify-content:flex-start; }
+      .filters input { min-width:200px; }
     }
 
     @media(max-width:1100px){
-      .statsGrid {
-        grid-template-columns:1fr 1fr;
-      }
+      .statsGrid { grid-template-columns:1fr 1fr; }
     }
 
     @media(max-width:900px){
-      body {
-        padding:12px;
-      }
-
-      .topbar {
-        padding:18px;
-      }
-
-      .topbarTitle {
-        width:100%;
-      }
-
-      .topbar h1 {
-        font-size:30px;
-      }
-
-      .topbarLogo {
-        width:56px;
-      }
-
-      .filters {
-        width:100%;
-      }
-
-      .filters input,
-      .filters select,
-      .filters button {
-        width:100%;
-      }
-
-      .statsGrid,
-      .avgGrid,
-      .grid {
-        grid-template-columns:1fr;
-      }
-
-      .stat {
-        font-size:34px;
-      }
-
-      table {
-        font-size:14px;
-      }
-
-      th,
-      td {
-        padding:10px 8px;
-      }
-
-      .detailsGrid {
-        grid-template-columns:1fr 1fr;
-      }
-
-      .detailsTable th {
-        width:130px;
-      }
+      body { padding:12px; }
+      .topbar { padding:18px; }
+      .topbarTitle { width:100%; }
+      .topbar h1 { font-size:30px; }
+      .topbarLogo { width:56px; }
+      .filters { width:100%; }
+      .filters input, .filters select, .filters button { width:100%; }
+      .statsGrid, .grid { grid-template-columns:1fr; }
+      .stat { font-size:34px; }
+      table { font-size:14px; }
+      th, td { padding:10px 8px; }
+      .detailsGrid { grid-template-columns:1fr 1fr; }
+      .detailsTable th { width:130px; }
     }
 
     @media(max-width:600px){
-      .detailsGrid {
-        grid-template-columns:1fr;
-      }
+      .detailsGrid { grid-template-columns:1fr; }
     }
   </style>
 </head>
@@ -645,9 +464,7 @@
   </div>
 
   <div class="dashboardLayout">
-
     <div class="leftDashboard">
-
       <div class="statsGrid">
         <div class="card totalCard">
           <div class="label">Spakowane łącznie</div>
@@ -683,16 +500,13 @@
         <p class="small">Kliknij QR torby, żeby zobaczyć szczegóły.</p>
         <div id="historyTable"></div>
       </div>
-
     </div>
 
     <div class="card workersPanel">
       <h2>🏆 Ranking pracowników</h2>
       <div id="workersTable"></div>
     </div>
-
   </div>
-
 </div>
 
 <div id="detailsModal" class="modalBg hidden">
@@ -719,8 +533,6 @@ let mealDate = "";
 let refreshTimer = null;
 window.workerStats = [];
 
-/* ================= LOGIN ================= */
-
 function getLoginEmail(value) {
   const login = String(value || "").trim().toLowerCase();
   if (!login) return "";
@@ -729,13 +541,14 @@ function getLoginEmail(value) {
 }
 
 async function getUserRole(userId) {
-  const { data } = await supabaseClient
+  const { data, error } = await supabaseClient
     .from("user_roles")
     .select("role")
     .eq("user_id", userId)
     .single();
 
-  return data?.role || null;
+  if (error || !data) return null;
+  return data.role;
 }
 
 function hasAccess(role, allowedRoles) {
@@ -771,7 +584,7 @@ async function login() {
   const role = await getUserRole(data.user.id);
 
   if (!hasAccess(role, ["manager", "admin"])) {
-    loginStatus.innerText = "Brak dostępu.";
+    loginStatus.innerText = "Brak dostępu do raportu.";
     return;
   }
 
@@ -785,8 +598,6 @@ async function login() {
   }
 }
 
-/* ================= DATA ================= */
-
 async function loadReport() {
   const { data, error } = await supabaseClient
     .from("packing_sessions")
@@ -795,14 +606,20 @@ async function loadReport() {
     .limit(5000);
 
   if (error) {
-    alert("Błąd: " + error.message);
+    alert("Błąd pobierania raportu: " + error.message);
     return;
   }
 
   sessions = data || [];
 
-  const { data: bagCount } = await supabaseClient.rpc("count_unique_bags");
-  totalBagsInPlan = bagCount || 0;
+  const { data: bagCount, error: bagCountError } = await supabaseClient.rpc("count_unique_bags");
+
+  if (bagCountError) {
+    console.error("Błąd liczenia toreb:", bagCountError);
+    totalBagsInPlan = 0;
+  } else {
+    totalBagsInPlan = bagCount || 0;
+  }
 
   const { data: mealRow } = await supabaseClient
     .from("app_settings")
@@ -813,20 +630,16 @@ async function loadReport() {
   mealDate = mealRow?.value || "";
 
   updateTitle();
-
   lastRefresh.innerText = new Date().toLocaleTimeString("pl-PL");
-
   refreshWorkerFilter();
   renderAll();
 }
-
-/* ================= TITLE ================= */
 
 function formatMealDate(dateText) {
   if (!dateText) return "";
 
   const d = new Date(dateText);
-  if (isNaN(d)) return "";
+  if (Number.isNaN(d.getTime())) return "";
 
   return d.toLocaleDateString("pl-PL", {
     day: "2-digit",
@@ -842,34 +655,32 @@ function updateTitle() {
     : "Raport pakowania";
 }
 
-/* ================= HELPERS ================= */
-
 function normalizeStatus(status) {
-  const value = String(status || "").toUpperCase();
+  const value = String(status || "").toUpperCase().trim();
   if (value === "NIEPRAWIDŁOWA") return "NIEPOPRAWNA";
   return value;
 }
 
 function splitItems(text) {
   if (!text || text === "-") return [];
-  return text.split("|").map(x => x.trim()).filter(Boolean);
+  return String(text).split("|").map(x => x.trim()).filter(Boolean);
 }
 
-function formatDuration(sec) {
-  if (!sec && sec !== 0) return "-";
-  if (sec < 60) return sec + "s";
+function formatDuration(seconds) {
+  if (!seconds && seconds !== 0) return "-";
+  if (seconds < 60) return seconds + "s";
 
-  const m = Math.floor(sec / 60);
-  const s = sec % 60;
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
   return `${m}m ${s}s`;
 }
 
-function displayLogin(v) {
-  return String(v || "").replace("@pakowanie.local", "");
+function displayLogin(value) {
+  return String(value || "").toLowerCase().replace("@pakowanie.local", "");
 }
 
-function escapeHtml(v) {
-  return String(v ?? "").replace(/[&<>"']/g, m => ({
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, m => ({
     "&":"&amp;",
     "<":"&lt;",
     ">":"&gt;",
@@ -878,100 +689,114 @@ function escapeHtml(v) {
   }[m]));
 }
 
-/* ================= FILTER ================= */
-
 function refreshWorkerFilter() {
   const current = workerFilter.value;
-
   const workers = [...new Set(sessions.map(x => x.user_login).filter(Boolean))].sort();
 
-  workerFilter.innerHTML =
-    `<option value="">Wszyscy</option>` +
-    workers.map(w => `<option value="${w}">${displayLogin(w)}</option>`).join("");
+  workerFilter.innerHTML = `<option value="">Wszyscy pracownicy</option>` +
+    workers.map(w => `<option value="${escapeHtml(w)}">${escapeHtml(displayLogin(w))}</option>`).join("");
 
   workerFilter.value = current;
 }
 
 function getFilteredSessions() {
-  const search = bagSearch.value.toLowerCase();
+  const search = bagSearch.value.trim().toLowerCase();
   const status = statusFilter.value;
   const worker = workerFilter.value;
 
   return sessions.filter(x => {
-    if (search && !String(x.bag_qr).toLowerCase().includes(search)) return false;
+    if (search && !String(x.bag_qr || "").toLowerCase().includes(search)) return false;
     if (status && normalizeStatus(x.status) !== status) return false;
     if (worker && x.user_login !== worker) return false;
     return true;
   });
 }
 
-/* ================= RENDER ================= */
-
 function renderAll() {
-  const data = sessions;
-  const filtered = getFilteredSessions();
+  const allSessions = sessions;
+  const filteredHistory = getFilteredSessions();
 
-  const correct = data.filter(x => normalizeStatus(x.status) === "POPRAWNA");
-  const bad = data.filter(x => normalizeStatus(x.status) === "NIEPOPRAWNA");
+  const correct = allSessions.filter(x => normalizeStatus(x.status) === "POPRAWNA");
+  const bad = allSessions.filter(x => normalizeStatus(x.status) === "NIEPOPRAWNA");
 
-  const avg = data.length
-    ? Math.round(data.reduce((a,b)=>a+(b.duration_seconds||0),0)/data.length)
+  const durations = allSessions
+    .map(x => x.duration_seconds)
+    .filter(x => typeof x === "number");
+
+  const avg = durations.length
+    ? Math.round(durations.reduce((a,b) => a + b, 0) / durations.length)
     : 0;
 
-  totalToday.innerText = `${data.length} / ${totalBagsInPlan}`;
+  const accuracy = allSessions.length
+    ? Math.round((correct.length / allSessions.length) * 100)
+    : 0;
 
-  totalProgressFill.style.width =
-    totalBagsInPlan ? Math.round((data.length / totalBagsInPlan)*100)+"%" : "0%";
+  totalToday.innerText = `${allSessions.length} / ${totalBagsInPlan}`;
+
+  const totalPercent = totalBagsInPlan
+    ? Math.min(100, Math.round((allSessions.length / totalBagsInPlan) * 100))
+    : 0;
+
+  totalProgressFill.style.width = totalPercent + "%";
 
   correctToday.innerText = correct.length;
   badToday.innerText = bad.length;
-  accuracyToday.innerText = data.length ? Math.round(correct.length/data.length*100)+"%" : "0%";
+  accuracyToday.innerText = accuracy + "%";
   avgTime.innerText = formatDuration(avg);
 
-  renderWorkers(data);
-  renderHistory(filtered);
+  renderAlerts(bad.length);
+  renderWorkers(allSessions);
+  renderHistory(filteredHistory);
 }
 
-<script>
-/* ================= TABLES ================= */
+function renderAlerts(badCount) {
+  if (badCount >= 20) {
+    alertBox.classList.remove("hidden");
+    alertBox.innerText = `⚠️ UWAGA: Liczba niepoprawnych toreb: ${badCount}`;
+    return;
+  }
+
+  alertBox.classList.add("hidden");
+  alertBox.innerText = "";
+}
 
 function renderWorkers(data) {
-  const map = {};
+  const workers = {};
 
   data.forEach(x => {
-    const w = displayLogin(x.user_login || "brak użytkownika");
+    const worker = displayLogin(x.user_login || "brak użytkownika");
 
-    if (!map[w]) {
-      map[w] = {
-        worker: w,
-        total: 0,
-        correct: 0,
-        bad: 0,
-        wrong: 0,
-        missing: 0,
-        duplicates: 0,
-        time: 0,
-        count: 0
+    if (!workers[worker]) {
+      workers[worker] = {
+        worker,
+        total:0,
+        correct:0,
+        bad:0,
+        wrong:0,
+        missing:0,
+        duplicates:0,
+        duration:0,
+        durationCount:0
       };
     }
 
-    map[w].total++;
+    workers[worker].total++;
 
-    if (normalizeStatus(x.status) === "POPRAWNA") map[w].correct++;
-    if (normalizeStatus(x.status) === "NIEPOPRAWNA") map[w].bad++;
+    if (normalizeStatus(x.status) === "POPRAWNA") workers[worker].correct++;
+    if (normalizeStatus(x.status) === "NIEPOPRAWNA") workers[worker].bad++;
 
-    map[w].wrong += splitItems(x.wrong_trays).length;
-    map[w].missing += splitItems(x.missing_trays).length;
-    map[w].duplicates += splitItems(x.duplicate_trays).length;
+    workers[worker].wrong += splitItems(x.wrong_trays).length;
+    workers[worker].missing += splitItems(x.missing_trays).length;
+    workers[worker].duplicates += splitItems(x.duplicate_trays).length;
 
     if (typeof x.duration_seconds === "number") {
-      map[w].time += x.duration_seconds;
-      map[w].count++;
+      workers[worker].duration += x.duration_seconds;
+      workers[worker].durationCount++;
     }
   });
 
-  const rows = Object.values(map).sort((a, b) => b.total - a.total);
-  window.workerStats = rows;
+  const dataRows = Object.values(workers).sort((a,b) => b.total - a.total);
+  window.workerStats = dataRows;
 
   workersTable.innerHTML = `
     <table>
@@ -985,8 +810,10 @@ function renderWorkers(data) {
         </tr>
       </thead>
       <tbody>
-        ${rows.map((w, index) => {
-          const avg = w.count ? Math.round(w.time / w.count) : 0;
+        ${dataRows.map((w, index) => {
+          const avg = w.durationCount
+            ? Math.round(w.duration / w.durationCount)
+            : 0;
 
           return `
             <tr>
@@ -1011,8 +838,13 @@ function openWorkerDetails(index) {
   const w = window.workerStats[index];
   if (!w) return;
 
-  const avg = w.count ? Math.round(w.time / w.count) : 0;
-  const accuracy = w.total ? Math.round((w.correct / w.total) * 100) : 0;
+  const avg = w.durationCount
+    ? Math.round(w.duration / w.durationCount)
+    : 0;
+
+  const accuracy = w.total
+    ? Math.round((w.correct / w.total) * 100)
+    : 0;
 
   detailsContent.innerHTML = `
     <div class="detailsGrid">
@@ -1020,17 +852,14 @@ function openWorkerDetails(index) {
         <div class="label">Pracownik</div>
         <div class="detailsValue">${escapeHtml(w.worker)}</div>
       </div>
-
       <div class="detailsCard">
         <div class="label">Razem</div>
         <div class="detailsValue">${w.total}</div>
       </div>
-
       <div class="detailsCard">
         <div class="label">Poprawność</div>
         <div class="detailsValue">${accuracy}%</div>
       </div>
-
       <div class="detailsCard">
         <div class="label">Średni czas</div>
         <div class="detailsValue">${formatDuration(avg)}</div>
@@ -1132,6 +961,168 @@ function openDetails(index) {
 
 function closeDetails() {
   detailsModal.classList.add("hidden");
+}
+
+function sheetFromRows(rows) {
+  return XLSX.utils.aoa_to_sheet(rows);
+}
+
+function setColumnWidths(sheet, widths) {
+  sheet["!cols"] = widths.map(width => ({ wch: width }));
+}
+
+function setAutoFilter(sheet, range) {
+  sheet["!autofilter"] = { ref: range };
+}
+
+function exportExcel() {
+  const data = getFilteredSessions();
+
+  const total = data.length;
+  const correct = data.filter(x => normalizeStatus(x.status) === "POPRAWNA").length;
+  const bad = data.filter(x => normalizeStatus(x.status) === "NIEPOPRAWNA").length;
+
+  const accuracy = total
+    ? Math.round((correct / total) * 100)
+    : 0;
+
+  const durations = data
+    .map(x => x.duration_seconds)
+    .filter(x => typeof x === "number");
+
+  const avgDuration = durations.length
+    ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length)
+    : 0;
+
+  const workers = {};
+
+  data.forEach(x => {
+    const worker = displayLogin(x.user_login || "brak użytkownika");
+
+    if (!workers[worker]) {
+      workers[worker] = {
+        worker,
+        total: 0,
+        correct: 0,
+        bad: 0,
+        wrong: 0,
+        missing: 0,
+        duplicates: 0,
+        duration: 0,
+        durationCount: 0
+      };
+    }
+
+    workers[worker].total++;
+
+    if (normalizeStatus(x.status) === "POPRAWNA") workers[worker].correct++;
+    if (normalizeStatus(x.status) === "NIEPOPRAWNA") workers[worker].bad++;
+
+    workers[worker].wrong += splitItems(x.wrong_trays).length;
+    workers[worker].missing += splitItems(x.missing_trays).length;
+    workers[worker].duplicates += splitItems(x.duplicate_trays).length;
+
+    if (typeof x.duration_seconds === "number") {
+      workers[worker].duration += x.duration_seconds;
+      workers[worker].durationCount++;
+    }
+  });
+
+  const workersRows = Object.values(workers)
+    .sort((a, b) => b.total - a.total)
+    .map(w => {
+      const workerAccuracy = w.total
+        ? Math.round((w.correct / w.total) * 100)
+        : 0;
+
+      const workerAvg = w.durationCount
+        ? Math.round(w.duration / w.durationCount)
+        : 0;
+
+      return [
+        w.worker,
+        w.total,
+        w.correct,
+        w.bad,
+        workerAccuracy + "%",
+        formatDuration(workerAvg),
+        w.missing,
+        w.wrong,
+        w.duplicates
+      ];
+    });
+
+  const historyRows = data.map(x => [
+    x.bag_qr || "",
+    normalizeStatus(x.status) || "",
+    displayLogin(x.user_login || ""),
+    x.expected_count || 0,
+    x.correct_count || 0,
+    formatDuration(x.duration_seconds),
+    x.missing_trays || "",
+    x.wrong_trays || "",
+    x.duplicate_trays || "",
+    x.all_scans || "",
+    x.closed_at ? new Date(x.closed_at).toLocaleString("pl-PL") : ""
+  ]);
+
+  const summaryRows = [
+    ["PODSUMOWANIE"],
+    ["Dzień jedzony", formatMealDate(mealDate)],
+    [],
+    ["Spakowane torby", `${total} / ${totalBagsInPlan}`],
+    ["Poprawne", correct],
+    ["Niepoprawne", bad],
+    ["Poprawność", accuracy + "%"],
+    ["Średni czas pakowania", formatDuration(avgDuration)]
+  ];
+
+  const workersSheetRows = [
+    ["RANKING PRACOWNIKÓW"],
+    ["Dzień jedzony", formatMealDate(mealDate)],
+    [],
+    ["Pracownik", "Razem", "Poprawne", "Niepoprawne", "Poprawność", "Średni czas", "Brakujące tacki", "Błędne tacki", "Duplikaty"],
+    ...workersRows
+  ];
+
+  const historySheetRows = [
+    [
+      "QR torby",
+      "Status",
+      "Pracownik",
+      "Oczekiwane tacki",
+      "Poprawne tacki",
+      "Czas pakowania",
+      "Brakujące tacki",
+      "Błędne tacki",
+      "Duplikaty",
+      "Wszystkie skany",
+      "Data zamknięcia"
+    ],
+    ...historyRows
+  ];
+
+  const workbook = XLSX.utils.book_new();
+
+  const summarySheet = sheetFromRows(summaryRows);
+  setColumnWidths(summarySheet, [28, 55]);
+
+  const workersSheet = sheetFromRows(workersSheetRows);
+  setColumnWidths(workersSheet, [28, 12, 12, 14, 14, 16, 18, 16, 14]);
+  setAutoFilter(workersSheet, "A4:I4");
+  workersSheet["!freeze"] = { xSplit: 0, ySplit: 4 };
+
+  const historySheet = sheetFromRows(historySheetRows);
+  setColumnWidths(historySheet, [24, 16, 24, 18, 16, 18, 35, 35, 35, 60, 22]);
+  setAutoFilter(historySheet, "A1:K1");
+  historySheet["!freeze"] = { xSplit: 0, ySplit: 1 };
+
+  XLSX.utils.book_append_sheet(workbook, summarySheet, "Podsumowanie");
+  XLSX.utils.book_append_sheet(workbook, workersSheet, "Pracownicy");
+  XLSX.utils.book_append_sheet(workbook, historySheet, "Historia");
+
+  const date = new Date().toISOString().slice(0,10);
+  XLSX.writeFile(workbook, `raport_pakowania_${date}.xlsx`);
 }
 </script>
 
