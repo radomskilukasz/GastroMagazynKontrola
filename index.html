@@ -913,18 +913,17 @@ function renderAll() {
   renderHistory(filteredHistory);
 }
 
-function renderAlerts(today, badCount, wrong, missing, dups) {
-  const errorTotal = badCount + wrong + missing + dups;
-
+function renderAlerts(badCount) {
   if (badCount >= 20) {
     alertBox.classList.remove("hidden");
-    alertBox.innerText = `⚠️ UWAGA: Liczba niepoprawnych toreb ${badCount} `;
+    alertBox.innerText = `⚠️ UWAGA: Liczba niepoprawnych toreb dzisiaj: ${badCount}`;
     return;
   }
 
   alertBox.classList.add("hidden");
   alertBox.innerText = "";
 }
+
 function renderWorkers(today) {
   const workers = {};
 
