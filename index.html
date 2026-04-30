@@ -348,18 +348,6 @@
       transition:width .3s ease;
     }
 
-    .problemRow {
-      background:#fff1f2;
-    }
-
-    .warnRow {
-      background:#fffbeb;
-    }
-
-    .goodRow {
-      background:#f0fdf4;
-    }
-
     .clickable,
     .workerName {
       cursor:pointer;
@@ -662,7 +650,7 @@
 
       <div class="statsGrid">
         <div class="card totalCard">
-          <div class="label">Spakowane dziś</div>
+          <div class="label">Spakowane łącznie</div>
           <div class="stat" id="totalToday">0 / 0</div>
           <div class="progressBar">
             <div class="progressFill" id="totalProgressFill"></div>
@@ -755,6 +743,12 @@ function getLoginEmail(value) {
   return login + LOGIN_DOMAIN;
 }
 
+function normalizeStatus(status) {
+  const value = String(status || "").toUpperCase().trim();
+  if (value === "NIEPRAWIDŁOWA") return "NIEPOPRAWNA";
+  return value;
+}
+
 loginInput.addEventListener("keydown", e => {
   if (e.key === "Enter") passwordInput.focus();
 });
@@ -827,17 +821,6 @@ async function loadReport() {
   renderAll();
 }
 
-function isToday(dateText) {
-  if (!dateText) return false;
-
-  const d = new Date(dateText);
-  const now = new Date();
-
-  return d.getFullYear() === now.getFullYear()
-    && d.getMonth() === now.getMonth()
-    && d.getDate() === now.getDate();
-}
-
 function splitItems(text) {
   if (!text || text === "-") return [];
   return String(text).split("|").map(x => x.trim()).filter(Boolean);
@@ -870,20 +853,20 @@ function getFilteredSessions() {
 
   return sessions.filter(x => {
     if (search && !String(x.bag_qr || "").toLowerCase().includes(search)) return false;
-    if (status && x.status !== status) return false;
+    if (status && normalizeStatus(x.status) !== status) return false;
     if (worker && x.user_login !== worker) return false;
     return true;
   });
 }
 
 function renderAll() {
-  const today = sessions.filter(x => isToday(x.closed_at));
+  const allSessions = sessions;
   const filteredHistory = getFilteredSessions();
 
-  const correct = today.filter(x => x.status === "POPRAWNA");
-  const bad = today.filter(x => x.status === "NIEPOPRAWNA");
+  const correct = allSessions.filter(x => normalizeStatus(x.status) === "POPRAWNA");
+  const bad = allSessions.filter(x => normalizeStatus(x.status) === "NIEPOPRAWNA");
 
-  const durations = today
+  const durations = allSessions
     .map(x => x.duration_seconds)
     .filter(x => typeof x === "number");
 
@@ -891,14 +874,14 @@ function renderAll() {
     ? Math.round(durations.reduce((a,b) => a + b, 0) / durations.length)
     : 0;
 
-  const accuracy = today.length
-    ? Math.round((correct.length / today.length) * 100)
+  const accuracy = allSessions.length
+    ? Math.round((correct.length / allSessions.length) * 100)
     : 0;
 
-  totalToday.innerText = `${today.length} / ${totalBagsInPlan}`;
+  totalToday.innerText = `${allSessions.length} / ${totalBagsInPlan}`;
 
   const totalPercent = totalBagsInPlan
-    ? Math.min(100, Math.round((today.length / totalBagsInPlan) * 100))
+    ? Math.min(100, Math.round((allSessions.length / totalBagsInPlan) * 100))
     : 0;
 
   totalProgressFill.style.width = totalPercent + "%";
@@ -909,14 +892,14 @@ function renderAll() {
   avgTime.innerText = formatDuration(avg);
 
   renderAlerts(bad.length);
-  renderWorkers(today);
+  renderWorkers(allSessions);
   renderHistory(filteredHistory);
 }
 
 function renderAlerts(badCount) {
   if (badCount >= 20) {
     alertBox.classList.remove("hidden");
-    alertBox.innerText = `⚠️ UWAGA: Liczba niepoprawnych toreb dzisiaj: ${badCount}`;
+    alertBox.innerText = `⚠️ UWAGA: Liczba niepoprawnych toreb: ${badCount}`;
     return;
   }
 
@@ -924,10 +907,10 @@ function renderAlerts(badCount) {
   alertBox.innerText = "";
 }
 
-function renderWorkers(today) {
+function renderWorkers(data) {
   const workers = {};
 
-  today.forEach(x => {
+  data.forEach(x => {
     const worker = displayLogin(x.user_login || "brak użytkownika");
 
     if (!workers[worker]) {
@@ -946,8 +929,8 @@ function renderWorkers(today) {
 
     workers[worker].total++;
 
-    if (x.status === "POPRAWNA") workers[worker].correct++;
-    if (x.status === "NIEPOPRAWNA") workers[worker].bad++;
+    if (normalizeStatus(x.status) === "POPRAWNA") workers[worker].correct++;
+    if (normalizeStatus(x.status) === "NIEPOPRAWNA") workers[worker].bad++;
 
     workers[worker].wrong += splitItems(x.wrong_trays).length;
     workers[worker].missing += splitItems(x.missing_trays).length;
@@ -959,8 +942,8 @@ function renderWorkers(today) {
     }
   });
 
-  const data = Object.values(workers).sort((a,b) => b.total - a.total);
-  window.workerStats = data;
+  const dataRows = Object.values(workers).sort((a,b) => b.total - a.total);
+  window.workerStats = dataRows;
 
   workersTable.innerHTML = `
     <table>
@@ -974,7 +957,7 @@ function renderWorkers(today) {
         </tr>
       </thead>
       <tbody>
-        ${data.map((w, index) => {
+        ${dataRows.map((w, index) => {
           const avg = w.durationCount
             ? Math.round(w.duration / w.durationCount)
             : 0;
@@ -1056,11 +1039,7 @@ function renderHistory(data) {
       </thead>
       <tbody>
         ${data.slice(0, 700).map(x => {
-          const hasBad = x.status === "NIEPOPRAWNA"
-            || splitItems(x.wrong_trays).length
-            || splitItems(x.missing_trays).length;
-
-          const hasWarn = splitItems(x.duplicate_trays).length;
+          const status = normalizeStatus(x.status);
           const globalIndex = sessions.findIndex(s => s.id === x.id);
 
           return `
@@ -1070,9 +1049,7 @@ function renderHistory(data) {
                   ${escapeHtml(x.bag_qr || "-")}
                 </span>
               </td>
-              <td class="${x.status === "POPRAWNA" ? "ok" : "bad"}">
-                ${x.status === "NIEPOPRAWNA" ? "NIEPOPRAWNA" : escapeHtml(x.status || "-")}
-              </td>
+              <td class="${status === "POPRAWNA" ? "ok" : "bad"}">${escapeHtml(status || "-")}</td>
               <td>${escapeHtml(displayLogin(x.user_login || "-"))}</td>
               <td>${formatDuration(x.duration_seconds)}</td>
               <td>${x.closed_at ? new Date(x.closed_at).toLocaleString("pl-PL") : "-"}</td>
@@ -1088,6 +1065,8 @@ function openDetails(index) {
   const x = sessions[index];
   if (!x) return;
 
+  const status = normalizeStatus(x.status);
+
   detailsContent.innerHTML = `
     <div class="detailsGrid">
       <div class="detailsCard">
@@ -1097,8 +1076,8 @@ function openDetails(index) {
 
       <div class="detailsCard">
         <div class="label">Status</div>
-        <div class="detailsStatus ${x.status === "POPRAWNA" ? "ok" : "bad"}">
-          ${escapeHtml(x.status || "-")}
+        <div class="detailsStatus ${status === "POPRAWNA" ? "ok" : "bad"}">
+          ${escapeHtml(status || "-")}
         </div>
       </div>
 
@@ -1147,8 +1126,8 @@ function exportExcel() {
   const data = getFilteredSessions();
 
   const total = data.length;
-  const correct = data.filter(x => x.status === "POPRAWNA").length;
-  const bad = data.filter(x => x.status === "NIEPOPRAWNA").length;
+  const correct = data.filter(x => normalizeStatus(x.status) === "POPRAWNA").length;
+  const bad = data.filter(x => normalizeStatus(x.status) === "NIEPOPRAWNA").length;
 
   const accuracy = total
     ? Math.round((correct / total) * 100)
@@ -1183,8 +1162,8 @@ function exportExcel() {
 
     workers[worker].total++;
 
-    if (x.status === "POPRAWNA") workers[worker].correct++;
-    if (x.status === "NIEPOPRAWNA") workers[worker].bad++;
+    if (normalizeStatus(x.status) === "POPRAWNA") workers[worker].correct++;
+    if (normalizeStatus(x.status) === "NIEPOPRAWNA") workers[worker].bad++;
 
     workers[worker].wrong += splitItems(x.wrong_trays).length;
     workers[worker].missing += splitItems(x.missing_trays).length;
@@ -1222,7 +1201,7 @@ function exportExcel() {
 
   const historyRows = data.map(x => [
     x.bag_qr || "",
-    x.status || "",
+    normalizeStatus(x.status) || "",
     displayLogin(x.user_login || ""),
     x.expected_count || 0,
     x.correct_count || 0,
