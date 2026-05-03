@@ -48,6 +48,7 @@
     }
 
     button:hover { background:var(--blue-dark); }
+    button:disabled { opacity:.6; cursor:not-allowed; }
 
     input, select, button {
       font-size:17px;
@@ -94,7 +95,7 @@
     .ok { color:var(--green); font-weight:bold; }
     .bad { color:var(--red); font-weight:bold; }
     .warn { color:var(--orange); font-weight:bold; }
-    .small { color:var(--muted); font-size:15px; }
+    .small { color:var(--muted); font-size:15px; line-height:1.45; }
 
     .label {
       color:var(--muted);
@@ -165,6 +166,18 @@
       border-radius:12px;
       font-weight:bold;
       min-height:44px;
+      line-height:1.35;
+      background:#f9fafb;
+    }
+
+    .loginStatus.bad {
+      background:#fee2e2;
+      color:#991b1b;
+    }
+
+    .loginStatus.ok {
+      background:#dcfce7;
+      color:#166534;
     }
 
     .dashboardShell {
@@ -290,6 +303,17 @@
       box-shadow:var(--shadow);
     }
 
+    .infoBox {
+      background:#eff6ff;
+      color:#1e40af;
+      border:2px solid #bfdbfe;
+      border-radius:18px;
+      padding:14px 18px;
+      font-weight:bold;
+      margin-bottom:14px;
+      line-height:1.45;
+    }
+
     .modalBg {
       position:fixed;
       inset:0;
@@ -298,6 +322,7 @@
       align-items:center;
       justify-content:center;
       z-index:999;
+      padding:14px;
     }
 
     .modal {
@@ -398,7 +423,7 @@
       .topbarLogo { width:56px; }
       .filters { width:100%; }
       .filters input, .filters select, .filters button { width:100%; }
-      .statsGrid, .grid { grid-template-columns:1fr; }
+      .statsGrid { grid-template-columns:1fr; }
       .stat { font-size:34px; }
       table { font-size:14px; }
       th, td { padding:10px 8px; }
@@ -423,12 +448,12 @@
   <p class="loginSubtitle">Zaloguj się, aby zobaczyć raport</p>
 
   <label>Login</label>
-  <input id="loginInput" class="loginInput" placeholder="np. JanKowalski">
+  <input id="loginInput" class="loginInput" placeholder="np. JanKowalski" autocomplete="username">
 
   <label>Hasło</label>
-  <input id="passwordInput" class="loginInput" type="password" placeholder="Wpisz hasło">
+  <input id="passwordInput" class="loginInput" type="password" placeholder="Wpisz hasło" autocomplete="current-password">
 
-  <button class="loginBtn" onclick="login()">Zaloguj</button>
+  <button id="loginButton" class="loginBtn" onclick="login()">Zaloguj</button>
   <p id="loginStatus" class="loginStatus bad"></p>
 </div>
 
@@ -443,23 +468,27 @@
         <h1 id="reportTitle">Raport pakowania</h1>
         <div class="small">
           Ostatnie odświeżenie: <span id="lastRefresh">-</span> |
-          Auto odświeżanie: co 30 sekund
+          Auto odświeżanie: co 30 sekund |
+          Załadowano wpisów: <span id="loadedRows">0</span>
         </div>
       </div>
     </div>
 
     <div class="filters">
       <input id="bagSearch" placeholder="Szukaj QR torby..." oninput="renderAll()">
+
       <select id="statusFilter" onchange="renderAll()">
         <option value="">Wszystkie statusy</option>
         <option value="POPRAWNA">Tylko poprawne</option>
         <option value="NIEPOPRAWNA">Tylko niepoprawne</option>
       </select>
+
       <select id="workerFilter" onchange="renderAll()">
         <option value="">Wszyscy pracownicy</option>
       </select>
-      <button onclick="loadReport()">Odśwież teraz</button>
-      <button class="secondaryBtn" onclick="exportExcel()">Eksport Excel</button>
+
+      <button id="refreshButton" onclick="loadReport()">Odśwież teraz</button>
+      <button id="exportButton" class="secondaryBtn" onclick="exportExcel()">Eksport Excel</button>
     </div>
   </div>
 
@@ -497,6 +526,10 @@
 
       <div class="card historyPanel">
         <h2>🧾 Historia pakowania</h2>
+        <div class="infoBox">
+          Na ekranie pokazano maksymalnie ostatnie 700 wpisów według aktualnych filtrów.
+          Eksport Excel zawiera wszystkie załadowane wpisy.
+        </div>
         <p class="small">Kliknij QR torby, żeby zobaczyć szczegóły.</p>
         <div id="historyTable"></div>
       </div>
@@ -531,6 +564,7 @@ let sessions = [];
 let totalBagsInPlan = 0;
 let mealDate = "";
 let refreshTimer = null;
+let isLoadingReport = false;
 window.workerStats = [];
 
 function getLoginEmail(value) {
@@ -540,119 +574,18 @@ function getLoginEmail(value) {
   return login + LOGIN_DOMAIN;
 }
 
-async function getUserRole(userId) {
-  const { data, error } = await supabaseClient
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", userId)
-    .single();
-
-  if (error || !data) return null;
-  return data.role;
+function displayLogin(value) {
+  return String(value || "").toLowerCase().replace(LOGIN_DOMAIN, "");
 }
 
-function hasAccess(role, allowedRoles) {
-  return allowedRoles.includes(role);
-}
-
-loginInput.addEventListener("keydown", e => {
-  if (e.key === "Enter") passwordInput.focus();
-});
-
-passwordInput.addEventListener("keydown", e => {
-  if (e.key === "Enter") login();
-});
-
-async function login() {
-  loginStatus.innerText = "";
-
-  const email = getLoginEmail(loginInput.value);
-  const password = passwordInput.value;
-
-  if (!email || !password) {
-    loginStatus.innerText = "Wpisz login i hasło.";
-    return;
-  }
-
-  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-
-  if (error) {
-    loginStatus.innerText = "Nieprawidłowy login lub hasło.";
-    return;
-  }
-
-  const role = await getUserRole(data.user.id);
-
-  if (!hasAccess(role, ["manager", "admin"])) {
-    loginStatus.innerText = "Brak dostępu do raportu.";
-    return;
-  }
-
-  loginScreen.classList.add("hidden");
-  reportScreen.classList.remove("hidden");
-
-  await loadReport();
-
-  if (!refreshTimer) {
-    refreshTimer = setInterval(loadReport, 30000);
-  }
-}
-
-async function loadReport() {
-  const { data, error } = await supabaseClient
-    .from("packing_sessions")
-    .select("*")
-    .order("closed_at", { ascending:false })
-    .limit(5000);
-
-  if (error) {
-    alert("Błąd pobierania raportu: " + error.message);
-    return;
-  }
-
-  sessions = data || [];
-
-  const { data: bagCount, error: bagCountError } = await supabaseClient.rpc("count_unique_bags");
-
-  if (bagCountError) {
-    console.error("Błąd liczenia toreb:", bagCountError);
-    totalBagsInPlan = 0;
-  } else {
-    totalBagsInPlan = bagCount || 0;
-  }
-
-  const { data: mealRow } = await supabaseClient
-    .from("app_settings")
-    .select("value")
-    .eq("key", "meal_date")
-    .maybeSingle();
-
-  mealDate = mealRow?.value || "";
-
-  updateTitle();
-  lastRefresh.innerText = new Date().toLocaleTimeString("pl-PL");
-  refreshWorkerFilter();
-  renderAll();
-}
-
-function formatMealDate(dateText) {
-  if (!dateText) return "";
-
-  const d = new Date(dateText);
-  if (Number.isNaN(d.getTime())) return "";
-
-  return d.toLocaleDateString("pl-PL", {
-    day: "2-digit",
-    month: "2-digit"
-  });
-}
-
-function updateTitle() {
-  const formatted = formatMealDate(mealDate);
-
-  reportTitle.innerText = formatted
-    ? `Raport pakowania ${formatted}`
-    : "Raport pakowania";
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, m => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
+  }[m]));
 }
 
 function normalizeStatus(status) {
@@ -675,18 +608,185 @@ function formatDuration(seconds) {
   return `${m}m ${s}s`;
 }
 
-function displayLogin(value) {
-  return String(value || "").toLowerCase().replace("@pakowanie.local", "");
+function formatMealDate(dateText) {
+  if (!dateText) return "";
+
+  const d = new Date(dateText);
+  if (Number.isNaN(d.getTime())) return "";
+
+  return d.toLocaleDateString("pl-PL", {
+    day: "2-digit",
+    month: "2-digit"
+  });
 }
 
-function escapeHtml(value) {
-  return String(value ?? "").replace(/[&<>"']/g, m => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#039;"
-  }[m]));
+function formatDateTime(dateText) {
+  if (!dateText) return "-";
+  const d = new Date(dateText);
+  if (Number.isNaN(d.getTime())) return "-";
+  return d.toLocaleString("pl-PL");
+}
+
+async function getUserRole(userId) {
+  const { data, error } = await supabaseClient
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", userId)
+    .single();
+
+  if (error || !data) return null;
+  return data.role;
+}
+
+function hasAccess(role, allowedRoles) {
+  return allowedRoles.includes(role);
+}
+
+function translateLoginError(errorMessage) {
+  const msg = String(errorMessage || "").toLowerCase();
+
+  if (msg.includes("invalid login credentials")) return "Nieprawidłowy login lub hasło.";
+  if (msg.includes("email not confirmed")) return "Konto nie zostało potwierdzone.";
+  if (msg.includes("user not found")) return "Nieznany użytkownik.";
+  if (msg.includes("invalid email")) return "Nieprawidłowy login.";
+  if (msg.includes("network") || msg.includes("failed to fetch")) return "Brak połączenia z internetem lub bazą danych.";
+
+  return "Nie udało się zalogować. Sprawdź login i hasło.";
+}
+
+loginInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") passwordInput.focus();
+});
+
+passwordInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") login();
+});
+
+async function login() {
+  loginStatus.innerText = "";
+
+  const email = getLoginEmail(loginInput.value);
+  const password = passwordInput.value;
+
+  if (!email || !password) {
+    loginStatus.innerText = "Wpisz login i hasło.";
+    loginStatus.className = "loginStatus bad";
+    return;
+  }
+
+  loginButton.disabled = true;
+  loginButton.innerText = "Loguję...";
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+  loginButton.disabled = false;
+  loginButton.innerText = "Zaloguj";
+
+  if (error) {
+    loginStatus.innerText = translateLoginError(error.message);
+    loginStatus.className = "loginStatus bad";
+    return;
+  }
+
+  const role = await getUserRole(data.user.id);
+
+  if (!hasAccess(role, ["manager", "admin"])) {
+    loginStatus.innerText = "Brak dostępu do raportu.";
+    loginStatus.className = "loginStatus bad";
+    return;
+  }
+
+  loginStatus.innerText = "Zalogowano.";
+  loginStatus.className = "loginStatus ok";
+
+  loginScreen.classList.add("hidden");
+  reportScreen.classList.remove("hidden");
+
+  await loadReport();
+
+  if (!refreshTimer) {
+    refreshTimer = setInterval(loadReport, 30000);
+  }
+}
+
+async function fetchAllSessions() {
+  const pageSize = 1000;
+  let from = 0;
+  let all = [];
+
+  while (true) {
+    const { data, error } = await supabaseClient
+      .from("packing_sessions")
+      .select("*")
+      .order("closed_at", { ascending:false })
+      .range(from, from + pageSize - 1);
+
+    if (error) throw new Error(error.message);
+
+    const rows = data || [];
+    all = all.concat(rows);
+
+    if (rows.length < pageSize) break;
+    from += pageSize;
+  }
+
+  return all;
+}
+
+async function loadReport() {
+  if (isLoadingReport) return;
+
+  isLoadingReport = true;
+  refreshButton.disabled = true;
+  refreshButton.innerText = "Ładuję...";
+
+  try {
+    const allSessions = await fetchAllSessions();
+    sessions = allSessions;
+
+    const { data: bagCount, error: bagCountError } = await supabaseClient.rpc("count_unique_bags");
+
+    if (bagCountError) {
+      console.error("Błąd liczenia toreb:", bagCountError);
+      totalBagsInPlan = 0;
+    } else {
+      totalBagsInPlan = bagCount || 0;
+    }
+
+    mealDate = "";
+
+    const { data: mealRow, error: mealError } = await supabaseClient
+      .from("app_settings")
+      .select("value")
+      .eq("key", "meal_date")
+      .maybeSingle();
+
+    if (!mealError) {
+      mealDate = mealRow?.value || "";
+    }
+
+    updateTitle();
+    lastRefresh.innerText = new Date().toLocaleTimeString("pl-PL");
+    loadedRows.innerText = String(sessions.length);
+
+    refreshWorkerFilter();
+    renderAll();
+
+  } catch (err) {
+    alert("Błąd pobierania raportu: " + err.message);
+  } finally {
+    isLoadingReport = false;
+    refreshButton.disabled = false;
+    refreshButton.innerText = "Odśwież teraz";
+  }
+}
+
+function updateTitle() {
+  const formatted = formatMealDate(mealDate);
+
+  reportTitle.innerText = formatted
+    ? `Raport pakowania ${formatted}`
+    : "Raport pakowania";
 }
 
 function refreshWorkerFilter() {
@@ -885,7 +985,7 @@ function renderHistory(data) {
         <tr>
           <th>Torba</th>
           <th>Status</th>
-          <th>Pracownik</th>
+          <th>Pracownik / stanowisko</th>
           <th>Czas pakowania</th>
           <th>Zapakowana</th>
         </tr>
@@ -905,7 +1005,7 @@ function renderHistory(data) {
               <td class="${status === "POPRAWNA" ? "ok" : "bad"}">${escapeHtml(status || "-")}</td>
               <td>${escapeHtml(displayLogin(x.user_login || "-"))}</td>
               <td>${formatDuration(x.duration_seconds)}</td>
-              <td>${x.closed_at ? new Date(x.closed_at).toLocaleString("pl-PL") : "-"}</td>
+              <td>${formatDateTime(x.closed_at)}</td>
             </tr>
           `;
         }).join("")}
@@ -935,7 +1035,7 @@ function openDetails(index) {
       </div>
 
       <div class="detailsCard">
-        <div class="label">Pracownik</div>
+        <div class="label">Pracownik / stanowisko</div>
         <div class="detailsValue">${escapeHtml(displayLogin(x.user_login || "-"))}</div>
       </div>
 
@@ -946,8 +1046,8 @@ function openDetails(index) {
     </div>
 
     <table class="detailsTable">
-      <tr><th>Start</th><td>${x.started_at ? new Date(x.started_at).toLocaleString("pl-PL") : "-"}</td></tr>
-      <tr><th>Koniec</th><td>${x.closed_at ? new Date(x.closed_at).toLocaleString("pl-PL") : "-"}</td></tr>
+      <tr><th>Start</th><td>${formatDateTime(x.started_at)}</td></tr>
+      <tr><th>Koniec</th><td>${formatDateTime(x.closed_at)}</td></tr>
       <tr><th>Postęp</th><td>${x.correct_count || 0}/${x.expected_count || 0}</td></tr>
       <tr><th>Wszystkie skany</th><td>${escapeHtml(x.all_scans || "-")}</td></tr>
       <tr><th>Brakujące</th><td class="${splitItems(x.missing_trays).length ? "badCell" : ""}">${escapeHtml(x.missing_trays || "-")}</td></tr>
@@ -978,151 +1078,165 @@ function setAutoFilter(sheet, range) {
 function exportExcel() {
   const data = getFilteredSessions();
 
-  const total = data.length;
-  const correct = data.filter(x => normalizeStatus(x.status) === "POPRAWNA").length;
-  const bad = data.filter(x => normalizeStatus(x.status) === "NIEPOPRAWNA").length;
+  if (!data.length) {
+    alert("Brak danych do eksportu.");
+    return;
+  }
 
-  const accuracy = total
-    ? Math.round((correct / total) * 100)
-    : 0;
+  exportButton.disabled = true;
+  exportButton.innerText = "Generuję...";
 
-  const durations = data
-    .map(x => x.duration_seconds)
-    .filter(x => typeof x === "number");
+  try {
+    const total = data.length;
+    const correct = data.filter(x => normalizeStatus(x.status) === "POPRAWNA").length;
+    const bad = data.filter(x => normalizeStatus(x.status) === "NIEPOPRAWNA").length;
 
-  const avgDuration = durations.length
-    ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length)
-    : 0;
+    const accuracy = total
+      ? Math.round((correct / total) * 100)
+      : 0;
 
-  const workers = {};
+    const durations = data
+      .map(x => x.duration_seconds)
+      .filter(x => typeof x === "number");
 
-  data.forEach(x => {
-    const worker = displayLogin(x.user_login || "brak użytkownika");
+    const avgDuration = durations.length
+      ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length)
+      : 0;
 
-    if (!workers[worker]) {
-      workers[worker] = {
-        worker,
-        total: 0,
-        correct: 0,
-        bad: 0,
-        wrong: 0,
-        missing: 0,
-        duplicates: 0,
-        duration: 0,
-        durationCount: 0
-      };
-    }
+    const workers = {};
 
-    workers[worker].total++;
+    data.forEach(x => {
+      const worker = displayLogin(x.user_login || "brak użytkownika");
 
-    if (normalizeStatus(x.status) === "POPRAWNA") workers[worker].correct++;
-    if (normalizeStatus(x.status) === "NIEPOPRAWNA") workers[worker].bad++;
+      if (!workers[worker]) {
+        workers[worker] = {
+          worker,
+          total: 0,
+          correct: 0,
+          bad: 0,
+          wrong: 0,
+          missing: 0,
+          duplicates: 0,
+          duration: 0,
+          durationCount: 0
+        };
+      }
 
-    workers[worker].wrong += splitItems(x.wrong_trays).length;
-    workers[worker].missing += splitItems(x.missing_trays).length;
-    workers[worker].duplicates += splitItems(x.duplicate_trays).length;
+      workers[worker].total++;
 
-    if (typeof x.duration_seconds === "number") {
-      workers[worker].duration += x.duration_seconds;
-      workers[worker].durationCount++;
-    }
-  });
+      if (normalizeStatus(x.status) === "POPRAWNA") workers[worker].correct++;
+      if (normalizeStatus(x.status) === "NIEPOPRAWNA") workers[worker].bad++;
 
-  const workersRows = Object.values(workers)
-    .sort((a, b) => b.total - a.total)
-    .map(w => {
-      const workerAccuracy = w.total
-        ? Math.round((w.correct / w.total) * 100)
-        : 0;
+      workers[worker].wrong += splitItems(x.wrong_trays).length;
+      workers[worker].missing += splitItems(x.missing_trays).length;
+      workers[worker].duplicates += splitItems(x.duplicate_trays).length;
 
-      const workerAvg = w.durationCount
-        ? Math.round(w.duration / w.durationCount)
-        : 0;
-
-      return [
-        w.worker,
-        w.total,
-        w.correct,
-        w.bad,
-        workerAccuracy + "%",
-        formatDuration(workerAvg),
-        w.missing,
-        w.wrong,
-        w.duplicates
-      ];
+      if (typeof x.duration_seconds === "number") {
+        workers[worker].duration += x.duration_seconds;
+        workers[worker].durationCount++;
+      }
     });
 
-  const historyRows = data.map(x => [
-    x.bag_qr || "",
-    normalizeStatus(x.status) || "",
-    displayLogin(x.user_login || ""),
-    x.expected_count || 0,
-    x.correct_count || 0,
-    formatDuration(x.duration_seconds),
-    x.missing_trays || "",
-    x.wrong_trays || "",
-    x.duplicate_trays || "",
-    x.all_scans || "",
-    x.closed_at ? new Date(x.closed_at).toLocaleString("pl-PL") : ""
-  ]);
+    const workersRows = Object.values(workers)
+      .sort((a, b) => b.total - a.total)
+      .map(w => {
+        const workerAccuracy = w.total
+          ? Math.round((w.correct / w.total) * 100)
+          : 0;
 
-  const summaryRows = [
-    ["PODSUMOWANIE"],
-    ["Dzień jedzony", formatMealDate(mealDate)],
-    [],
-    ["Spakowane torby", `${total} / ${totalBagsInPlan}`],
-    ["Poprawne", correct],
-    ["Niepoprawne", bad],
-    ["Poprawność", accuracy + "%"],
-    ["Średni czas pakowania", formatDuration(avgDuration)]
-  ];
+        const workerAvg = w.durationCount
+          ? Math.round(w.duration / w.durationCount)
+          : 0;
 
-  const workersSheetRows = [
-    ["RANKING PRACOWNIKÓW"],
-    ["Dzień jedzony", formatMealDate(mealDate)],
-    [],
-    ["Pracownik", "Razem", "Poprawne", "Niepoprawne", "Poprawność", "Średni czas", "Brakujące tacki", "Błędne tacki", "Duplikaty"],
-    ...workersRows
-  ];
+        return [
+          w.worker,
+          w.total,
+          w.correct,
+          w.bad,
+          workerAccuracy + "%",
+          formatDuration(workerAvg),
+          w.missing,
+          w.wrong,
+          w.duplicates
+        ];
+      });
 
-  const historySheetRows = [
-    [
-      "QR torby",
-      "Status",
-      "Pracownik",
-      "Oczekiwane tacki",
-      "Poprawne tacki",
-      "Czas pakowania",
-      "Brakujące tacki",
-      "Błędne tacki",
-      "Duplikaty",
-      "Wszystkie skany",
-      "Data zamknięcia"
-    ],
-    ...historyRows
-  ];
+    const historyRows = data.map(x => [
+      x.bag_qr || "",
+      normalizeStatus(x.status) || "",
+      displayLogin(x.user_login || ""),
+      x.expected_count || 0,
+      x.correct_count || 0,
+      formatDuration(x.duration_seconds),
+      x.missing_trays || "",
+      x.wrong_trays || "",
+      x.duplicate_trays || "",
+      x.all_scans || "",
+      x.closed_at ? new Date(x.closed_at).toLocaleString("pl-PL") : ""
+    ]);
 
-  const workbook = XLSX.utils.book_new();
+    const summaryRows = [
+      ["PODSUMOWANIE"],
+      ["Dzień jedzony", formatMealDate(mealDate)],
+      [],
+      ["Spakowane torby", `${total} / ${totalBagsInPlan}`],
+      ["Poprawne", correct],
+      ["Niepoprawne", bad],
+      ["Poprawność", accuracy + "%"],
+      ["Średni czas pakowania", formatDuration(avgDuration)]
+    ];
 
-  const summarySheet = sheetFromRows(summaryRows);
-  setColumnWidths(summarySheet, [28, 55]);
+    const workersSheetRows = [
+      ["RANKING PRACOWNIKÓW"],
+      ["Dzień jedzony", formatMealDate(mealDate)],
+      [],
+      ["Pracownik", "Razem", "Poprawne", "Niepoprawne", "Poprawność", "Średni czas", "Brakujące tacki", "Błędne tacki", "Duplikaty"],
+      ...workersRows
+    ];
 
-  const workersSheet = sheetFromRows(workersSheetRows);
-  setColumnWidths(workersSheet, [28, 12, 12, 14, 14, 16, 18, 16, 14]);
-  setAutoFilter(workersSheet, "A4:I4");
-  workersSheet["!freeze"] = { xSplit: 0, ySplit: 4 };
+    const historySheetRows = [
+      [
+        "QR torby",
+        "Status",
+        "Pracownik / stanowisko",
+        "Oczekiwane tacki",
+        "Poprawne tacki",
+        "Czas pakowania",
+        "Brakujące tacki",
+        "Błędne tacki",
+        "Duplikaty",
+        "Wszystkie skany",
+        "Data zamknięcia"
+      ],
+      ...historyRows
+    ];
 
-  const historySheet = sheetFromRows(historySheetRows);
-  setColumnWidths(historySheet, [24, 16, 24, 18, 16, 18, 35, 35, 35, 60, 22]);
-  setAutoFilter(historySheet, "A1:K1");
-  historySheet["!freeze"] = { xSplit: 0, ySplit: 1 };
+    const workbook = XLSX.utils.book_new();
 
-  XLSX.utils.book_append_sheet(workbook, summarySheet, "Podsumowanie");
-  XLSX.utils.book_append_sheet(workbook, workersSheet, "Pracownicy");
-  XLSX.utils.book_append_sheet(workbook, historySheet, "Historia");
+    const summarySheet = sheetFromRows(summaryRows);
+    setColumnWidths(summarySheet, [28, 55]);
 
-  const date = new Date().toISOString().slice(0,10);
-  XLSX.writeFile(workbook, `raport_pakowania_${date}.xlsx`);
+    const workersSheet = sheetFromRows(workersSheetRows);
+    setColumnWidths(workersSheet, [28, 12, 12, 14, 14, 16, 18, 16, 14]);
+    setAutoFilter(workersSheet, "A4:I4");
+    workersSheet["!freeze"] = { xSplit: 0, ySplit: 4 };
+
+    const historySheet = sheetFromRows(historySheetRows);
+    setColumnWidths(historySheet, [24, 20, 28, 18, 16, 18, 35, 35, 35, 60, 22]);
+    setAutoFilter(historySheet, "A1:K1");
+    historySheet["!freeze"] = { xSplit: 0, ySplit: 1 };
+
+    XLSX.utils.book_append_sheet(workbook, summarySheet, "Podsumowanie");
+    XLSX.utils.book_append_sheet(workbook, workersSheet, "Pracownicy");
+    XLSX.utils.book_append_sheet(workbook, historySheet, "Historia");
+
+    const date = new Date().toISOString().slice(0,10);
+    XLSX.writeFile(workbook, `raport_pakowania_${date}.xlsx`);
+
+  } finally {
+    exportButton.disabled = false;
+    exportButton.innerText = "Eksport Excel";
+  }
 }
 </script>
 
