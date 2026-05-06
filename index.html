@@ -747,6 +747,50 @@ async function login() {
   }
 }
 
+async function fetchAllSessionsFallback() {
+  const pageSize = 1000;
+  let from = 0;
+  let all = [];
+
+  while (true) {
+    const { data, error } = await supabaseClient
+      .from("packing_sessions")
+      .select("*")
+      .order("closed_at", { ascending:false })
+      .range(from, from + pageSize - 1);
+
+    if (error) throw new Error(error.message);
+
+    const rows = data || [];
+    all = all.concat(rows);
+
+    if (rows.length < pageSize) break;
+    from += pageSize;
+  }
+
+  return all;
+}
+
+function mergeSessionsWithBraki(reportRows, brakiReportRows) {
+  const map = new Map();
+
+  (reportRows || []).forEach(row => {
+    if (row && row.id) map.set(row.id, row);
+  });
+
+  (brakiReportRows || []).forEach(row => {
+    if (row && row.id && !map.has(row.id)) {
+      map.set(row.id, row);
+    }
+  });
+
+  return [...map.values()].sort((a, b) => {
+    const da = new Date(a.closed_at || 0).getTime();
+    const db = new Date(b.closed_at || 0).getTime();
+    return db - da;
+  });
+}
+
 async function loadReport() {
   if (isLoadingReport) return;
 
@@ -755,15 +799,18 @@ async function loadReport() {
   refreshButton.innerText = "Ładuję...";
 
   try {
-    const { data: reportRows, error: reportError } = await supabaseClient.rpc("get_packing_report_rows");
+    let reportRows = [];
+
+    const { data: rpcReportRows, error: reportError } = await supabaseClient.rpc("get_packing_report_rows");
 
     if (reportError) {
-      throw new Error(reportError.message);
+      console.warn("RPC get_packing_report_rows nie działa, używam fallback SELECT:", reportError.message);
+      reportRows = await fetchAllSessionsFallback();
+    } else {
+      reportRows = rpcReportRows || [];
     }
 
-    sessions = reportRows || [];
-
-    const { data: brakiData, error: brakiError } = await supabaseClient.rpc("get_braki_rows");
+    const { data: brakiData, error: brakiError } = await supabaseClient.rpc("get_braki_report");
 
     if (brakiError) {
       console.error("Błąd pobierania braków:", brakiError);
@@ -771,6 +818,8 @@ async function loadReport() {
     } else {
       brakiRows = brakiData || [];
     }
+
+    sessions = mergeSessionsWithBraki(reportRows, brakiRows);
 
     const { data: bagCount, error: bagCountError } = await supabaseClient.rpc("count_unique_bags");
 
@@ -791,6 +840,8 @@ async function loadReport() {
 
     if (!mealError) {
       mealDate = mealRow?.value || "";
+    } else {
+      console.warn("Nie udało się pobrać meal_date:", mealError.message);
     }
 
     updateTitle();
@@ -1346,7 +1397,7 @@ function exportExcel() {
     ]);
 
     const filteredSessionIds = new Set(data.map(x => x.id));
-    const brakiExportRows = brakiRows.filter(x => filteredSessionIds.has(x.session_id));
+    const brakiExportRows = brakiRows.filter(x => filteredSessionIds.has(x.id));
 
     const brakiSheetRows = [
       ["BRAKI / DO DOPAKOWANIA"],
@@ -1354,25 +1405,29 @@ function exportExcel() {
       [],
       [
         "QR torby",
-        "Posiłek",
-        "Kod",
-        "Rozmiar",
-        "QR tacki",
-        "Nazwa dania",
-        "Oznaczył brak",
-        "Kiedy oznaczono",
-        "Sesja zamknięta"
+        "Status",
+        "Pracownik / stanowisko",
+        "Postęp",
+        "Liczba brakujących",
+        "Brakujące tacki",
+        "Wszystkie skany",
+        "Błędne tacki",
+        "Duplikaty",
+        "Czas pakowania",
+        "Data zamknięcia"
       ],
       ...brakiExportRows.map(x => [
         x.bag_qr || "",
-        x.meal || "",
-        x.code || "",
-        x.size || "",
-        x.tray_qr || "",
-        x.dish_name || "",
-        displayLogin(x.missing_by_email || ""),
-        x.missing_at ? new Date(x.missing_at).toLocaleString("pl-PL") : "",
-        x.session_closed_at ? new Date(x.session_closed_at).toLocaleString("pl-PL") : ""
+        normalizeStatus(x.status) || "",
+        displayLogin(x.user_login || ""),
+        `${x.correct_count || 0}/${x.expected_count || 0}`,
+        x.missing_count || 0,
+        x.missing_trays || "",
+        x.all_scans || "",
+        x.wrong_trays || "",
+        x.duplicate_trays || "",
+        formatDuration(x.duration_seconds),
+        x.closed_at ? new Date(x.closed_at).toLocaleString("pl-PL") : ""
       ])
     ];
 
@@ -1441,8 +1496,8 @@ function exportExcel() {
     historySheet["!freeze"] = { xSplit: 0, ySplit: 1 };
 
     const brakiSheet = sheetFromRows(brakiSheetRows);
-    setColumnWidths(brakiSheet, [24, 18, 18, 14, 28, 45, 24, 24, 24]);
-    setAutoFilter(brakiSheet, "A4:I4");
+    setColumnWidths(brakiSheet, [24, 16, 28, 16, 18, 40, 55, 35, 35, 18, 24]);
+    setAutoFilter(brakiSheet, "A4:K4");
     brakiSheet["!freeze"] = { xSplit: 0, ySplit: 4 };
 
     XLSX.utils.book_append_sheet(workbook, summarySheet, "Podsumowanie");
