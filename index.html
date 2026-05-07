@@ -129,7 +129,7 @@
       padding:36px;
       border-radius:24px;
       width:100%;
-      max-width:520px;
+      max-width:560px;
       margin:40px auto;
       box-shadow:var(--shadow);
       box-sizing:border-box;
@@ -138,8 +138,71 @@
     .loginLogo { text-align:center; margin-bottom:15px; }
     .loginLogo img { width:90px; height:auto; display:block; margin:0 auto; }
     .loginCard h1 { text-align:center; margin:0; font-size:32px; }
-    .loginSubtitle { text-align:center; color:var(--muted); margin-bottom:28px; }
+    .loginSubtitle { text-align:center; color:var(--muted); margin-bottom:28px; line-height:1.4; }
     .loginCard label { display:block; font-weight:bold; margin-top:16px; margin-bottom:6px; }
+
+    .qrLoginBox {
+      border:2px solid #e5e7eb;
+      background:#f9fafb;
+      border-radius:22px;
+      padding:22px;
+      margin-bottom:28px;
+      text-align:center;
+    }
+
+    .qrLoginTitle {
+      background:var(--blue);
+      color:white;
+      border-radius:16px;
+      padding:18px;
+      font-size:28px;
+      font-weight:900;
+      margin-bottom:16px;
+    }
+
+    .qrLoginHint {
+      color:var(--muted);
+      font-size:17px;
+      line-height:1.4;
+      margin-bottom:16px;
+    }
+
+    .qrLoginInput {
+      width:100%;
+      font-size:24px;
+      padding:16px;
+      border-radius:14px;
+      border:3px solid var(--blue);
+      text-align:center;
+      font-weight:bold;
+      letter-spacing:1px;
+    }
+
+    .qrLoginInput:focus {
+      outline:none;
+      border-color:var(--blue-dark);
+      box-shadow:0 0 0 4px rgba(37,99,235,.15);
+    }
+
+    .passwordToggleBtn {
+      width:100%;
+      background:#e5e7eb;
+      color:#111827;
+      font-size:22px;
+      padding:16px;
+      border-radius:16px;
+      margin-bottom:16px;
+    }
+
+    .passwordToggleBtn:hover {
+      background:#d1d5db;
+    }
+
+    .passwordLoginBox {
+      border-top:1px solid var(--border);
+      padding-top:18px;
+      margin-top:8px;
+    }
 
     .loginInput {
       width:100%;
@@ -160,70 +223,6 @@
       font-weight:bold;
     }
 
-    .qrLoginBox {
-      background:#f9fafb;
-      border:2px solid #e5e7eb;
-      border-radius:18px;
-      padding:18px;
-      margin-bottom:14px;
-    }
-
-    .qrLoginInput {
-      width:100%;
-      font-size:24px;
-      padding:16px;
-      border-radius:14px;
-      border:3px solid var(--blue);
-      text-align:center;
-      font-weight:bold;
-      letter-spacing:1px;
-    }
-
-    .qrLoginInput:focus {
-      outline:none;
-      border-color:var(--blue-dark);
-      box-shadow:0 0 0 4px rgba(37,99,235,.15);
-    }
-
-    .qrHint {
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.45;
-      text-align:center;
-      margin:10px 0 0;
-    }
-
-    .loginDivider {
-      text-align:center;
-      color:var(--muted);
-      font-weight:bold;
-      margin:18px 0 10px;
-      text-transform:uppercase;
-      font-size:13px;
-      letter-spacing:.06em;
-    }
-
-    .togglePasswordBtn {
-      width:100%;
-      margin:8px 0 0;
-      font-size:18px;
-      padding:13px;
-      border-radius:14px;
-      border:none;
-      background:#e5e7eb;
-      color:#111827;
-      font-weight:bold;
-    }
-
-    .togglePasswordBtn:hover {
-      background:#d1d5db;
-    }
-
-    .passwordLoginBox {
-      margin-top:18px;
-      padding-top:4px;
-    }
-
     .loginStatus {
       margin-top:18px;
       padding:12px;
@@ -232,6 +231,7 @@
       min-height:44px;
       line-height:1.35;
       background:#f9fafb;
+      white-space:pre-wrap;
     }
 
     .loginStatus.bad {
@@ -294,6 +294,14 @@
 
     .secondaryBtn { background:#111827; }
     .secondaryBtn:hover { background:#030712; }
+
+    .dangerBtn {
+      background:#ef4444;
+    }
+
+    .dangerBtn:hover {
+      background:#dc2626;
+    }
 
     .dashboardLayout {
       display:grid;
@@ -499,6 +507,8 @@
 
     @media(max-width:900px){
       body { padding:12px; }
+      .loginCard { padding:26px; margin:20px auto; }
+      .qrLoginTitle { font-size:24px; }
       .topbar { padding:18px; }
       .topbarTitle { width:100%; }
       .topbar h1 { font-size:30px; }
@@ -531,29 +541,26 @@
   <p class="loginSubtitle">Zaloguj się, aby zobaczyć raport</p>
 
   <div class="qrLoginBox">
-    <label>Kod QR logowania</label>
+    <div class="qrLoginTitle">Zaloguj kodem QR</div>
+    <div class="qrLoginHint">Zeskanuj kod QR pracownika. Login i hasło nadal działają awaryjnie.</div>
     <input id="qrLoginInput" class="qrLoginInput" placeholder="Zeskanuj kod QR" autocomplete="off">
-    <button id="qrLoginButton" class="loginBtn" style="margin-top:14px;" onclick="qrLogin()">Zaloguj kodem QR</button>
-    <p class="qrHint">Zeskanuj kod QR pracownika. Login i hasło nadal działają awaryjnie.</p>
   </div>
 
-  <button id="togglePasswordLoginBtn" type="button" class="togglePasswordBtn" onclick="togglePasswordLogin()">
+  <button id="passwordToggleButton" class="passwordToggleBtn" type="button" onclick="togglePasswordLogin()">
     Logowanie login / hasło
   </button>
 
   <div id="passwordLoginBox" class="passwordLoginBox hidden">
-    <div class="loginDivider">awaryjnie</div>
-
     <label>Login</label>
     <input id="loginInput" class="loginInput" placeholder="np. JanKowalski" autocomplete="username">
 
     <label>Hasło</label>
     <input id="passwordInput" class="loginInput" type="password" placeholder="Wpisz hasło" autocomplete="current-password">
 
-    <button id="loginButton" class="loginBtn" onclick="login()">Zaloguj loginem i hasłem</button>
+    <button id="loginButton" class="loginBtn" onclick="login()">Zaloguj</button>
   </div>
 
-  <p id="loginStatus" class="loginStatus bad"></p>
+  <p id="loginStatus" class="loginStatus"></p>
 </div>
 
 <div id="reportScreen" class="hidden dashboardShell">
@@ -590,6 +597,7 @@
 
       <button id="refreshButton" onclick="loadReport()">Odśwież teraz</button>
       <button id="exportButton" class="secondaryBtn" onclick="exportExcel()">Eksport Excel</button>
+      <button class="dangerBtn" onclick="logout()">Wyloguj</button>
     </div>
   </div>
 
@@ -675,7 +683,24 @@ let totalBagsInPlan = 0;
 let mealDate = "";
 let refreshTimer = null;
 let isLoadingReport = false;
+let currentUserEmail = "";
+let currentUserRole = "";
 window.workerStats = [];
+
+function togglePasswordLogin() {
+  passwordLoginBox.classList.toggle("hidden");
+
+  if (!passwordLoginBox.classList.contains("hidden")) {
+    setTimeout(() => loginInput.focus(), 80);
+  } else {
+    setTimeout(() => qrLoginInput.focus(), 80);
+  }
+}
+
+function setLoginStatus(text, type = "bad") {
+  loginStatus.innerText = text;
+  loginStatus.className = "loginStatus " + type;
+}
 
 function getLoginEmail(value) {
   const login = String(value || "").trim().toLowerCase();
@@ -745,6 +770,14 @@ function formatDateTime(dateText) {
   return d.toLocaleString("pl-PL");
 }
 
+async function safeRpc(functionName, params) {
+  try {
+    await supabaseClient.rpc(functionName, params);
+  } catch (e) {
+    console.warn("RPC pomocnicze nieudane:", functionName, e);
+  }
+}
+
 async function getUserRole(userId) {
   const { data, error } = await supabaseClient
     .from("user_roles")
@@ -772,28 +805,7 @@ function translateLoginError(errorMessage) {
   return "Nie udało się zalogować. Sprawdź login i hasło.";
 }
 
-function togglePasswordLogin() {
-  const box = document.getElementById("passwordLoginBox");
-  const btn = document.getElementById("togglePasswordLoginBtn");
-
-  const willOpen = box.classList.contains("hidden");
-
-  box.classList.toggle("hidden", !willOpen);
-  btn.innerText = willOpen
-    ? "Ukryj logowanie login / hasło"
-    : "Logowanie login / hasło";
-
-  if (willOpen) {
-    setTimeout(() => loginInput.focus(), 80);
-  } else {
-    setTimeout(() => qrLoginInput.focus(), 80);
-  }
-}
-
 async function enterReportAfterLogin() {
-  loginStatus.innerText = "Zalogowano.";
-  loginStatus.className = "loginStatus ok";
-
   loginScreen.classList.add("hidden");
   reportScreen.classList.remove("hidden");
 
@@ -805,19 +817,12 @@ async function enterReportAfterLogin() {
 }
 
 async function qrLogin() {
-  loginStatus.innerText = "";
-
   const rawToken = qrLoginInput.value.trim();
 
-  if (!rawToken) {
-    loginStatus.innerText = "Zeskanuj kod QR.";
-    loginStatus.className = "loginStatus bad";
-    qrLoginInput.focus();
-    return;
-  }
+  if (!rawToken) return;
 
-  qrLoginButton.disabled = true;
-  qrLoginButton.innerText = "Sprawdzam QR...";
+  setLoginStatus("⏳ Sprawdzam kod QR...", "ok");
+  qrLoginInput.disabled = true;
 
   try {
     const { data, error } = await supabaseClient.rpc("qr_login_lookup", {
@@ -825,94 +830,66 @@ async function qrLogin() {
     });
 
     if (error) {
-      await supabaseClient.rpc("qr_login_mark_fail", {
+      await safeRpc("qr_login_mark_fail", {
         target_details: error.message,
         target_user_agent: navigator.userAgent
-      }).catch(() => {});
+      });
 
-      loginStatus.innerText = "Nieprawidłowy albo nieaktywny kod QR.";
-      loginStatus.className = "loginStatus bad";
+      setLoginStatus("Błąd logowania QR:\n" + error.message, "bad");
       qrLoginInput.value = "";
+      qrLoginInput.disabled = false;
       qrLoginInput.focus();
       return;
     }
 
-    const row = Array.isArray(data) ? data[0] : data;
+    const row = data && data.length ? data[0] : null;
 
-    if (!row || !row.user_id || !row.user_email) {
-      await supabaseClient.rpc("qr_login_mark_fail", {
-        target_details: "Brak użytkownika dla QR",
+    if (!row || !row.user_email) {
+      await safeRpc("qr_login_mark_fail", {
+        target_details: "Nie znaleziono użytkownika dla tokenu QR",
         target_user_agent: navigator.userAgent
-      }).catch(() => {});
+      });
 
-      loginStatus.innerText = "Nieprawidłowy albo nieaktywny kod QR.";
-      loginStatus.className = "loginStatus bad";
+      setLoginStatus("Nieprawidłowy albo nieaktywny kod QR.", "bad");
       qrLoginInput.value = "";
+      qrLoginInput.disabled = false;
       qrLoginInput.focus();
       return;
     }
 
     if (!hasAccess(row.user_role, ["manager", "admin"])) {
-      await supabaseClient.rpc("qr_login_mark_fail", {
+      await safeRpc("qr_login_mark_fail", {
         target_details: "Brak dostępu do raportu: " + row.user_email,
         target_user_agent: navigator.userAgent
-      }).catch(() => {});
+      });
 
-      loginStatus.innerText = "Brak dostępu do raportu.";
-      loginStatus.className = "loginStatus bad";
+      setLoginStatus("Brak dostępu do raportu.", "bad");
       qrLoginInput.value = "";
+      qrLoginInput.disabled = false;
       qrLoginInput.focus();
       return;
     }
 
-    await supabaseClient.rpc("qr_login_mark_success", {
+    await safeRpc("qr_login_mark_success", {
       target_user_id: row.user_id,
       target_user_email: row.user_email,
       target_token_hint: row.token_hint || "",
       target_user_agent: navigator.userAgent
-    }).catch(() => {});
+    });
 
+    currentUserEmail = row.user_email;
+    currentUserRole = row.user_role;
+
+    setLoginStatus("✅ Zalogowano kodem QR: " + displayLogin(row.user_email), "ok");
     await enterReportAfterLogin();
 
   } catch (err) {
-    loginStatus.innerText = "Błąd logowania QR: " + err.message;
-    loginStatus.className = "loginStatus bad";
+    setLoginStatus("Błąd logowania QR:\n" + err.message, "bad");
     qrLoginInput.value = "";
+    qrLoginInput.disabled = false;
     qrLoginInput.focus();
-
-  } finally {
-    qrLoginButton.disabled = false;
-    qrLoginButton.innerText = "Zaloguj kodem QR";
   }
 }
-
-loginInput.addEventListener("keydown", e => {
-  if (e.key === "Enter") passwordInput.focus();
-});
-
-passwordInput.addEventListener("keydown", e => {
-  if (e.key === "Enter") login();
-});
-
-qrLoginInput.addEventListener("keydown", e => {
-  if (e.key === "Enter") qrLogin();
-});
-
-document.addEventListener("click", event => {
-  if (event.target.closest("button,input,select,textarea,label")) return;
-
-  setTimeout(() => {
-    if (!loginScreen.classList.contains("hidden") && passwordLoginBox.classList.contains("hidden")) {
-      qrLoginInput.focus();
-    }
-  }, 50);
-});
-
-setTimeout(() => {
-  if (!loginScreen.classList.contains("hidden")) {
-    qrLoginInput.focus();
-  }
-}, 150);
 
 async function login() {
   loginStatus.innerText = "";
@@ -921,8 +898,7 @@ async function login() {
   const password = passwordInput.value;
 
   if (!email || !password) {
-    loginStatus.innerText = "Wpisz login i hasło.";
-    loginStatus.className = "loginStatus bad";
+    setLoginStatus("Wpisz login i hasło.", "bad");
     return;
   }
 
@@ -932,23 +908,49 @@ async function login() {
   const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
   loginButton.disabled = false;
-  loginButton.innerText = "Zaloguj loginem i hasłem";
+  loginButton.innerText = "Zaloguj";
 
   if (error) {
-    loginStatus.innerText = translateLoginError(error.message);
-    loginStatus.className = "loginStatus bad";
+    setLoginStatus(translateLoginError(error.message), "bad");
     return;
   }
 
   const role = await getUserRole(data.user.id);
 
   if (!hasAccess(role, ["manager", "admin"])) {
-    loginStatus.innerText = "Brak dostępu do raportu.";
-    loginStatus.className = "loginStatus bad";
+    setLoginStatus("Brak dostępu do raportu.", "bad");
     return;
   }
 
+  currentUserEmail = data.user.email;
+  currentUserRole = role;
+
+  setLoginStatus("Zalogowano.", "ok");
   await enterReportAfterLogin();
+}
+
+async function logout() {
+  if (refreshTimer) {
+    clearInterval(refreshTimer);
+    refreshTimer = null;
+  }
+
+  try {
+    await supabaseClient.auth.signOut();
+  } catch(e) {}
+
+  currentUserEmail = "";
+  currentUserRole = "";
+
+  reportScreen.classList.add("hidden");
+  loginScreen.classList.remove("hidden");
+
+  qrLoginInput.disabled = false;
+  qrLoginInput.value = "";
+  passwordInput.value = "";
+  setLoginStatus("", "bad");
+
+  setTimeout(() => qrLoginInput.focus(), 100);
 }
 
 async function fetchAllSessionsFallback() {
@@ -1625,7 +1627,7 @@ function exportExcel() {
         normalizeStatus(x.status) || "",
         displayLogin(x.user_login || ""),
         `${x.correct_count || 0}/${x.expected_count || 0}`,
-        x.missing_count || 0,
+        x.missing_count || splitItems(x.missing_trays).length || 0,
         x.missing_trays || "",
         x.all_scans || "",
         x.wrong_trays || "",
@@ -1717,6 +1719,22 @@ function exportExcel() {
     exportButton.innerText = "Eksport Excel";
   }
 }
+
+qrLoginInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") qrLogin();
+});
+
+loginInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") passwordInput.focus();
+});
+
+passwordInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") login();
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+  setTimeout(() => qrLoginInput.focus(), 100);
+});
 </script>
 
 </body>
