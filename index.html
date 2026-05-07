@@ -124,55 +124,64 @@
       border:1px solid rgba(255,255,255,.7);
     }
 
+    /* LOGIN — styl jak Pakowanie Toreb */
     .loginCard {
       background:white;
       padding:36px;
       border-radius:24px;
       width:100%;
-      max-width:560px;
+      max-width:520px;
       margin:40px auto;
       box-shadow:var(--shadow);
       box-sizing:border-box;
     }
 
-    .loginLogo { text-align:center; margin-bottom:15px; }
-    .loginLogo img { width:90px; height:auto; display:block; margin:0 auto; }
-    .loginCard h1 { text-align:center; margin:0; font-size:32px; }
-    .loginSubtitle { text-align:center; color:var(--muted); margin-bottom:28px; line-height:1.4; }
-    .loginCard label { display:block; font-weight:bold; margin-top:16px; margin-bottom:6px; }
-
-    .qrLoginBox {
-      border:2px solid #e5e7eb;
-      background:#f9fafb;
-      border-radius:22px;
-      padding:22px;
-      margin-bottom:28px;
+    .loginLogo {
       text-align:center;
+      margin-bottom:15px;
     }
 
-    .qrLoginTitle {
-      background:var(--blue);
-      color:white;
-      border-radius:16px;
-      padding:18px;
-      font-size:28px;
-      font-weight:900;
-      margin-bottom:16px;
+    .loginLogo img {
+      width:90px;
+      height:auto;
+      display:block;
+      margin:0 auto;
     }
 
-    .qrLoginHint {
+    .loginCard h1 {
+      text-align:center;
+      margin:0;
+      font-size:32px;
+    }
+
+    .loginSubtitle {
+      text-align:center;
       color:var(--muted);
-      font-size:17px;
+      margin-top:8px;
+      margin-bottom:28px;
       line-height:1.4;
-      margin-bottom:16px;
+    }
+
+    .qrLoginPanel {
+      margin-bottom:18px;
+    }
+
+    .qrLoginLabel {
+      display:block;
+      text-align:center;
+      font-weight:bold;
+      font-size:20px;
+      margin-bottom:10px;
+      color:#111827;
     }
 
     .qrLoginInput {
       width:100%;
-      font-size:24px;
-      padding:16px;
+      font-size:30px;
+      padding:18px;
       border-radius:14px;
       border:3px solid var(--blue);
+      margin:0;
       text-align:center;
       font-weight:bold;
       letter-spacing:1px;
@@ -184,14 +193,25 @@
       box-shadow:0 0 0 4px rgba(37,99,235,.15);
     }
 
+    .qrHint {
+      text-align:center;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.4;
+      margin:10px 0 0;
+    }
+
     .passwordToggleBtn {
       width:100%;
+      margin:18px 0 0;
+      font-size:20px;
+      padding:15px;
+      border-radius:14px;
+      border:none;
       background:#e5e7eb;
       color:#111827;
-      font-size:22px;
-      padding:16px;
-      border-radius:16px;
-      margin-bottom:16px;
+      font-weight:bold;
+      box-shadow:none;
     }
 
     .passwordToggleBtn:hover {
@@ -200,8 +220,15 @@
 
     .passwordLoginBox {
       border-top:1px solid var(--border);
+      margin-top:20px;
       padding-top:18px;
-      margin-top:8px;
+    }
+
+    .loginCard label {
+      display:block;
+      font-weight:bold;
+      margin-top:16px;
+      margin-bottom:6px;
     }
 
     .loginInput {
@@ -507,8 +534,8 @@
 
     @media(max-width:900px){
       body { padding:12px; }
-      .loginCard { padding:26px; margin:20px auto; }
-      .qrLoginTitle { font-size:24px; }
+      .loginCard { padding:24px; margin:20px auto; }
+      .qrLoginInput { font-size:26px; padding:16px; }
       .topbar { padding:18px; }
       .topbarTitle { width:100%; }
       .topbar h1 { font-size:30px; }
@@ -540,10 +567,10 @@
   <h1>Raport pakowania</h1>
   <p class="loginSubtitle">Zaloguj się, aby zobaczyć raport</p>
 
-  <div class="qrLoginBox">
-    <div class="qrLoginTitle">Zaloguj kodem QR</div>
-    <div class="qrLoginHint">Zeskanuj kod QR pracownika. Login i hasło nadal działają awaryjnie.</div>
+  <div class="qrLoginPanel">
+    <label class="qrLoginLabel">Zeskanuj kod QR pracownika</label>
     <input id="qrLoginInput" class="qrLoginInput" placeholder="Zeskanuj kod QR" autocomplete="off">
+    <p class="qrHint">Po zeskanowaniu kodu raport otworzy się automatycznie. Login i hasło zostają jako opcja awaryjna.</p>
   </div>
 
   <button id="passwordToggleButton" class="passwordToggleBtn" type="button" onclick="togglePasswordLogin()">
