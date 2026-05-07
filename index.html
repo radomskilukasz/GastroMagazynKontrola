@@ -160,6 +160,70 @@
       font-weight:bold;
     }
 
+    .qrLoginBox {
+      background:#f9fafb;
+      border:2px solid #e5e7eb;
+      border-radius:18px;
+      padding:18px;
+      margin-bottom:14px;
+    }
+
+    .qrLoginInput {
+      width:100%;
+      font-size:24px;
+      padding:16px;
+      border-radius:14px;
+      border:3px solid var(--blue);
+      text-align:center;
+      font-weight:bold;
+      letter-spacing:1px;
+    }
+
+    .qrLoginInput:focus {
+      outline:none;
+      border-color:var(--blue-dark);
+      box-shadow:0 0 0 4px rgba(37,99,235,.15);
+    }
+
+    .qrHint {
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.45;
+      text-align:center;
+      margin:10px 0 0;
+    }
+
+    .loginDivider {
+      text-align:center;
+      color:var(--muted);
+      font-weight:bold;
+      margin:18px 0 10px;
+      text-transform:uppercase;
+      font-size:13px;
+      letter-spacing:.06em;
+    }
+
+    .togglePasswordBtn {
+      width:100%;
+      margin:8px 0 0;
+      font-size:18px;
+      padding:13px;
+      border-radius:14px;
+      border:none;
+      background:#e5e7eb;
+      color:#111827;
+      font-weight:bold;
+    }
+
+    .togglePasswordBtn:hover {
+      background:#d1d5db;
+    }
+
+    .passwordLoginBox {
+      margin-top:18px;
+      padding-top:4px;
+    }
+
     .loginStatus {
       margin-top:18px;
       padding:12px;
@@ -466,13 +530,29 @@
   <h1>Raport pakowania</h1>
   <p class="loginSubtitle">Zaloguj się, aby zobaczyć raport</p>
 
-  <label>Login</label>
-  <input id="loginInput" class="loginInput" placeholder="np. JanKowalski" autocomplete="username">
+  <div class="qrLoginBox">
+    <label>Kod QR logowania</label>
+    <input id="qrLoginInput" class="qrLoginInput" placeholder="Zeskanuj kod QR" autocomplete="off">
+    <button id="qrLoginButton" class="loginBtn" style="margin-top:14px;" onclick="qrLogin()">Zaloguj kodem QR</button>
+    <p class="qrHint">Zeskanuj kod QR pracownika. Login i hasło nadal działają awaryjnie.</p>
+  </div>
 
-  <label>Hasło</label>
-  <input id="passwordInput" class="loginInput" type="password" placeholder="Wpisz hasło" autocomplete="current-password">
+  <button id="togglePasswordLoginBtn" type="button" class="togglePasswordBtn" onclick="togglePasswordLogin()">
+    Logowanie login / hasło
+  </button>
 
-  <button id="loginButton" class="loginBtn" onclick="login()">Zaloguj</button>
+  <div id="passwordLoginBox" class="passwordLoginBox hidden">
+    <div class="loginDivider">awaryjnie</div>
+
+    <label>Login</label>
+    <input id="loginInput" class="loginInput" placeholder="np. JanKowalski" autocomplete="username">
+
+    <label>Hasło</label>
+    <input id="passwordInput" class="loginInput" type="password" placeholder="Wpisz hasło" autocomplete="current-password">
+
+    <button id="loginButton" class="loginBtn" onclick="login()">Zaloguj loginem i hasłem</button>
+  </div>
+
   <p id="loginStatus" class="loginStatus bad"></p>
 </div>
 
@@ -692,6 +772,120 @@ function translateLoginError(errorMessage) {
   return "Nie udało się zalogować. Sprawdź login i hasło.";
 }
 
+function togglePasswordLogin() {
+  const box = document.getElementById("passwordLoginBox");
+  const btn = document.getElementById("togglePasswordLoginBtn");
+
+  const willOpen = box.classList.contains("hidden");
+
+  box.classList.toggle("hidden", !willOpen);
+  btn.innerText = willOpen
+    ? "Ukryj logowanie login / hasło"
+    : "Logowanie login / hasło";
+
+  if (willOpen) {
+    setTimeout(() => loginInput.focus(), 80);
+  } else {
+    setTimeout(() => qrLoginInput.focus(), 80);
+  }
+}
+
+async function enterReportAfterLogin() {
+  loginStatus.innerText = "Zalogowano.";
+  loginStatus.className = "loginStatus ok";
+
+  loginScreen.classList.add("hidden");
+  reportScreen.classList.remove("hidden");
+
+  await loadReport();
+
+  if (!refreshTimer) {
+    refreshTimer = setInterval(loadReport, 30000);
+  }
+}
+
+async function qrLogin() {
+  loginStatus.innerText = "";
+
+  const rawToken = qrLoginInput.value.trim();
+
+  if (!rawToken) {
+    loginStatus.innerText = "Zeskanuj kod QR.";
+    loginStatus.className = "loginStatus bad";
+    qrLoginInput.focus();
+    return;
+  }
+
+  qrLoginButton.disabled = true;
+  qrLoginButton.innerText = "Sprawdzam QR...";
+
+  try {
+    const { data, error } = await supabaseClient.rpc("qr_login_lookup", {
+      raw_token: rawToken
+    });
+
+    if (error) {
+      await supabaseClient.rpc("qr_login_mark_fail", {
+        target_details: error.message,
+        target_user_agent: navigator.userAgent
+      }).catch(() => {});
+
+      loginStatus.innerText = "Nieprawidłowy albo nieaktywny kod QR.";
+      loginStatus.className = "loginStatus bad";
+      qrLoginInput.value = "";
+      qrLoginInput.focus();
+      return;
+    }
+
+    const row = Array.isArray(data) ? data[0] : data;
+
+    if (!row || !row.user_id || !row.user_email) {
+      await supabaseClient.rpc("qr_login_mark_fail", {
+        target_details: "Brak użytkownika dla QR",
+        target_user_agent: navigator.userAgent
+      }).catch(() => {});
+
+      loginStatus.innerText = "Nieprawidłowy albo nieaktywny kod QR.";
+      loginStatus.className = "loginStatus bad";
+      qrLoginInput.value = "";
+      qrLoginInput.focus();
+      return;
+    }
+
+    if (!hasAccess(row.user_role, ["manager", "admin"])) {
+      await supabaseClient.rpc("qr_login_mark_fail", {
+        target_details: "Brak dostępu do raportu: " + row.user_email,
+        target_user_agent: navigator.userAgent
+      }).catch(() => {});
+
+      loginStatus.innerText = "Brak dostępu do raportu.";
+      loginStatus.className = "loginStatus bad";
+      qrLoginInput.value = "";
+      qrLoginInput.focus();
+      return;
+    }
+
+    await supabaseClient.rpc("qr_login_mark_success", {
+      target_user_id: row.user_id,
+      target_user_email: row.user_email,
+      target_token_hint: row.token_hint || "",
+      target_user_agent: navigator.userAgent
+    }).catch(() => {});
+
+    await enterReportAfterLogin();
+
+  } catch (err) {
+    loginStatus.innerText = "Błąd logowania QR: " + err.message;
+    loginStatus.className = "loginStatus bad";
+    qrLoginInput.value = "";
+    qrLoginInput.focus();
+
+  } finally {
+    qrLoginButton.disabled = false;
+    qrLoginButton.innerText = "Zaloguj kodem QR";
+  }
+}
+
 loginInput.addEventListener("keydown", e => {
   if (e.key === "Enter") passwordInput.focus();
 });
@@ -699,6 +893,26 @@ loginInput.addEventListener("keydown", e => {
 passwordInput.addEventListener("keydown", e => {
   if (e.key === "Enter") login();
 });
+
+qrLoginInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") qrLogin();
+});
+
+document.addEventListener("click", event => {
+  if (event.target.closest("button,input,select,textarea,label")) return;
+
+  setTimeout(() => {
+    if (!loginScreen.classList.contains("hidden") && passwordLoginBox.classList.contains("hidden")) {
+      qrLoginInput.focus();
+    }
+  }, 50);
+});
+
+setTimeout(() => {
+  if (!loginScreen.classList.contains("hidden")) {
+    qrLoginInput.focus();
+  }
+}, 150);
 
 async function login() {
   loginStatus.innerText = "";
@@ -718,7 +932,7 @@ async function login() {
   const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
   loginButton.disabled = false;
-  loginButton.innerText = "Zaloguj";
+  loginButton.innerText = "Zaloguj loginem i hasłem";
 
   if (error) {
     loginStatus.innerText = translateLoginError(error.message);
@@ -734,17 +948,7 @@ async function login() {
     return;
   }
 
-  loginStatus.innerText = "Zalogowano.";
-  loginStatus.className = "loginStatus ok";
-
-  loginScreen.classList.add("hidden");
-  reportScreen.classList.remove("hidden");
-
-  await loadReport();
-
-  if (!refreshTimer) {
-    refreshTimer = setInterval(loadReport, 30000);
-  }
+  await enterReportAfterLogin();
 }
 
 async function fetchAllSessionsFallback() {
