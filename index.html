@@ -212,9 +212,7 @@
       font-weight:bold;
     }
 
-    .qrLoginBtn:hover {
-      background:var(--blue-dark);
-    }
+    .qrLoginBtn:hover { background:var(--blue-dark); }
 
     .togglePasswordBtn {
       width:100%;
@@ -228,9 +226,7 @@
       font-weight:bold;
     }
 
-    .togglePasswordBtn:hover {
-      background:#d1d5db;
-    }
+    .togglePasswordBtn:hover { background:#d1d5db; }
 
     .passwordLoginBox {
       margin-top:18px;
@@ -293,23 +289,9 @@
       white-space:pre-wrap;
     }
 
-    .loginStatus.error {
-      display:block;
-      background:#fee2e2;
-      color:#991b1b;
-    }
-
-    .loginStatus.ok {
-      display:block;
-      background:#dcfce7;
-      color:#166534;
-    }
-
-    .loginStatus.info {
-      display:block;
-      background:#eff6ff;
-      color:#1d4ed8;
-    }
+    .loginStatus.error { display:block; background:#fee2e2; color:#991b1b; }
+    .loginStatus.ok { display:block; background:#dcfce7; color:#166534; }
+    .loginStatus.info { display:block; background:#eff6ff; color:#1d4ed8; }
 
     .dashboardShell {
       width:100%;
@@ -362,13 +344,8 @@
     .secondaryBtn { background:#111827; }
     .secondaryBtn:hover { background:#030712; }
 
-    .dangerBtn {
-      background:#ef4444;
-    }
-
-    .dangerBtn:hover {
-      background:#dc2626;
-    }
+    .dangerBtn { background:#ef4444; }
+    .dangerBtn:hover { background:#dc2626; }
 
     .dashboardLayout {
       display:grid;
@@ -429,23 +406,56 @@
       text-underline-offset:4px;
       font-weight:bold;
     }
-    
+
     .sortableTh {
-  cursor:pointer;
-  user-select:none;
-}
+      cursor:pointer;
+      user-select:none;
+    }
 
-.sortableTh:hover {
-  background:#eef2ff;
-  color:var(--blue);
-}
+    .sortableTh:hover {
+      background:#eef2ff;
+      color:var(--blue);
+    }
 
-.rankBadge {
-  display:inline-block;
-  min-width:34px;
-  font-weight:bold;
-  margin-right:8px;
-}
+    .rankBadge {
+      display:inline-block;
+      min-width:34px;
+      font-weight:bold;
+      margin-right:8px;
+    }
+
+    .historyPager {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin:14px 0 0;
+      padding-top:14px;
+      border-top:1px solid var(--border);
+    }
+
+    .historyPagerInfo {
+      color:var(--muted);
+      font-weight:bold;
+      font-size:15px;
+    }
+
+    .historyPagerButtons {
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .historyPagerButtons button {
+      min-width:150px;
+      background:#111827;
+    }
+
+    .historyPagerButtons button:hover {
+      background:#030712;
+    }
+
     .alertBox {
       background:#fee2e2;
       color:#991b1b;
@@ -468,17 +478,6 @@
       font-size:22px;
       margin-bottom:20px;
       box-shadow:var(--shadow);
-    }
-
-    .infoBox {
-      background:#eff6ff;
-      color:#1e40af;
-      border:2px solid #bfdbfe;
-      border-radius:18px;
-      padding:14px 18px;
-      font-weight:bold;
-      margin-bottom:14px;
-      line-height:1.45;
     }
 
     .modalBg {
@@ -604,6 +603,10 @@
       th, td { padding:10px 8px; }
       .detailsGrid { grid-template-columns:1fr 1fr; }
       .detailsTable th { width:130px; }
+      .historyPagerButtons,
+      .historyPagerButtons button {
+        width:100%;
+      }
     }
 
     @media(max-width:600px){
@@ -666,16 +669,16 @@
     </div>
 
     <div class="filters">
-      <input id="bagSearch" placeholder="Szukaj QR torby..." oninput="renderAll()">
+      <input id="bagSearch" placeholder="Szukaj QR torby..." oninput="resetHistoryPageAndRender()">
 
-      <select id="statusFilter" onchange="renderAll()">
+      <select id="statusFilter" onchange="resetHistoryPageAndRender()">
         <option value="">Wszystkie statusy</option>
         <option value="POPRAWNA">Tylko poprawne</option>
         <option value="NIEPOPRAWNA">Tylko niepoprawne</option>
         <option value="BRAKI">Tylko braki</option>
       </select>
 
-      <select id="workerFilter" onchange="renderAll()">
+      <select id="workerFilter" onchange="resetHistoryPageAndRender()">
         <option value="">Wszyscy pracownicy</option>
       </select>
 
@@ -767,12 +770,15 @@ let currentUserEmail = "";
 let currentUserRole = "";
 let workerSortKey = "total";
 let workerSortDirection = "desc";
+
+let historyPage = 1;
+const HISTORY_PAGE_SIZE = 1000;
+
 window.workerStats = [];
 
 function togglePasswordLogin() {
   const box = document.getElementById("passwordLoginBox");
   const btn = document.getElementById("togglePasswordLoginBtn");
-
   const willOpen = box.classList.contains("hidden");
 
   box.classList.toggle("hidden", !willOpen);
@@ -806,9 +812,7 @@ function focusQrInput() {
 }
 
 function normalizeQrToken(value) {
-  return String(value || "")
-    .trim()
-    .replace(/\s+/g, "");
+  return String(value || "").trim().replace(/\s+/g, "");
 }
 
 function getLoginEmail(value) {
@@ -877,6 +881,28 @@ function formatDateTime(dateText) {
   const d = new Date(dateText);
   if (Number.isNaN(d.getTime())) return "-";
   return d.toLocaleString("pl-PL");
+}
+
+function resetHistoryPageAndRender() {
+  historyPage = 1;
+  renderAll();
+}
+
+function changeHistoryPage(direction) {
+  const filtered = getFilteredSessions();
+  const totalPages = Math.max(1, Math.ceil(filtered.length / HISTORY_PAGE_SIZE));
+
+  historyPage += direction;
+
+  if (historyPage < 1) historyPage = 1;
+  if (historyPage > totalPages) historyPage = totalPages;
+
+  renderHistory(filtered);
+
+  const historyPanel = document.querySelector(".historyPanel");
+  if (historyPanel) {
+    historyPanel.scrollIntoView({ behavior:"smooth", block:"start" });
+  }
 }
 
 async function safeRpc(functionName, params) {
@@ -1218,6 +1244,10 @@ function renderAll() {
   const allSessions = sessions;
   const filteredHistory = getFilteredSessions();
 
+  const totalPages = Math.max(1, Math.ceil(filteredHistory.length / HISTORY_PAGE_SIZE));
+  if (historyPage > totalPages) historyPage = totalPages;
+  if (historyPage < 1) historyPage = 1;
+
   const correct = allSessions.filter(x => normalizeStatus(x.status) === "POPRAWNA");
   const bad = allSessions.filter(x => normalizeStatus(x.status) === "NIEPOPRAWNA");
   const braki = allSessions.filter(x => normalizeStatus(x.status) === "BRAKI");
@@ -1446,6 +1476,19 @@ function openWorkerDetails(index) {
 }
 
 function renderHistory(data) {
+  const totalRows = data.length;
+  const totalPages = Math.max(1, Math.ceil(totalRows / HISTORY_PAGE_SIZE));
+
+  if (historyPage > totalPages) historyPage = totalPages;
+  if (historyPage < 1) historyPage = 1;
+
+  const start = (historyPage - 1) * HISTORY_PAGE_SIZE;
+  const end = start + HISTORY_PAGE_SIZE;
+  const pageRows = data.slice(start, end);
+
+  const fromLabel = totalRows ? start + 1 : 0;
+  const toLabel = Math.min(end, totalRows);
+
   historyTable.innerHTML = `
     <table>
       <thead>
@@ -1459,7 +1502,7 @@ function renderHistory(data) {
         </tr>
       </thead>
       <tbody>
-        ${data.slice(0, 700).map(x => {
+        ${pageRows.map(x => {
           const status = normalizeStatus(x.status);
           const globalIndex = sessions.findIndex(s => s.id === x.id);
 
@@ -1480,6 +1523,17 @@ function renderHistory(data) {
         }).join("")}
       </tbody>
     </table>
+
+    <div class="historyPager">
+      <div class="historyPagerInfo">
+        Pokazuję ${fromLabel}-${toLabel} z ${totalRows} wpisów | Strona ${historyPage} z ${totalPages}
+      </div>
+
+      <div class="historyPagerButtons">
+        <button onclick="changeHistoryPage(-1)" ${historyPage <= 1 ? "disabled" : ""}>⬅ Poprzednia</button>
+        <button onclick="changeHistoryPage(1)" ${historyPage >= totalPages ? "disabled" : ""}>Następna ➜</button>
+      </div>
+    </div>
   `;
 }
 
