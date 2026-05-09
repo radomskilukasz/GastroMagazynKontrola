@@ -429,7 +429,23 @@
       text-underline-offset:4px;
       font-weight:bold;
     }
+    
+    .sortableTh {
+  cursor:pointer;
+  user-select:none;
+}
 
+.sortableTh:hover {
+  background:#eef2ff;
+  color:var(--blue);
+}
+
+.rankBadge {
+  display:inline-block;
+  min-width:34px;
+  font-weight:bold;
+  margin-right:8px;
+}
     .alertBox {
       background:#fee2e2;
       color:#991b1b;
@@ -753,6 +769,8 @@ let refreshTimer = null;
 let isLoadingReport = false;
 let currentUserEmail = "";
 let currentUserRole = "";
+let workerSortKey = "total";
+let workerSortDirection = "desc";
 window.workerStats = [];
 
 function togglePasswordLogin() {
@@ -1264,84 +1282,26 @@ function renderBrakiBox(brakiCount) {
   brakiBox.innerText = "";
 }
 
+function setWorkerSort(key) {
+  workerSortKey = key;
+  workerSortDirection = key === "avgTime" ? "asc" : "desc";
+  renderAll();
+}
+
+function getWorkerSortIcon(key) {
+  if (workerSortKey !== key) return "";
+  return workerSortDirection === "asc" ? " ▲" : " ▼";
+}
+
+function getRankBadge(index) {
+  if (index === 0) return "🥇";
+  if (index === 1) return "🥈";
+  if (index === 2) return "🥉";
+  return String(index + 1) + ".";
+}
+
 function renderWorkers(data) {
-  const workers = {};
-
-  data.forEach(x => {
-    const worker = displayLogin(x.user_login || "brak użytkownika");
-
-    if (!workers[worker]) {
-      workers[worker] = {
-        worker,
-        total:0,
-        correct:0,
-        bad:0,
-        braki:0,
-        wrong:0,
-        missing:0,
-        duplicates:0,
-        duration:0,
-        durationCount:0
-      };
-    }
-
-    workers[worker].total++;
-
-    const status = normalizeStatus(x.status);
-
-    if (status === "POPRAWNA") workers[worker].correct++;
-    if (status === "NIEPOPRAWNA") workers[worker].bad++;
-    if (status === "BRAKI") workers[worker].braki++;
-
-    workers[worker].wrong += splitItems(x.wrong_trays).length;
-    workers[worker].missing += splitItems(x.missing_trays).length;
-    workers[worker].duplicates += splitItems(x.duplicate_trays).length;
-
-    if (typeof x.duration_seconds === "number") {
-      workers[worker].duration += x.duration_seconds;
-      workers[worker].durationCount++;
-    }
-  });
-
-  const dataRows = Object.values(workers).sort((a,b) => b.total - a.total);
-  window.workerStats = dataRows;
-
-  workersTable.innerHTML = `
-    <table>
-      <thead>
-        <tr>
-          <th>Pracownik</th>
-          <th>Razem</th>
-          <th>OK</th>
-          <th>Źle</th>
-          <th>Braki</th>
-          <th>Śr. czas</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${dataRows.map((w, index) => {
-          const avg = w.durationCount
-            ? Math.round(w.duration / w.durationCount)
-            : 0;
-
-          return `
-            <tr>
-              <td>
-                <span class="workerName" onclick="openWorkerDetails(${index})">
-                  ${escapeHtml(w.worker)}
-                </span>
-              </td>
-              <td><b>${w.total}</b></td>
-              <td class="ok">${w.correct}</td>
-              <td class="bad">${w.bad}</td>
-              <td class="warn">${w.braki}</td>
-              <td>${formatDuration(avg)}</td>
-            </tr>
-          `;
-        }).join("")}
-      </tbody>
-    </table>
-  `;
+  // cały kod funkcji z poprzedniej wiadomości
 }
 
 function openWorkerDetails(index) {
