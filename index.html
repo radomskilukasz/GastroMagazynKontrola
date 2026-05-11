@@ -753,9 +753,13 @@
 </div>
 
 <script>
+const PROJECT_URL = "https://lanmmbpqxmenyjwvwpkt.supabase.co";
+const PUBLISHABLE_KEY = "sb_publishable_sYrinkI1u2zr9uXZwsERNg_HE0wQKsC";
+const QR_LOGIN_FUNCTION_URL = PROJECT_URL + "/functions/v1/qr-login-session";
+
 const supabaseClient = window.supabase.createClient(
-  "https://lanmmbpqxmenyjwvwpkt.supabase.co",
-  "sb_publishable_sYrinkI1u2zr9uXZwsERNg_HE0wQKsC"
+  PROJECT_URL,
+  PUBLISHABLE_KEY
 );
 
 const LOGIN_DOMAIN = "@pakowanie.local";
@@ -905,14 +909,6 @@ function changeHistoryPage(direction) {
   }
 }
 
-async function safeRpc(functionName, params) {
-  try {
-    await supabaseClient.rpc(functionName, params);
-  } catch (e) {
-    console.warn("RPC pomocnicze nieudane:", functionName, e);
-  }
-}
-
 async function getUserRole(userId) {
   const { data, error } = await supabaseClient
     .from("user_roles")
@@ -966,71 +962,78 @@ async function qrLogin() {
   qrLoginBtn.innerText = "Sprawdzam QR...";
 
   try {
-    const { data, error } = await supabaseClient.rpc("qr_login_lookup", {
-      raw_token: rawToken
+    const res = await fetch(QR_LOGIN_FUNCTION_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": PUBLISHABLE_KEY
+      },
+      body: JSON.stringify({
+        raw_token: rawToken,
+        token: rawToken,
+        user_agent: navigator.userAgent || null
+      })
     });
 
-    if (error) {
-      await safeRpc("qr_login_mark_fail", {
-        target_details: error.message,
-        target_user_agent: navigator.userAgent
-      });
+    const json = await res.json().catch(() => ({}));
 
-      setLoginStatus("❌ Błąd logowania QR:\n" + error.message, "error");
+    if (!res.ok) {
+      setLoginStatus("❌ Nie udało się zalogować QR: " + (json.error || json.message || "Nieznany błąd."), "error");
       qrLoginInput.value = "";
+      focusQrInput();
       return;
     }
 
-    const row = data && data.length ? data[0] : null;
+    const session = json.session || json.data?.session || json;
+    const accessToken = session.access_token || json.access_token;
+    const refreshToken = session.refresh_token || json.refresh_token;
 
-    if (!row || !row.user_email) {
-      await safeRpc("qr_login_mark_fail", {
-        target_details: "Nie znaleziono użytkownika dla tokenu QR",
-        target_user_agent: navigator.userAgent
-      });
-
-      setLoginStatus("❌ Nieprawidłowy albo nieaktywny kod QR.", "error");
+    if (!accessToken || !refreshToken) {
+      setLoginStatus("❌ Funkcja QR nie zwróciła pełnej sesji.", "error");
       qrLoginInput.value = "";
+      focusQrInput();
       return;
     }
 
-    if (!hasAccess(row.user_role, ["manager", "admin"])) {
-      await safeRpc("qr_login_mark_fail", {
-        target_details: "Brak dostępu do raportu: " + row.user_email,
-        target_user_agent: navigator.userAgent
-      });
-
-      setLoginStatus("❌ Brak dostępu do raportu.", "error");
-      qrLoginInput.value = "";
-      return;
-    }
-
-    await safeRpc("qr_login_mark_success", {
-      target_user_id: row.user_id,
-      target_user_email: row.user_email,
-      target_token_hint: row.token_hint || "",
-      target_user_agent: navigator.userAgent
+    const { data: setData, error: setError } = await supabaseClient.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken
     });
 
-    currentUserEmail = row.user_email;
-    currentUserRole = row.user_role;
+    if (setError || !setData?.session?.user) {
+      setLoginStatus("❌ Nie udało się ustawić sesji: " + (setError?.message || "brak użytkownika"), "error");
+      qrLoginInput.value = "";
+      focusQrInput();
+      return;
+    }
 
-    setLoginStatus("✅ Zalogowano kodem QR: " + displayLogin(row.user_email), "ok");
+    const user = setData.session.user;
+    const role = json.role || json.user_role || json.data?.role || json.data?.user_role || await getUserRole(user.id);
+
+    if (!hasAccess(role, ["manager", "admin"])) {
+      setLoginStatus("❌ Brak dostępu do raportu dla tego kodu QR.", "error");
+      await supabaseClient.auth.signOut();
+      qrLoginInput.value = "";
+      focusQrInput();
+      return;
+    }
+
+    currentUserEmail = user.email;
+    currentUserRole = role;
+
+    setLoginStatus("✅ Zalogowano kodem QR: " + displayLogin(user.email), "ok");
     qrLoginInput.value = "";
 
     await enterReportAfterLogin();
 
   } catch (err) {
-    setLoginStatus("❌ Błąd logowania QR:\n" + err.message, "error");
+    setLoginStatus("❌ Błąd logowania QR: " + err.message, "error");
     qrLoginInput.value = "";
+    focusQrInput();
   } finally {
     qrLoginInput.disabled = false;
     qrLoginBtn.disabled = false;
     qrLoginBtn.innerText = "Zaloguj kodem QR";
-
-    if (!loginScreen.classList.contains("hidden")) {
-      focusQrInput();
-    }
   }
 }
 
