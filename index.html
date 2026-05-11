@@ -612,6 +612,161 @@
     @media(max-width:600px){
       .detailsGrid { grid-template-columns:1fr; }
     }
+
+    .mobileView { display:none; }
+
+@media(max-width:700px){
+  .dashboardShell { display:none; }
+  .mobileView { display:block; }
+
+  .mobileTopbar {
+    background:white;
+    border-radius:20px;
+    padding:16px 18px;
+    margin-bottom:14px;
+    box-shadow:var(--shadow);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+  }
+
+  .mobileTopbar h1 {
+    font-size:22px;
+    margin:0;
+    letter-spacing:-.02em;
+  }
+
+  .mobileTopbar .small { margin-top:4px; font-size:13px; }
+
+  .mobileLogo { width:44px; height:auto; display:block; }
+
+  .mobileTopbarRight {
+    display:flex;
+    gap:8px;
+    align-items:center;
+  }
+
+  .mobileTopbarRight button {
+    font-size:14px;
+    padding:10px 12px;
+    border-radius:10px;
+  }
+
+  .mobileStatsGrid {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-bottom:14px;
+  }
+
+  .mobileStatCard {
+    background:white;
+    border-radius:18px;
+    padding:16px;
+    box-shadow:var(--shadow);
+    text-align:center;
+  }
+
+  .mobileStatCard.fullWidth {
+    grid-column:1 / -1;
+  }
+
+  .mobileStatLabel {
+    color:var(--muted);
+    font-size:12px;
+    font-weight:bold;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    margin-bottom:6px;
+  }
+
+  .mobileStatValue {
+    font-size:36px;
+    font-weight:bold;
+    letter-spacing:-.03em;
+    line-height:1;
+  }
+
+  .mobileProgressBar {
+    width:100%;
+    height:12px;
+    background:#e5e7eb;
+    border-radius:999px;
+    overflow:hidden;
+    margin-top:10px;
+  }
+
+  .mobileProgressFill {
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,#22c55e,#16a34a);
+    transition:width .3s ease;
+  }
+
+  .mobileAlertBox {
+    background:#fee2e2;
+    color:#991b1b;
+    border:2px solid #fecaca;
+    border-radius:16px;
+    padding:14px 16px;
+    font-weight:bold;
+    font-size:16px;
+    margin-bottom:12px;
+  }
+
+  .mobileBrakiBox {
+    background:#fffbeb;
+    color:#92400e;
+    border:2px solid #fde68a;
+    border-radius:16px;
+    padding:14px 16px;
+    font-weight:bold;
+    font-size:15px;
+    margin-bottom:12px;
+  }
+
+  .mobileHistoryCard {
+    background:white;
+    border-radius:18px;
+    padding:16px;
+    box-shadow:var(--shadow);
+  }
+
+  .mobileHistoryCard h2 {
+    font-size:20px;
+    margin:0 0 12px;
+  }
+
+  .mobileHistoryItem {
+    border-bottom:1px solid var(--border);
+    padding:12px 0;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+  }
+
+  .mobileHistoryItem:last-child { border-bottom:none; }
+
+  .mobileHistoryBag {
+    font-size:16px;
+    font-weight:bold;
+    word-break:break-all;
+  }
+
+  .mobileHistoryMeta {
+    font-size:13px;
+    color:var(--muted);
+    margin-top:3px;
+  }
+
+  .mobileHistoryStatus {
+    font-size:13px;
+    font-weight:bold;
+    white-space:nowrap;
+  }
+}
   </style>
 </head>
 
@@ -938,12 +1093,21 @@ function translateLoginError(errorMessage) {
 
 async function enterReportAfterLogin() {
   loginScreen.classList.add("hidden");
-  reportScreen.classList.remove("hidden");
+
+  const isMobile = window.innerWidth <= 700;
+
+  if (isMobile) {
+    mobileScreen.classList.remove("hidden");
+  } else {
+    reportScreen.classList.remove("hidden");
+  }
 
   await loadReport();
 
+  const mobileInterval = isMobile ? 120000 : 30000;
+
   if (!refreshTimer) {
-    refreshTimer = setInterval(loadReport, 30000);
+    refreshTimer = setInterval(loadReport, mobileInterval);
   }
 }
 
@@ -1202,7 +1366,8 @@ async function loadReport() {
 
     refreshWorkerFilter();
     renderAll();
-
+    renderMobile(allSessions);
+    
   } catch (err) {
     alert("Błąd pobierania raportu: " + err.message);
   } finally {
@@ -1288,7 +1453,71 @@ function renderAll() {
   renderWorkers(allSessions);
   renderHistory(filteredHistory);
 }
+function renderMobile(data) {
+  if (!document.getElementById("mobileScreen")) return;
 
+  const correct = data.filter(x => normalizeStatus(x.status) === "POPRAWNA").length;
+  const bad = data.filter(x => normalizeStatus(x.status) === "NIEPOPRAWNA").length;
+  const braki = data.filter(x => normalizeStatus(x.status) === "BRAKI").length;
+  const finalPacked = correct + bad;
+  const accuracy = finalPacked ? Math.round((correct / finalPacked) * 100) : 0;
+  const totalPercent = totalBagsInPlan
+    ? Math.min(100, Math.round((finalPacked / totalBagsInPlan) * 100))
+    : 0;
+
+  const formatted = formatMealDate(mealDate);
+  document.getElementById("mobileTitleEl").innerText = formatted
+    ? "Raport " + formatted
+    : "Raport pakowania";
+
+  document.getElementById("mobileLastRefresh").innerText =
+    new Date().toLocaleTimeString("pl-PL");
+
+  document.getElementById("mobileTotalStat").innerText =
+    finalPacked + " / " + totalBagsInPlan;
+  document.getElementById("mobileProgressFill").style.width = totalPercent + "%";
+  document.getElementById("mobileCorrectStat").innerText = correct;
+  document.getElementById("mobileBadStat").innerText = bad;
+  document.getElementById("mobileBrakiStat").innerText = braki;
+  document.getElementById("mobileAccuracyStat").innerText = accuracy + "%";
+
+  const mobileAlert = document.getElementById("mobileAlertBox");
+  if (bad >= 20) {
+    mobileAlert.classList.remove("hidden");
+    mobileAlert.innerText = "⚠️ Niepoprawnych toreb: " + bad;
+  } else {
+    mobileAlert.classList.add("hidden");
+  }
+
+  const mobileBraki = document.getElementById("mobileBrakiBox");
+  if (braki > 0) {
+    mobileBraki.classList.remove("hidden");
+    mobileBraki.innerText = "🟡 Do dopakowania: " + braki + " toreb";
+  } else {
+    mobileBraki.classList.add("hidden");
+  }
+
+  const last30 = data.slice(0, 30);
+
+  document.getElementById("mobileHistoryList").innerHTML = last30.length
+    ? last30.map(x => {
+        const status = normalizeStatus(x.status);
+        const cls = status === "POPRAWNA" ? "ok" : status === "BRAKI" ? "warn" : "bad";
+        return `
+          <div class="mobileHistoryItem">
+            <div>
+              <div class="mobileHistoryBag">${escapeHtml(x.bag_qr || "-")}</div>
+              <div class="mobileHistoryMeta">
+                ${escapeHtml(displayLogin(x.user_login || "-"))} &bull;
+                ${formatDateTime(x.closed_at)}
+              </div>
+            </div>
+            <div class="mobileHistoryStatus ${cls}">${escapeHtml(status)}</div>
+          </div>
+        `;
+      }).join("")
+    : `<div class="small" style="padding:12px 0;">Brak danych.</div>`;
+}
 function renderAlerts(badCount) {
   if (badCount >= 20) {
     alertBox.classList.remove("hidden");
@@ -1980,6 +2209,56 @@ window.addEventListener("DOMContentLoaded", async () => {
 });
 
 </script>
+<div class="mobileView hidden" id="mobileScreen">
 
+  <div id="mobileAlertBox" class="mobileAlertBox hidden"></div>
+  <div id="mobileBrakiBox" class="mobileBrakiBox hidden"></div>
+
+  <div class="mobileTopbar">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <img src="logo.png" class="mobileLogo" alt="logo">
+      <div>
+        <h1 id="mobileTitleEl">Raport pakowania</h1>
+        <div class="small">Odświeżono: <span id="mobileLastRefresh">-</span></div>
+      </div>
+    </div>
+    <div class="mobileTopbarRight">
+      <button onclick="loadReport()" style="background:#111827;">↻</button>
+      <button onclick="logout()" style="background:#ef4444;">Wyloguj</button>
+    </div>
+  </div>
+
+  <div class="mobileStatsGrid">
+    <div class="mobileStatCard fullWidth">
+      <div class="mobileStatLabel">Postęp pakowania</div>
+      <div class="mobileStatValue" id="mobileTotalStat">0 / 0</div>
+      <div class="mobileProgressBar">
+        <div class="mobileProgressFill" id="mobileProgressFill"></div>
+      </div>
+    </div>
+    <div class="mobileStatCard">
+      <div class="mobileStatLabel">Poprawne</div>
+      <div class="mobileStatValue ok" id="mobileCorrectStat">0</div>
+    </div>
+    <div class="mobileStatCard">
+      <div class="mobileStatLabel">Niepoprawne</div>
+      <div class="mobileStatValue bad" id="mobileBadStat">0</div>
+    </div>
+    <div class="mobileStatCard">
+      <div class="mobileStatLabel">Braki</div>
+      <div class="mobileStatValue warn" id="mobileBrakiStat">0</div>
+    </div>
+    <div class="mobileStatCard">
+      <div class="mobileStatLabel">Poprawność</div>
+      <div class="mobileStatValue" id="mobileAccuracyStat">0%</div>
+    </div>
+  </div>
+
+  <div class="mobileHistoryCard">
+    <h2>🧾 Ostatnie torby</h2>
+    <div id="mobileHistoryList"></div>
+  </div>
+
+</div>
 </body>
 </html>
