@@ -1958,9 +1958,27 @@ document.addEventListener("click", event => {
   }, 50);
 });
 
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const { data } = await supabaseClient.auth.getSession();
+
+    if (data?.session?.user) {
+      const role = await getUserRole(data.session.user.id);
+
+      if (hasAccess(role, ["manager", "admin"])) {
+        currentUserEmail = data.session.user.email;
+        currentUserRole = role;
+        await enterReportAfterLogin();
+        return;
+      }
+
+      await supabaseClient.auth.signOut();
+    }
+  } catch(e) {}
+
   focusQrInput();
 });
+
 </script>
 
 </body>
