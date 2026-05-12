@@ -1459,6 +1459,40 @@
   height:30px !important;
   object-fit:contain !important;
 }
+   /* POPRAWKA — PODSUMOWANIE NIE MOŻE WYCHODZIĆ POZA LEWĄ KRAWĘDŹ */
+
+.main {
+  padding-left:32px !important;
+  padding-right:32px !important;
+  overflow:hidden !important;
+}
+
+#summaryView {
+  width:100% !important;
+  max-width:100% !important;
+  overflow:hidden !important;
+}
+
+#summaryView .progressHero,
+#summaryView .forecastGrid,
+#summaryView .miniGrid,
+#summaryView .kpiGrid {
+  margin-left:0 !important;
+  margin-right:0 !important;
+  width:100% !important;
+  max-width:100% !important;
+}
+
+#summaryView .progressHero {
+  padding-left:28px !important;
+  padding-right:28px !important;
+}
+
+#summaryView .forecastCard,
+#summaryView .card,
+#summaryView .kpiCard {
+  overflow:hidden !important;
+} 
   </style>
 </head>
 
