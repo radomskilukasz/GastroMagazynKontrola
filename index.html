@@ -532,6 +532,8 @@
       letter-spacing:-.03em;
     }
 
+    /* PODSUMOWANIE KPI */
+
     .kpiGrid {
       display:grid;
       grid-template-columns:repeat(6, minmax(0, 1fr));
@@ -545,10 +547,9 @@
       border-radius:22px;
       padding:18px;
       box-shadow:var(--shadow2);
-      min-height:126px;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
+      min-height:150px;
+      display:grid;
+      grid-template-rows:auto 1fr auto;
       overflow:hidden;
       position:relative;
     }
@@ -565,10 +566,10 @@
     }
 
     .kpiTop {
-      display:flex;
-      justify-content:space-between;
+      display:grid;
+      grid-template-columns:minmax(0, 1fr) 46px;
       gap:8px;
-      align-items:flex-start;
+      align-items:start;
       position:relative;
       z-index:1;
     }
@@ -583,6 +584,7 @@
       font-size:23px;
       background:var(--blueSoft);
       color:var(--blue);
+      justify-self:end;
       flex:0 0 auto;
     }
 
@@ -607,19 +609,25 @@
       font-size:13px;
       font-weight:900;
       line-height:1.25;
+      text-align:left;
+      min-width:0;
     }
 
-    .kpiValue{
-  grid-row:2;
-  align-self:center;
-  justify-self:center;
-  width:100%;
-  text-align:center;
-  margin:0;
-  line-height:1;
-  padding:0 4px;
-  transform:translateY(-10px);
-}
+    .kpiValue {
+      position:relative;
+      z-index:1;
+      align-self:center;
+      justify-self:center;
+      width:100%;
+      text-align:center;
+      font-size:33px;
+      font-weight:950;
+      letter-spacing:-.045em;
+      line-height:1;
+      margin:0;
+      padding:0;
+      white-space:nowrap;
+    }
 
     .kpiHint {
       color:var(--muted);
@@ -627,7 +635,12 @@
       margin-top:8px;
       position:relative;
       z-index:1;
+      text-align:left;
+      width:100%;
+      line-height:1.25;
     }
+
+    /* POSTĘP DNIA */
 
     .progressHero {
       background:
@@ -637,21 +650,31 @@
       border-radius:28px;
       padding:24px;
       box-shadow:var(--shadow2);
+      overflow:hidden;
     }
 
     .progressMain {
       display:flex;
       justify-content:space-between;
-      align-items:flex-end;
+      align-items:center;
       gap:16px;
       margin-bottom:18px;
     }
 
+    .progressInfo {
+      min-width:0;
+    }
+
     .progressBig {
-      font-size:54px;
-      line-height:1;
+      display:block;
+      font-size:58px;
+      line-height:.95;
       font-weight:950;
       letter-spacing:-.06em;
+      margin:0 0 7px;
+      padding:0;
+      text-align:left;
+      white-space:nowrap;
     }
 
     .progressBar {
@@ -689,13 +712,34 @@
       border-radius:22px;
       padding:18px;
       box-shadow:var(--shadow2);
+      min-height:118px;
+      display:grid;
+      grid-template-rows:auto 1fr auto;
+      overflow:hidden;
+    }
+
+    .forecastCard .label {
+      margin-bottom:0;
     }
 
     .forecastValue {
-      font-size:30px;
+      display:flex;
+      align-items:center;
+      justify-content:flex-start;
+      min-height:48px;
+      font-size:34px;
       font-weight:950;
-      letter-spacing:-.04em;
+      letter-spacing:-.045em;
       line-height:1;
+      margin:0;
+      padding:8px 0 6px;
+      white-space:nowrap;
+      text-align:left;
+    }
+
+    .forecastCard .small {
+      text-align:left;
+      margin:0;
     }
 
     .filtersCard {
@@ -1207,7 +1251,11 @@
       }
 
       .progressBig {
-        font-size:38px;
+        font-size:42px;
+      }
+
+      .forecastValue {
+        font-size:31px;
       }
 
       .detailsTable th {
@@ -1377,88 +1425,6 @@
         white-space:nowrap;
       }
     }
-/* FINALNA POPRAWKA KAFELKÓW KPI W PODSUMOWANIU */
-
-.kpiCard {
-  min-height:150px !important;
-  display:flex !important;
-  flex-direction:column !important;
-  justify-content:space-between !important;
-  position:relative !important;
-  padding:18px !important;
-}
-
-.kpiTop {
-  display:grid !important;
-  grid-template-columns:minmax(0, 1fr) 46px !important;
-  grid-template-rows:auto 1fr !important;
-  gap:8px !important;
-  align-items:start !important;
-  flex:1 1 auto !important;
-  min-height:92px !important;
-}
-
-.kpiTop > div:first-child {
-  display:flex !important;
-  flex-direction:column !important;
-  min-width:0 !important;
-  height:100% !important;
-  grid-column:1 / 2 !important;
-  grid-row:1 / 3 !important;
-}
-
-.kpiLabel {
-  width:100% !important;
-  min-height:0 !important;
-  padding-right:0 !important;
-  text-align:left !important;
-}
-
-.kpiValue {
-  flex:1 1 auto !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  width:100% !important;
-  text-align:center !important;
-  font-size:31px !important;
-  line-height:1 !important;
-  margin:0 !important;
-  padding:0 !important;
-  transform:translateY(-4px) !important;
-}
-
-.kpiHint {
-  width:100% !important;
-  text-align:center !important;
-  margin-top:8px !important;
-  min-height:18px !important;
-}
-
-.kpiIcon {
-  position:static !important;
-  grid-column:2 / 3 !important;
-  grid-row:1 / 2 !important;
-  justify-self:end !important;
-  align-self:start !important;
-  width:42px !important;
-  height:42px !important;
-  flex:0 0 42px !important;
-}
-.kpiValue,
-#totalToday,
-#correctToday,
-#badToday,
-#brakiToday,
-#accuracyToday,
-#avgTime {
-  font-weight:950 !important;
-}
-.logoKpiIcon img {
-  width:30px !important;
-  height:30px !important;
-  object-fit:contain !important;
-}
   </style>
 </head>
 
@@ -1548,69 +1514,57 @@
       <div class="kpiGrid">
         <div class="kpiCard">
           <div class="kpiTop">
-            <div>
-              <div class="kpiLabel">Finalnie zapakowane</div>
-              <div class="kpiValue" id="totalToday">0 / 0</div>
-            </div>
+            <div class="kpiLabel">Finalnie zapakowane</div>
             <div class="kpiIcon logoKpiIcon">
               <img src="logo.png" alt="logo">
             </div>
           </div>
+          <div class="kpiValue" id="totalToday">0 / 0</div>
           <div class="kpiHint">Bez statusu BRAKI</div>
         </div>
 
         <div class="kpiCard">
           <div class="kpiTop">
-            <div>
-              <div class="kpiLabel">Poprawne</div>
-              <div class="kpiValue ok" id="correctToday">0</div>
-            </div>
+            <div class="kpiLabel">Poprawne</div>
             <div class="kpiIcon okIcon">✓</div>
           </div>
+          <div class="kpiValue ok" id="correctToday">0</div>
           <div class="kpiHint">Torby zamknięte OK</div>
         </div>
 
         <div class="kpiCard">
           <div class="kpiTop">
-            <div>
-              <div class="kpiLabel">Niepoprawne</div>
-              <div class="kpiValue bad" id="badToday">0</div>
-            </div>
+            <div class="kpiLabel">Niepoprawne</div>
             <div class="kpiIcon badIcon">!</div>
           </div>
+          <div class="kpiValue bad" id="badToday">0</div>
           <div class="kpiHint">Wymaga kontroli</div>
         </div>
 
         <div class="kpiCard">
           <div class="kpiTop">
-            <div>
-              <div class="kpiLabel">Braki</div>
-              <div class="kpiValue warn" id="brakiToday">0</div>
-            </div>
+            <div class="kpiLabel">Braki</div>
             <div class="kpiIcon warnIcon">●</div>
           </div>
+          <div class="kpiValue warn" id="brakiToday">0</div>
           <div class="kpiHint">Do dopakowania</div>
         </div>
 
         <div class="kpiCard">
           <div class="kpiTop">
-            <div>
-              <div class="kpiLabel">Poprawność finalnych</div>
-              <div class="kpiValue" id="accuracyToday">0%</div>
-            </div>
+            <div class="kpiLabel">Poprawność finalnych</div>
             <div class="kpiIcon okIcon">◎</div>
           </div>
+          <div class="kpiValue" id="accuracyToday">0%</div>
           <div class="kpiHint">Poprawne / finalne</div>
         </div>
 
         <div class="kpiCard">
           <div class="kpiTop">
-            <div>
-              <div class="kpiLabel">Śr. czas / torba</div>
-              <div class="kpiValue" id="avgTime">0s</div>
-            </div>
+            <div class="kpiLabel">Śr. czas / torba</div>
             <div class="kpiIcon">◷</div>
           </div>
+          <div class="kpiValue" id="avgTime">0s</div>
           <div class="kpiHint">Średni czas pakowania</div>
         </div>
       </div>
@@ -1618,7 +1572,7 @@
       <div>
         <div class="progressHero">
           <div class="progressMain">
-            <div>
+            <div class="progressInfo">
               <div class="label">Postęp dnia</div>
               <div class="progressBig" id="summaryProgressText">0%</div>
               <div class="small" id="summaryProgressSub">Spakowano 0 z 0 toreb.</div>
