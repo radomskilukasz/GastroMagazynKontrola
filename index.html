@@ -11,137 +11,224 @@
 
   <style>
     :root {
-      --bg:#eef2f7;
+      --bg:#f4f7fb;
+      --bg2:#eef4ff;
       --card:#ffffff;
-      --text:#111827;
-      --muted:#6b7280;
+      --text:#0f172a;
+      --muted:#64748b;
       --border:#e5e7eb;
       --blue:#2563eb;
-      --blue-dark:#1d4ed8;
+      --blue2:#1d4ed8;
+      --blueSoft:#eff6ff;
       --green:#16a34a;
+      --greenSoft:#dcfce7;
       --red:#dc2626;
+      --redSoft:#fee2e2;
       --orange:#f59e0b;
-      --shadow:0 10px 35px rgba(15,23,42,.08);
+      --orangeSoft:#fffbeb;
+      --shadow:0 16px 50px rgba(15,23,42,.08);
+      --shadow2:0 8px 24px rgba(15,23,42,.06);
+      --radius:24px;
+      --sidebar:260px;
     }
 
     * { box-sizing:border-box; }
 
     body {
-      font-family: Arial, sans-serif;
-      background:var(--bg);
-      padding:22px;
       margin:0;
       color:var(--text);
+      font-family:Inter, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(37,99,235,.12), transparent 30%),
+        radial-gradient(circle at top right, rgba(22,163,74,.08), transparent 25%),
+        var(--bg);
     }
 
     .hidden { display:none !important; }
-    h1, h2 { margin-top:0; }
+
+    h1, h2, h3, p { margin-top:0; }
+
+    button, input, select {
+      font-family:inherit;
+      font-size:16px;
+    }
 
     button {
       border:none;
       background:var(--blue);
       color:white;
-      font-weight:bold;
+      font-weight:800;
       cursor:pointer;
-      border-radius:12px;
+      border-radius:14px;
       transition:.15s ease;
+      padding:13px 16px;
+      min-height:46px;
     }
 
-    button:hover { background:var(--blue-dark); }
-    button:disabled { opacity:.6; cursor:not-allowed; }
+    button:hover {
+      background:var(--blue2);
+      transform:translateY(-1px);
+    }
 
-    input, select, button {
-      font-size:17px;
-      padding:13px 14px;
-      margin:0;
+    button:disabled {
+      opacity:.55;
+      cursor:not-allowed;
+      transform:none;
     }
 
     input, select {
-      border:2px solid #d1d5db;
+      border:1px solid #d7deea;
       background:white;
-      border-radius:12px;
+      border-radius:14px;
       min-height:48px;
+      padding:13px 14px;
+      color:var(--text);
     }
 
     input:focus, select:focus {
       outline:none;
       border-color:var(--blue);
-      box-shadow:0 0 0 4px rgba(37,99,235,.15);
+      box-shadow:0 0 0 4px rgba(37,99,235,.13);
     }
 
     table {
       width:100%;
       border-collapse:collapse;
-      font-size:17px;
+      font-size:15px;
     }
 
     th, td {
       border-bottom:1px solid var(--border);
-      padding:13px 12px;
+      padding:14px 12px;
       text-align:left;
       vertical-align:middle;
     }
 
     th {
-      background:#f9fafb;
-      color:#374151;
-      font-size:14px;
+      color:#475569;
+      font-size:12px;
       text-transform:uppercase;
-      letter-spacing:.04em;
+      letter-spacing:.06em;
+      font-weight:900;
+      background:#f8fafc;
     }
 
-    tbody tr:hover { filter:brightness(.98); }
+    tbody tr:hover {
+      background:#f8fafc;
+    }
 
-    .ok { color:var(--green); font-weight:bold; }
-    .bad { color:var(--red); font-weight:bold; }
-    .warn { color:var(--orange); font-weight:bold; }
-    .small { color:var(--muted); font-size:15px; line-height:1.45; }
+    .ok { color:var(--green); font-weight:900; }
+    .bad { color:var(--red); font-weight:900; }
+    .warn { color:var(--orange); font-weight:900; }
+
+    .small {
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.45;
+    }
 
     .label {
       color:var(--muted);
-      font-size:15px;
-      font-weight:bold;
+      font-size:12px;
+      font-weight:900;
       text-transform:uppercase;
-      letter-spacing:.04em;
+      letter-spacing:.07em;
       margin-bottom:8px;
     }
 
-    .stat {
-      font-size:42px;
-      line-height:1;
-      font-weight:bold;
-      letter-spacing:-.03em;
+    .pill {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:900;
+      white-space:nowrap;
     }
 
-    .statsGrid .card:not(:first-child) .stat { font-size:32px; }
-
-    .card {
-      background:var(--card);
-      border-radius:24px;
-      padding:24px;
-      margin-bottom:18px;
-      box-shadow:var(--shadow);
-      border:1px solid rgba(255,255,255,.7);
+    .pill.okPill {
+      background:var(--greenSoft);
+      color:#166534;
     }
+
+    .pill.badPill {
+      background:var(--redSoft);
+      color:#991b1b;
+    }
+
+    .pill.warnPill {
+      background:var(--orangeSoft);
+      color:#92400e;
+    }
+
+    .pill.bluePill {
+      background:var(--blueSoft);
+      color:#1d4ed8;
+    }
+
+    .primaryBtn {
+      background:linear-gradient(135deg, #2563eb, #1d4ed8);
+      box-shadow:0 12px 22px rgba(37,99,235,.22);
+    }
+
+    .secondaryBtn {
+      background:#111827;
+    }
+
+    .secondaryBtn:hover {
+      background:#030712;
+    }
+
+    .dangerBtn {
+      background:#ef4444;
+    }
+
+    .dangerBtn:hover {
+      background:#dc2626;
+    }
+
+    .lightBtn {
+      background:#f1f5f9;
+      color:#0f172a;
+      border:1px solid #dbe4f0;
+    }
+
+    .lightBtn:hover {
+      background:#e2e8f0;
+    }
+
+    .ghostBtn {
+      background:white;
+      color:#1d4ed8;
+      border:1px solid #bfdbfe;
+    }
+
+    .ghostBtn:hover {
+      background:#eff6ff;
+    }
+
+    /* LOGIN */
 
     .loginCard {
-      background:white;
-      padding:36px;
-      border-radius:24px;
+      background:rgba(255,255,255,.88);
+      backdrop-filter:blur(16px);
+      padding:38px;
+      border-radius:30px;
       width:100%;
-      max-width:520px;
-      margin:40px auto;
+      max-width:540px;
+      margin:48px auto;
       box-shadow:var(--shadow);
-      box-sizing:border-box;
+      border:1px solid rgba(255,255,255,.75);
     }
 
     .loginLogo {
       text-align:center;
-      margin-bottom:15px;
+      margin-bottom:16px;
     }
 
     .loginLogo img {
-      width:90px;
+      width:94px;
       height:auto;
       display:block;
       margin:0 auto;
@@ -150,7 +237,8 @@
     .loginCard h1 {
       text-align:center;
       margin:0;
-      font-size:32px;
+      font-size:34px;
+      letter-spacing:-.04em;
     }
 
     .loginSubtitle {
@@ -158,75 +246,69 @@
       color:var(--muted);
       margin-top:8px;
       margin-bottom:28px;
-      line-height:1.4;
+      line-height:1.45;
     }
 
     .loginCard label {
       display:block;
-      font-weight:bold;
+      font-weight:900;
       margin-top:16px;
-      margin-bottom:6px;
+      margin-bottom:7px;
     }
 
     .qrLoginBox {
-      background:#eff6ff;
-      border:2px solid #bfdbfe;
-      border-radius:18px;
+      background:linear-gradient(135deg, #eff6ff, #ffffff);
+      border:1px solid #bfdbfe;
+      border-radius:22px;
       padding:18px;
-      margin-bottom:22px;
+      margin-bottom:18px;
+      box-shadow:var(--shadow2);
     }
 
     .qrLoginBox label {
       margin-top:0;
       color:#1e3a8a;
-      font-size:18px;
+      font-size:17px;
     }
 
     .qrLoginInput {
       width:100%;
       font-size:24px;
       padding:16px;
-      border-radius:14px;
-      border:3px solid var(--blue);
+      border-radius:16px;
+      border:2px solid var(--blue);
       margin:0;
       text-align:center;
-      font-weight:bold;
+      font-weight:900;
       letter-spacing:.5px;
     }
 
-    .qrLoginInput:focus {
-      outline:none;
-      border-color:var(--blue-dark);
-      box-shadow:0 0 0 4px rgba(37,99,235,.15);
-    }
-
-    .qrLoginBtn {
+    .qrLoginBtn,
+    .loginBtn {
       width:100%;
       margin:14px 0 0;
-      font-size:22px;
+      font-size:21px;
       padding:15px;
-      border-radius:14px;
-      border:none;
-      background:var(--blue);
-      color:white;
-      font-weight:bold;
+      border-radius:16px;
+      background:linear-gradient(135deg, #2563eb, #1d4ed8);
+      box-shadow:0 12px 22px rgba(37,99,235,.20);
     }
-
-    .qrLoginBtn:hover { background:var(--blue-dark); }
 
     .togglePasswordBtn {
       width:100%;
       margin:8px 0 0;
-      font-size:18px;
+      font-size:17px;
       padding:13px;
-      border-radius:14px;
-      border:none;
-      background:#e5e7eb;
+      border-radius:16px;
+      background:#eef2f7;
       color:#111827;
-      font-weight:bold;
+      font-weight:900;
+      border:1px solid #d7deea;
     }
 
-    .togglePasswordBtn:hover { background:#d1d5db; }
+    .togglePasswordBtn:hover {
+      background:#e2e8f0;
+    }
 
     .passwordLoginBox {
       margin-top:18px;
@@ -238,7 +320,7 @@
       align-items:center;
       gap:12px;
       color:var(--muted);
-      font-weight:bold;
+      font-weight:900;
       margin:18px 0;
       text-align:center;
     }
@@ -247,43 +329,24 @@
     .loginDivider::after {
       content:"";
       height:1px;
-      background:#d1d5db;
+      background:#d7deea;
       flex:1;
     }
 
     .loginInput {
       width:100%;
-      font-size:22px;
+      font-size:21px;
       padding:14px;
-      border-radius:12px;
-      border:2px solid #d1d5db;
+      border-radius:14px;
+      border:1px solid #d7deea;
       margin:0;
     }
 
-    .loginInput:focus {
-      outline:none;
-      border-color:var(--blue);
-    }
-
-    .loginBtn {
-      width:100%;
-      margin:24px 0 0;
-      font-size:24px;
-      padding:16px;
-      border-radius:14px;
-      border:none;
-      background:var(--blue);
-      color:white;
-      font-weight:bold;
-    }
-
-    .loginBtn:hover { background:var(--blue-dark); }
-
     .loginStatus {
       margin-top:18px;
-      padding:12px;
-      border-radius:12px;
-      font-weight:bold;
+      padding:13px 14px;
+      border-radius:14px;
+      font-weight:900;
       display:none;
       line-height:1.35;
       white-space:pre-wrap;
@@ -293,118 +356,369 @@
     .loginStatus.ok { display:block; background:#dcfce7; color:#166534; }
     .loginStatus.info { display:block; background:#eff6ff; color:#1d4ed8; }
 
-    .dashboardShell {
-      width:100%;
-      max-width:1920px;
-      margin:0 auto;
+    /* APP */
+
+    .appShell {
+      display:grid;
+      grid-template-columns:var(--sidebar) minmax(0, 1fr);
+      min-height:100vh;
     }
 
-    .topbar {
+    .sidebar {
+      position:sticky;
+      top:0;
+      height:100vh;
+      background:rgba(255,255,255,.82);
+      backdrop-filter:blur(18px);
+      border-right:1px solid rgba(226,232,240,.8);
+      padding:22px 16px;
       display:flex;
-      justify-content:space-between;
-      gap:20px;
-      align-items:center;
-      flex-wrap:wrap;
-      background:white;
-      border-radius:26px;
-      padding:22px 26px;
-      margin-bottom:20px;
-      box-shadow:var(--shadow);
-    }
-
-    .topbarTitle {
-      display:flex;
-      align-items:center;
+      flex-direction:column;
       gap:18px;
     }
 
-    .topbarLogo {
-      width:70px;
+    .brand {
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:10px 10px 22px;
+      border-bottom:1px solid var(--border);
+    }
+
+    .brand img {
+      width:46px;
       height:auto;
-      display:block;
     }
 
-    .topbar h1 {
-      margin:0;
-      font-size:38px;
+    .brandTitle {
+      font-weight:950;
       letter-spacing:-.03em;
+      font-size:18px;
+      line-height:1.05;
     }
 
-    .filters {
+    .brandSub {
+      color:var(--blue);
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+
+    .nav {
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .navBtn {
+      width:100%;
+      background:transparent;
+      color:#334155;
+      display:flex;
+      justify-content:flex-start;
+      align-items:center;
+      gap:11px;
+      font-size:16px;
+      border-radius:16px;
+      padding:13px 14px;
+      box-shadow:none;
+    }
+
+    .navBtn:hover {
+      background:#eff6ff;
+      color:#1d4ed8;
+      transform:none;
+    }
+
+    .navBtn.active {
+      color:white;
+      background:linear-gradient(135deg, #2563eb, #1d4ed8);
+      box-shadow:0 14px 26px rgba(37,99,235,.22);
+    }
+
+    .sidebarFooter {
+      margin-top:auto;
+      background:#f8fafc;
+      border:1px solid var(--border);
+      border-radius:20px;
+      padding:14px;
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+
+    .avatar {
+      width:42px;
+      height:42px;
+      border-radius:999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:linear-gradient(135deg, #2563eb, #60a5fa);
+      color:white;
+      font-weight:950;
+      box-shadow:0 10px 18px rgba(37,99,235,.22);
+      flex:0 0 auto;
+    }
+
+    .main {
+      min-width:0;
+      padding:24px;
+    }
+
+    .hero {
+      background:rgba(255,255,255,.86);
+      border:1px solid rgba(255,255,255,.8);
+      box-shadow:var(--shadow);
+      border-radius:30px;
+      padding:24px;
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:18px;
+      margin-bottom:20px;
+      backdrop-filter:blur(16px);
+    }
+
+    .hero h1 {
+      font-size:38px;
+      margin:0;
+      letter-spacing:-.045em;
+    }
+
+    .heroMeta {
+      margin-top:7px;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.5;
+    }
+
+    .heroActions {
       display:flex;
       gap:10px;
       flex-wrap:wrap;
-      align-items:center;
       justify-content:flex-end;
     }
 
-    .filters input { min-width:230px; }
-    .filters button { min-height:48px; padding-left:18px; padding-right:18px; }
+    .view {
+      display:none;
+    }
 
-    .secondaryBtn { background:#111827; }
-    .secondaryBtn:hover { background:#030712; }
+    .view.active {
+      display:block;
+    }
 
-    .dangerBtn { background:#ef4444; }
-    .dangerBtn:hover { background:#dc2626; }
+    .card {
+      background:rgba(255,255,255,.92);
+      border:1px solid rgba(255,255,255,.8);
+      border-radius:var(--radius);
+      padding:22px;
+      box-shadow:var(--shadow2);
+      margin-bottom:18px;
+    }
 
-    .dashboardLayout {
+    .cardTitleRow {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+      margin-bottom:16px;
+    }
+
+    .cardTitleRow h2 {
+      margin:0;
+      font-size:22px;
+      letter-spacing:-.03em;
+    }
+
+    .kpiGrid {
       display:grid;
-      grid-template-columns:minmax(0, 1fr) 560px;
-      gap:20px;
+      grid-template-columns:repeat(6, minmax(0, 1fr));
+      gap:14px;
+      margin-bottom:18px;
+    }
+
+    .kpiCard {
+      background:white;
+      border:1px solid rgba(226,232,240,.95);
+      border-radius:22px;
+      padding:18px;
+      box-shadow:var(--shadow2);
+      min-height:126px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      overflow:hidden;
+      position:relative;
+    }
+
+    .kpiCard::after {
+      content:"";
+      position:absolute;
+      right:-28px;
+      top:-28px;
+      width:82px;
+      height:82px;
+      border-radius:999px;
+      background:rgba(37,99,235,.08);
+    }
+
+    .kpiTop {
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      align-items:flex-start;
+      position:relative;
+      z-index:1;
+    }
+
+    .kpiIcon {
+      width:42px;
+      height:42px;
+      border-radius:15px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:23px;
+      background:var(--blueSoft);
+      color:var(--blue);
+      flex:0 0 auto;
+    }
+
+    .kpiIcon.okIcon { background:var(--greenSoft); color:var(--green); }
+    .kpiIcon.badIcon { background:var(--redSoft); color:var(--red); }
+    .kpiIcon.warnIcon { background:var(--orangeSoft); color:var(--orange); }
+
+    .kpiLabel {
+      color:var(--muted);
+      font-size:13px;
+      font-weight:900;
+      line-height:1.25;
+    }
+
+    .kpiValue {
+      font-size:31px;
+      font-weight:950;
+      letter-spacing:-.04em;
+      line-height:1;
+      position:relative;
+      z-index:1;
+    }
+
+    .kpiHint {
+      color:var(--muted);
+      font-size:13px;
+      margin-top:8px;
+      position:relative;
+      z-index:1;
+    }
+
+    .summaryGrid {
+      display:grid;
+      grid-template-columns:minmax(0, 1.25fr) minmax(340px, .75fr);
+      gap:18px;
       align-items:start;
     }
 
-    .leftDashboard { min-width:0; }
-
-    .statsGrid {
-      display:grid;
-      grid-template-columns:repeat(5, minmax(0, 1fr));
-      gap:16px;
+    .progressHero {
+      background:
+        radial-gradient(circle at right top, rgba(34,197,94,.14), transparent 35%),
+        white;
+      border:1px solid rgba(226,232,240,.95);
+      border-radius:28px;
+      padding:24px;
+      box-shadow:var(--shadow2);
     }
 
-    .totalCard { grid-column:1 / -1; }
-
-    .statsGrid .card {
-      min-height:150px;
+    .progressMain {
       display:flex;
-      flex-direction:column;
-      justify-content:center;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:16px;
+      margin-bottom:18px;
     }
 
-    .totalCard { min-height:130px; }
-
-    .workersPanel {
-      min-height:700px;
-      position:sticky;
-      top:22px;
-    }
-
-    .workersPanel h2, .historyPanel h2 {
-      font-size:28px;
-      margin-bottom:8px;
+    .progressBig {
+      font-size:54px;
+      line-height:1;
+      font-weight:950;
+      letter-spacing:-.06em;
     }
 
     .progressBar {
       width:100%;
-      height:18px;
+      height:17px;
       background:#e5e7eb;
       border-radius:999px;
       overflow:hidden;
-      margin-top:18px;
     }
 
     .progressFill {
       height:100%;
       width:0%;
       background:linear-gradient(90deg, #22c55e, #16a34a);
-      transition:width .3s ease;
+      transition:width .35s ease;
     }
 
-    .clickable, .workerName {
+    .alertBox,
+    .brakiBox {
+      border-radius:22px;
+      padding:18px 20px;
+      font-weight:900;
+      line-height:1.45;
+      box-shadow:var(--shadow2);
+      margin-bottom:14px;
+    }
+
+    .alertBox {
+      background:#fff1f2;
+      color:#991b1b;
+      border:1px solid #fecaca;
+    }
+
+    .brakiBox {
+      background:#fffbeb;
+      color:#92400e;
+      border:1px solid #fde68a;
+    }
+
+    .miniGrid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+      margin-top:18px;
+    }
+
+    .filtersCard {
+      display:grid;
+      grid-template-columns:1.4fr 1fr 1fr auto auto;
+      gap:10px;
+      align-items:end;
+      margin-bottom:16px;
+    }
+
+    .filterGroup label {
+      display:block;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.07em;
+      margin-bottom:7px;
+    }
+
+    .filterGroup input,
+    .filterGroup select {
+      width:100%;
+    }
+
+    .clickable,
+    .workerName {
       cursor:pointer;
       text-decoration:underline;
       text-underline-offset:4px;
-      font-weight:bold;
+      font-weight:900;
     }
 
     .sortableTh {
@@ -418,10 +732,15 @@
     }
 
     .rankBadge {
-      display:inline-block;
-      min-width:34px;
-      font-weight:bold;
+      display:inline-flex;
+      justify-content:center;
+      align-items:center;
+      min-width:32px;
+      height:32px;
       margin-right:8px;
+      border-radius:999px;
+      background:#f1f5f9;
+      font-weight:950;
     }
 
     .historyPager {
@@ -430,15 +749,15 @@
       align-items:center;
       gap:12px;
       flex-wrap:wrap;
-      margin:14px 0 0;
-      padding-top:14px;
+      margin:16px 0 0;
+      padding-top:16px;
       border-top:1px solid var(--border);
     }
 
     .historyPagerInfo {
       color:var(--muted);
-      font-weight:bold;
-      font-size:15px;
+      font-weight:900;
+      font-size:14px;
     }
 
     .historyPagerButtons {
@@ -447,60 +766,155 @@
       flex-wrap:wrap;
     }
 
-    .historyPagerButtons button {
-      min-width:150px;
-      background:#111827;
+    .statusBadge {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      border-radius:999px;
+      padding:7px 10px;
+      font-size:13px;
+      font-weight:950;
     }
 
-    .historyPagerButtons button:hover {
-      background:#030712;
+    .statusBadge.POPRAWNA {
+      background:var(--greenSoft);
+      color:#166534;
     }
 
-    .alertBox {
-      background:#fee2e2;
-      color:#991b1b;
-      border:2px solid #fecaca;
-      border-radius:20px;
-      padding:18px 22px;
-      font-weight:bold;
-      font-size:24px;
-      margin-bottom:20px;
-      box-shadow:var(--shadow);
-    }
-
-    .brakiBox {
-      background:#fffbeb;
+    .statusBadge.BRAKI {
+      background:var(--orangeSoft);
       color:#92400e;
-      border:2px solid #fde68a;
-      border-radius:20px;
-      padding:18px 22px;
-      font-weight:bold;
-      font-size:22px;
-      margin-bottom:20px;
-      box-shadow:var(--shadow);
     }
+
+    .statusBadge.NIEPOPRAWNA {
+      background:var(--redSoft);
+      color:#991b1b;
+    }
+
+    .workerAdminLayout {
+      display:grid;
+      grid-template-columns:minmax(0, 1fr) 360px;
+      gap:18px;
+      align-items:start;
+    }
+
+    .employeeToolbar {
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:16px;
+    }
+
+    .employeeToolbar input {
+      min-width:300px;
+      flex:1;
+    }
+
+    .qrMini,
+    .qrPreview {
+      background:
+        linear-gradient(90deg, #111 20%, transparent 20% 40%, #111 40% 60%, transparent 60% 80%, #111 80%),
+        linear-gradient(#111 20%, transparent 20% 40%, #111 40% 60%, transparent 60% 80%, #111 80%);
+      background-size:11px 11px;
+      border:5px solid white;
+      box-shadow:0 0 0 1px #dbe4f0;
+      image-rendering:pixelated;
+    }
+
+    .qrMini {
+      width:42px;
+      height:42px;
+      border-radius:8px;
+    }
+
+    .qrPreview {
+      width:180px;
+      height:180px;
+      border-radius:16px;
+      margin:16px auto;
+    }
+
+    .sidePanelMock {
+      background:white;
+      border:1px solid rgba(226,232,240,.95);
+      border-radius:28px;
+      padding:22px;
+      box-shadow:var(--shadow2);
+      position:sticky;
+      top:24px;
+    }
+
+    .sidePanelMock input,
+    .sidePanelMock select {
+      width:100%;
+      margin-bottom:14px;
+    }
+
+    .settingsGrid {
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:18px;
+    }
+
+    .settingRow {
+      display:flex;
+      justify-content:space-between;
+      gap:14px;
+      align-items:center;
+      padding:14px 0;
+      border-bottom:1px solid var(--border);
+    }
+
+    .settingRow:last-child {
+      border-bottom:none;
+    }
+
+    .switchMock {
+      width:48px;
+      height:28px;
+      border-radius:999px;
+      background:#dbeafe;
+      position:relative;
+      flex:0 0 auto;
+    }
+
+    .switchMock::after {
+      content:"";
+      position:absolute;
+      width:22px;
+      height:22px;
+      border-radius:999px;
+      background:var(--blue);
+      right:3px;
+      top:3px;
+      box-shadow:0 3px 8px rgba(37,99,235,.25);
+    }
+
+    /* MODAL */
 
     .modalBg {
       position:fixed;
       inset:0;
-      background:rgba(0,0,0,.55);
+      background:rgba(15,23,42,.58);
       display:flex;
       align-items:center;
       justify-content:center;
       z-index:999;
       padding:14px;
+      backdrop-filter:blur(6px);
     }
 
     .modal {
       background:white;
-      border-radius:24px;
+      border-radius:30px;
       padding:28px;
       width:95%;
-      max-width:1300px;
-      max-height:85vh;
+      max-width:1320px;
+      max-height:86vh;
       overflow:auto;
       overflow-x:hidden;
-      box-shadow:0 25px 80px rgba(0,0,0,.25);
+      box-shadow:0 28px 90px rgba(0,0,0,.28);
     }
 
     .modalHeader {
@@ -508,24 +922,20 @@
       justify-content:space-between;
       align-items:center;
       gap:12px;
-      margin-bottom:16px;
+      margin-bottom:18px;
     }
 
     .modalHeader h2 {
       font-size:30px;
       margin:0;
+      letter-spacing:-.04em;
     }
 
     .closeBtn {
       background:#ef4444;
-      font-size:18px;
+      font-size:16px;
       padding:12px 18px;
     }
-
-    .closeBtn:hover { background:#dc2626; }
-
-    .badCell { background:#fee2e2; }
-    .warnCell { background:#fffbeb; }
 
     .detailsGrid {
       display:grid;
@@ -535,25 +945,23 @@
     }
 
     .detailsCard {
-      background:#f9fafb;
+      background:#f8fafc;
       border:1px solid var(--border);
-      border-radius:18px;
+      border-radius:20px;
       padding:18px;
       min-width:0;
     }
 
     .detailsValue {
-      font-size:24px;
-      font-weight:bold;
+      font-size:22px;
+      font-weight:950;
       word-break:break-word;
     }
 
     .detailsStatus {
-      font-size:24px;
-      font-weight:bold;
+      font-size:22px;
+      font-weight:950;
     }
-
-    .detailsGrid .label { font-size:13px; }
 
     .detailsTable {
       width:100%;
@@ -561,212 +969,283 @@
       margin-bottom:18px;
     }
 
-    .detailsTable th { width:180px; }
+    .detailsTable th { width:185px; }
     .detailsTable td { word-break:break-word; }
+
+    .badCell { background:#fee2e2; }
+    .warnCell { background:#fffbeb; }
 
     .itemStatusOk { background:#f0fdf4; }
     .itemStatusBrak { background:#fffbeb; }
     .itemStatusBad { background:#fff1f2; }
 
-    @media(max-width:1500px){
-      .dashboardLayout { grid-template-columns:1fr; }
-      .workersPanel { position:static; min-height:auto; max-height:none; }
-      .statsGrid { grid-template-columns:repeat(5, minmax(0, 1fr)); }
-      .statsGrid .card { min-height:120px; padding:18px; }
-      .stat { font-size:30px; }
-      .statsGrid .card:not(:first-child) .stat { font-size:26px; }
-      .topbar { align-items:flex-start; }
-      .topbar h1 { font-size:30px; }
-      .topbarLogo { width:60px; }
-      .filters { width:100%; justify-content:flex-start; }
-      .filters input { min-width:200px; }
-    }
-
-    @media(max-width:1200px){
-      .statsGrid { grid-template-columns:1fr 1fr; }
-      .totalCard { grid-column:1 / -1; }
-    }
-
-    @media(max-width:900px){
-      body { padding:12px; }
-      .loginCard { padding:24px; margin:20px auto; }
-      .topbar { padding:18px; }
-      .topbarTitle { width:100%; }
-      .topbar h1 { font-size:30px; }
-      .topbarLogo { width:56px; }
-      .filters { width:100%; }
-      .filters input, .filters select, .filters button { width:100%; }
-      .statsGrid { grid-template-columns:1fr; }
-      .totalCard { grid-column:auto; }
-      .stat { font-size:34px; }
-      table { font-size:14px; }
-      th, td { padding:10px 8px; }
-      .detailsGrid { grid-template-columns:1fr 1fr; }
-      .detailsTable th { width:130px; }
-      .historyPagerButtons,
-      .historyPagerButtons button {
-        width:100%;
-      }
-    }
-
-    @media(max-width:600px){
-      .detailsGrid { grid-template-columns:1fr; }
-    }
+    /* MOBILE */
 
     .mobileView { display:none; }
 
-@media(max-width:700px){
-  .dashboardShell { display:none; }
-  .mobileView { display:block; }
+    @media(max-width:1300px) {
+      .appShell {
+        grid-template-columns:1fr;
+      }
 
-  .mobileTopbar {
-    background:white;
-    border-radius:20px;
-    padding:16px 18px;
-    margin-bottom:14px;
-    box-shadow:var(--shadow);
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-  }
+      .sidebar {
+        position:static;
+        height:auto;
+        flex-direction:row;
+        align-items:center;
+        overflow:auto;
+        padding:14px;
+      }
 
-  .mobileTopbar h1 {
-    font-size:22px;
-    margin:0;
-    letter-spacing:-.02em;
-  }
+      .brand {
+        border-bottom:none;
+        padding:8px;
+        min-width:220px;
+      }
 
-  .mobileTopbar .small { margin-top:4px; font-size:13px; }
+      .nav {
+        flex-direction:row;
+      }
 
-  .mobileLogo { width:44px; height:auto; display:block; }
+      .navBtn {
+        white-space:nowrap;
+      }
 
-  .mobileTopbarRight {
-    display:flex;
-    gap:8px;
-    align-items:center;
-  }
+      .sidebarFooter {
+        display:none;
+      }
 
-  .mobileTopbarRight button {
-    font-size:14px;
-    padding:10px 12px;
-    border-radius:10px;
-  }
+      .kpiGrid {
+        grid-template-columns:repeat(3, minmax(0, 1fr));
+      }
 
-  .mobileStatsGrid {
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
-    margin-bottom:14px;
-  }
+      .summaryGrid,
+      .workerAdminLayout {
+        grid-template-columns:1fr;
+      }
 
-  .mobileStatCard {
-    background:white;
-    border-radius:18px;
-    padding:16px;
-    box-shadow:var(--shadow);
-    text-align:center;
-  }
+      .sidePanelMock {
+        position:static;
+      }
 
-  .mobileStatCard.fullWidth {
-    grid-column:1 / -1;
-  }
+      .filtersCard {
+        grid-template-columns:1fr 1fr;
+      }
+    }
 
-  .mobileStatLabel {
-    color:var(--muted);
-    font-size:12px;
-    font-weight:bold;
-    text-transform:uppercase;
-    letter-spacing:.04em;
-    margin-bottom:6px;
-  }
+    @media(max-width:900px) {
+      .main {
+        padding:14px;
+      }
 
-  .mobileStatValue {
-    font-size:36px;
-    font-weight:bold;
-    letter-spacing:-.03em;
-    line-height:1;
-  }
+      .hero {
+        flex-direction:column;
+        border-radius:24px;
+      }
 
-  .mobileProgressBar {
-    width:100%;
-    height:12px;
-    background:#e5e7eb;
-    border-radius:999px;
-    overflow:hidden;
-    margin-top:10px;
-  }
+      .heroActions {
+        width:100%;
+        justify-content:stretch;
+      }
 
-  .mobileProgressFill {
-    height:100%;
-    width:0%;
-    background:linear-gradient(90deg,#22c55e,#16a34a);
-    transition:width .3s ease;
-  }
+      .heroActions button {
+        flex:1;
+      }
 
-  .mobileAlertBox {
-    background:#fee2e2;
-    color:#991b1b;
-    border:2px solid #fecaca;
-    border-radius:16px;
-    padding:14px 16px;
-    font-weight:bold;
-    font-size:16px;
-    margin-bottom:12px;
-  }
+      .hero h1 {
+        font-size:30px;
+      }
 
-  .mobileBrakiBox {
-    background:#fffbeb;
-    color:#92400e;
-    border:2px solid #fde68a;
-    border-radius:16px;
-    padding:14px 16px;
-    font-weight:bold;
-    font-size:15px;
-    margin-bottom:12px;
-  }
+      .kpiGrid,
+      .miniGrid,
+      .settingsGrid,
+      .detailsGrid {
+        grid-template-columns:1fr;
+      }
 
-  .mobileHistoryCard {
-    background:white;
-    border-radius:18px;
-    padding:16px;
-    box-shadow:var(--shadow);
-  }
+      .filtersCard {
+        grid-template-columns:1fr;
+      }
 
-  .mobileHistoryCard h2 {
-    font-size:20px;
-    margin:0 0 12px;
-  }
+      table {
+        font-size:13px;
+      }
 
-  .mobileHistoryItem {
-    border-bottom:1px solid var(--border);
-    padding:12px 0;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-  }
+      th, td {
+        padding:10px 8px;
+      }
 
-  .mobileHistoryItem:last-child { border-bottom:none; }
+      .progressBig {
+        font-size:38px;
+      }
 
-  .mobileHistoryBag {
-    font-size:16px;
-    font-weight:bold;
-    word-break:break-all;
-  }
+      .detailsTable th {
+        width:130px;
+      }
+    }
 
-  .mobileHistoryMeta {
-    font-size:13px;
-    color:var(--muted);
-    margin-top:3px;
-  }
+    @media(max-width:700px) {
+      body {
+        background:var(--bg);
+      }
 
-  .mobileHistoryStatus {
-    font-size:13px;
-    font-weight:bold;
-    white-space:nowrap;
-  }
-}
+      .appShell {
+        display:none !important;
+      }
+
+      .mobileView {
+        display:block;
+        padding:12px;
+      }
+
+      .mobileTopbar {
+        background:white;
+        border-radius:22px;
+        padding:16px;
+        margin-bottom:14px;
+        box-shadow:var(--shadow2);
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:10px;
+      }
+
+      .mobileTopbar h1 {
+        font-size:22px;
+        margin:0;
+        letter-spacing:-.03em;
+      }
+
+      .mobileLogo {
+        width:44px;
+        height:auto;
+      }
+
+      .mobileTopbarRight {
+        display:flex;
+        gap:8px;
+        align-items:center;
+      }
+
+      .mobileTopbarRight button {
+        font-size:14px;
+        padding:10px 12px;
+        border-radius:12px;
+      }
+
+      .mobileStatsGrid {
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:10px;
+        margin-bottom:14px;
+      }
+
+      .mobileStatCard {
+        background:white;
+        border-radius:20px;
+        padding:16px;
+        box-shadow:var(--shadow2);
+        text-align:center;
+      }
+
+      .mobileStatCard.fullWidth {
+        grid-column:1 / -1;
+      }
+
+      .mobileStatLabel {
+        color:var(--muted);
+        font-size:12px;
+        font-weight:900;
+        text-transform:uppercase;
+        letter-spacing:.05em;
+        margin-bottom:6px;
+      }
+
+      .mobileStatValue {
+        font-size:34px;
+        font-weight:950;
+        letter-spacing:-.04em;
+        line-height:1;
+      }
+
+      .mobileProgressBar {
+        width:100%;
+        height:12px;
+        background:#e5e7eb;
+        border-radius:999px;
+        overflow:hidden;
+        margin-top:10px;
+      }
+
+      .mobileProgressFill {
+        height:100%;
+        width:0%;
+        background:linear-gradient(90deg,#22c55e,#16a34a);
+        transition:width .3s ease;
+      }
+
+      .mobileAlertBox,
+      .mobileBrakiBox {
+        border-radius:18px;
+        padding:14px 16px;
+        font-weight:900;
+        font-size:15px;
+        margin-bottom:12px;
+      }
+
+      .mobileAlertBox {
+        background:#fee2e2;
+        color:#991b1b;
+        border:1px solid #fecaca;
+      }
+
+      .mobileBrakiBox {
+        background:#fffbeb;
+        color:#92400e;
+        border:1px solid #fde68a;
+      }
+
+      .mobileHistoryCard {
+        background:white;
+        border-radius:20px;
+        padding:16px;
+        box-shadow:var(--shadow2);
+      }
+
+      .mobileHistoryCard h2 {
+        font-size:20px;
+        margin:0 0 12px;
+      }
+
+      .mobileHistoryItem {
+        border-bottom:1px solid var(--border);
+        padding:12px 0;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:10px;
+      }
+
+      .mobileHistoryItem:last-child { border-bottom:none; }
+
+      .mobileHistoryBag {
+        font-size:16px;
+        font-weight:950;
+        word-break:break-all;
+      }
+
+      .mobileHistoryMeta {
+        font-size:13px;
+        color:var(--muted);
+        margin-top:3px;
+      }
+
+      .mobileHistoryStatus {
+        font-size:13px;
+        font-weight:950;
+        white-space:nowrap;
+      }
+    }
   </style>
 </head>
 
@@ -805,96 +1284,400 @@
   <p id="loginStatus" class="loginStatus"></p>
 </div>
 
-<div id="reportScreen" class="hidden dashboardShell">
+<div id="reportScreen" class="hidden appShell">
 
-  <div id="alertBox" class="alertBox hidden"></div>
-  <div id="brakiBox" class="brakiBox hidden"></div>
+  <aside class="sidebar">
+    <div class="brand">
+      <img src="logo.png" alt="logo">
+      <div>
+        <div class="brandTitle">Catering</div>
+        <div class="brandSub">System</div>
+      </div>
+    </div>
 
-  <div class="topbar">
-    <div class="topbarTitle">
-      <img src="logo.png" class="topbarLogo" alt="logo">
+    <div class="nav">
+      <button id="tabSummary" class="navBtn active" onclick="showReportTab('summary')">📊 Podsumowanie</button>
+      <button id="tabHistory" class="navBtn" onclick="showReportTab('history')">🕘 Historia</button>
+      <button id="tabWorkers" class="navBtn" onclick="showReportTab('workers')">👥 Pracownicy</button>
+      <button id="tabSettings" class="navBtn" onclick="showReportTab('settings')">⚙️ Ustawienia</button>
+    </div>
+
+    <div class="sidebarFooter">
+      <div class="avatar" id="userAvatar">M</div>
+      <div>
+        <div style="font-weight:950;" id="sidebarUserName">Manager</div>
+        <div class="small" id="sidebarRoleName">Rola: -</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="hero">
       <div>
         <h1 id="reportTitle">Raport pakowania</h1>
-        <div class="small">
-          Ostatnie odświeżenie: <span id="lastRefresh">-</span> |
-          Auto odświeżanie: co 30 sekund |
-          Załadowano wpisów: <span id="loadedRows">0</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="filters">
-      <input id="bagSearch" placeholder="Szukaj QR torby..." oninput="resetHistoryPageAndRender()">
-
-      <select id="statusFilter" onchange="resetHistoryPageAndRender()">
-        <option value="">Wszystkie statusy</option>
-        <option value="POPRAWNA">Tylko poprawne</option>
-        <option value="NIEPOPRAWNA">Tylko niepoprawne</option>
-        <option value="BRAKI">Tylko braki</option>
-      </select>
-
-      <select id="workerFilter" onchange="resetHistoryPageAndRender()">
-        <option value="">Wszyscy pracownicy</option>
-      </select>
-
-      <button id="refreshButton" onclick="loadReport()">Odśwież teraz</button>
-      <button id="exportButton" class="secondaryBtn" onclick="exportExcel()">Eksport Excel</button>
-      <button class="dangerBtn" onclick="logout()">Wyloguj</button>
-    </div>
-  </div>
-
-  <div class="dashboardLayout">
-    <div class="leftDashboard">
-      <div class="statsGrid">
-        <div class="card totalCard">
-          <div class="label">Finalnie zapakowane</div>
-          <div class="stat" id="totalToday">0 / 0</div>
-          <div class="progressBar">
-            <div class="progressFill" id="totalProgressFill"></div>
-          </div>
-          <div class="small" style="margin-top:10px;">
-            Status BRAKI nie jest liczony jako finalnie zapakowana torba.
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="label">Poprawne</div>
-          <div class="stat ok" id="correctToday">0</div>
-        </div>
-
-        <div class="card">
-          <div class="label">Niepoprawne</div>
-          <div class="stat bad" id="badToday">0</div>
-        </div>
-
-        <div class="card">
-          <div class="label">Braki</div>
-          <div class="stat warn" id="brakiToday">0</div>
-        </div>
-
-        <div class="card">
-          <div class="label">Poprawność finalnych</div>
-          <div class="stat" id="accuracyToday">0%</div>
-        </div>
-
-        <div class="card">
-          <div class="label">Średni czas / torba</div>
-          <div class="stat" id="avgTime">0s</div>
+        <div class="heroMeta">
+          Monitoruj jakość pakowania, braki, błędy i efektywność zespołu.<br>
+          Ostatnie odświeżenie: <b id="lastRefresh">-</b> |
+          Auto odświeżanie: <b>co 30 sekund</b> |
+          Załadowano wpisów: <b id="loadedRows">0</b>
         </div>
       </div>
 
-      <div class="card historyPanel">
-        <h2>🧾 Historia pakowania</h2>
-        <p class="small">Kliknij QR torby, żeby zobaczyć szczegóły.</p>
+      <div class="heroActions">
+        <button id="refreshButton" class="ghostBtn" onclick="loadReport()">↻ Odśwież</button>
+        <button id="exportButton" class="secondaryBtn" onclick="exportExcel()">Eksport Excel</button>
+        <button class="dangerBtn" onclick="logout()">Wyloguj</button>
+      </div>
+    </div>
+
+    <section id="summaryView" class="view active">
+      <div class="kpiGrid">
+        <div class="kpiCard">
+          <div class="kpiTop">
+            <div>
+              <div class="kpiLabel">Finalnie zapakowane</div>
+              <div class="kpiValue" id="totalToday">0 / 0</div>
+            </div>
+            <div class="kpiIcon">🛍️</div>
+          </div>
+          <div class="kpiHint">Bez statusu BRAKI</div>
+        </div>
+
+        <div class="kpiCard">
+          <div class="kpiTop">
+            <div>
+              <div class="kpiLabel">Poprawne</div>
+              <div class="kpiValue ok" id="correctToday">0</div>
+            </div>
+            <div class="kpiIcon okIcon">✓</div>
+          </div>
+          <div class="kpiHint">Torby zamknięte OK</div>
+        </div>
+
+        <div class="kpiCard">
+          <div class="kpiTop">
+            <div>
+              <div class="kpiLabel">Niepoprawne</div>
+              <div class="kpiValue bad" id="badToday">0</div>
+            </div>
+            <div class="kpiIcon badIcon">!</div>
+          </div>
+          <div class="kpiHint">Wymaga kontroli</div>
+        </div>
+
+        <div class="kpiCard">
+          <div class="kpiTop">
+            <div>
+              <div class="kpiLabel">Braki</div>
+              <div class="kpiValue warn" id="brakiToday">0</div>
+            </div>
+            <div class="kpiIcon warnIcon">●</div>
+          </div>
+          <div class="kpiHint">Do dopakowania</div>
+        </div>
+
+        <div class="kpiCard">
+          <div class="kpiTop">
+            <div>
+              <div class="kpiLabel">Poprawność finalnych</div>
+              <div class="kpiValue" id="accuracyToday">0%</div>
+            </div>
+            <div class="kpiIcon okIcon">◎</div>
+          </div>
+          <div class="kpiHint">Poprawne / finalne</div>
+        </div>
+
+        <div class="kpiCard">
+          <div class="kpiTop">
+            <div>
+              <div class="kpiLabel">Śr. czas / torba</div>
+              <div class="kpiValue" id="avgTime">0s</div>
+            </div>
+            <div class="kpiIcon">◷</div>
+          </div>
+          <div class="kpiHint">Średni czas pakowania</div>
+        </div>
+      </div>
+
+      <div class="summaryGrid">
+        <div>
+          <div class="progressHero">
+            <div class="progressMain">
+              <div>
+                <div class="label">Postęp dnia</div>
+                <div class="progressBig" id="summaryProgressText">0%</div>
+                <div class="small" id="summaryProgressSub">Spakowano 0 z 0 toreb.</div>
+              </div>
+              <div class="pill bluePill">● Live</div>
+            </div>
+            <div class="progressBar">
+              <div class="progressFill" id="totalProgressFill"></div>
+            </div>
+          </div>
+
+          <div class="miniGrid">
+            <div class="card">
+              <div class="cardTitleRow">
+                <h2>🏆 Ranking pracowników</h2>
+                <button class="lightBtn" onclick="showReportTab('workers')">Pełny ranking</button>
+              </div>
+              <div id="summaryTopWorkers" class="small">Brak danych.</div>
+            </div>
+
+            <div class="card">
+              <div class="cardTitleRow">
+                <h2>🕘 Ostatnie torby</h2>
+                <button class="lightBtn" onclick="showReportTab('history')">Historia</button>
+              </div>
+              <div id="summaryRecentHistory" class="small">Brak danych.</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card">
+            <div class="cardTitleRow">
+              <h2>🚨 Wymaga uwagi</h2>
+            </div>
+            <div id="alertBox" class="alertBox hidden"></div>
+            <div id="brakiBox" class="brakiBox hidden"></div>
+            <div id="summaryAlertsOk" class="small">
+              Brak krytycznych alertów. System wygląda poprawnie.
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>📌 Szybkie informacje</h2>
+            <div class="settingRow">
+              <div>
+                <b>Status BRAKI</b>
+                <div class="small">Nie liczy się jako finalnie zapakowana torba.</div>
+              </div>
+              <span class="pill warnPill">ważne</span>
+            </div>
+            <div class="settingRow">
+              <div>
+                <b>Eksport Excel</b>
+                <div class="small">Eksportuje wszystkie przefiltrowane dane, nie tylko stronę.</div>
+              </div>
+              <span class="pill bluePill">OK</span>
+            </div>
+            <div class="settingRow">
+              <div>
+                <b>Role</b>
+                <div class="small">Docelowo dodamy rolę managera w Supabase.</div>
+              </div>
+              <span class="pill bluePill">później</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="historyView" class="view">
+      <div class="card">
+        <div class="cardTitleRow">
+          <div>
+            <h2>🧾 Historia pakowania</h2>
+            <div class="small">Szukaj po torbie, statusie albo pracowniku. Kliknij QR torby, żeby zobaczyć szczegóły.</div>
+          </div>
+        </div>
+
+        <div class="filtersCard">
+          <div class="filterGroup">
+            <label>QR torby</label>
+            <input id="bagSearch" placeholder="Szukaj QR torby..." oninput="resetHistoryPageAndRender()">
+          </div>
+
+          <div class="filterGroup">
+            <label>Status</label>
+            <select id="statusFilter" onchange="resetHistoryPageAndRender()">
+              <option value="">Wszystkie statusy</option>
+              <option value="POPRAWNA">Tylko poprawne</option>
+              <option value="NIEPOPRAWNA">Tylko niepoprawne</option>
+              <option value="BRAKI">Tylko braki</option>
+            </select>
+          </div>
+
+          <div class="filterGroup">
+            <label>Pracownik</label>
+            <select id="workerFilter" onchange="resetHistoryPageAndRender()">
+              <option value="">Wszyscy pracownicy</option>
+            </select>
+          </div>
+
+          <button class="lightBtn" onclick="clearHistoryFilters()">Wyczyść</button>
+          <button class="secondaryBtn" onclick="exportExcel()">Eksport</button>
+        </div>
+
         <div id="historyTable"></div>
       </div>
-    </div>
+    </section>
 
-    <div class="card workersPanel">
-      <h2>🏆 Ranking pracowników</h2>
-      <div id="workersTable"></div>
-    </div>
-  </div>
+    <section id="workersView" class="view">
+      <div class="workerAdminLayout">
+        <div>
+          <div class="card">
+            <div class="employeeToolbar">
+              <div>
+                <h2 style="margin:0;">👥 Pracownicy</h2>
+                <div class="small">Wizualny panel pod przyszłe dodawanie workerów, managerów i obsługę QR.</div>
+              </div>
+              <button class="primaryBtn" onclick="openEmployeePanel()">+ Dodaj pracownika</button>
+            </div>
+
+            <input id="employeeSearch" placeholder="Szukaj pracownika..." oninput="renderEmployeeDirectoryFromStats()">
+            <div style="height:14px;"></div>
+            <div id="employeeDirectory"></div>
+          </div>
+
+          <div class="card">
+            <div class="cardTitleRow">
+              <div>
+                <h2>🏆 Ranking z raportu</h2>
+                <div class="small">Kliknij nagłówki, żeby sortować.</div>
+              </div>
+            </div>
+            <div id="workersTable"></div>
+          </div>
+        </div>
+
+        <div id="employeePanel" class="sidePanelMock">
+          <div class="cardTitleRow">
+            <h2>Nowy pracownik</h2>
+            <button class="lightBtn" style="width:auto;" onclick="closeEmployeePanel()">×</button>
+          </div>
+
+          <label class="label">Login</label>
+          <input placeholder="np. jnowak" disabled>
+
+          <label class="label">Imię i nazwisko</label>
+          <input placeholder="np. Jan Nowak" disabled>
+
+          <label class="label">Rola</label>
+          <select disabled>
+            <option>worker</option>
+            <option>manager — dodamy później w Supabase</option>
+            <option>admin</option>
+          </select>
+
+          <div class="card" style="box-shadow:none;background:#f8fafc;margin-top:10px;">
+            <h3 style="margin-bottom:6px;">Kod QR pracownika</h3>
+            <div class="qrPreview"></div>
+            <div class="small" style="text-align:center;">QR zostanie spięty z Supabase w kolejnym etapie.</div>
+          </div>
+
+          <button class="primaryBtn" style="width:100%;" disabled>Generuj QR</button>
+          <button class="ghostBtn" style="width:100%;margin-top:10px;" disabled>Drukuj</button>
+
+          <div class="small" style="margin-top:14px;">
+            Na razie to tylko wygląd. Funkcje dodawania pracownika, roli managera i generowania QR podłączymy później.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="settingsView" class="view">
+      <div class="settingsGrid">
+        <div class="card">
+          <h2>📅 Dzień pakowania</h2>
+          <div class="settingRow">
+            <div>
+              <b>Data pakowania</b>
+              <div class="small" id="settingsMealDate">-</div>
+            </div>
+            <button class="lightBtn" disabled>Zmień</button>
+          </div>
+          <div class="settingRow">
+            <div>
+              <b>Aktywny import</b>
+              <div class="small">Plan pobierany z aktualnej tabeli packing_plan.</div>
+            </div>
+            <span class="pill bluePill">aktywny</span>
+          </div>
+          <div class="settingRow">
+            <div>
+              <b>Liczba toreb w planie</b>
+              <div class="small" id="settingsTotalBags">0</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>📊 Raport</h2>
+          <div class="settingRow">
+            <div>
+              <b>Odświeżanie</b>
+              <div class="small">Raport odświeża się co 30 sekund.</div>
+            </div>
+            <div class="switchMock"></div>
+          </div>
+          <div class="settingRow">
+            <div>
+              <b>Historia na stronę</b>
+              <div class="small">1000 wpisów na stronę.</div>
+            </div>
+            <span class="pill bluePill">1000</span>
+          </div>
+          <div class="settingRow">
+            <div>
+              <b>Eksport Excel</b>
+              <div class="small">Wszystkie przefiltrowane dane.</div>
+            </div>
+            <span class="pill okPill">OK</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>🔐 Dostęp i role</h2>
+          <div class="settingRow">
+            <div>
+              <b>worker</b>
+              <div class="small">Pakowanie solo i stanowiskowe.</div>
+            </div>
+          </div>
+          <div class="settingRow">
+            <div>
+              <b>manager</b>
+              <div class="small">Docelowo raport, kontrola, pracownicy i QR.</div>
+            </div>
+            <span class="pill warnPill">do dodania</span>
+          </div>
+          <div class="settingRow">
+            <div>
+              <b>admin</b>
+              <div class="small">Pełny dostęp techniczny.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>🧰 Narzędzia techniczne</h2>
+          <div class="settingRow">
+            <div>
+              <b>Wyczyść testowe sesje</b>
+              <div class="small">Przycisk pojawi się dopiero po podłączeniu funkcji admina.</div>
+            </div>
+            <button class="dangerBtn" disabled>Wyczyść</button>
+          </div>
+          <div class="settingRow">
+            <div>
+              <b>Zamknij stanowiska</b>
+              <div class="small">Do spięcia z funkcjami RPC.</div>
+            </div>
+            <button class="dangerBtn" disabled>Zamknij</button>
+          </div>
+          <div class="settingRow">
+            <div>
+              <b>Test dźwięku</b>
+              <div class="small">Możemy dodać później ustawienia dźwięków.</div>
+            </div>
+            <button class="lightBtn" disabled>Test</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 </div>
 
 <div id="detailsModal" class="modalBg hidden">
@@ -904,6 +1687,56 @@
       <button class="closeBtn" onclick="closeDetails()">Zamknij</button>
     </div>
     <div id="detailsContent"></div>
+  </div>
+</div>
+
+<div class="mobileView hidden" id="mobileScreen">
+  <div id="mobileAlertBox" class="mobileAlertBox hidden"></div>
+  <div id="mobileBrakiBox" class="mobileBrakiBox hidden"></div>
+
+  <div class="mobileTopbar">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <img src="logo.png" class="mobileLogo" alt="logo">
+      <div>
+        <h1 id="mobileTitleEl">Raport pakowania</h1>
+        <div class="small">Odświeżono: <span id="mobileLastRefresh">-</span></div>
+      </div>
+    </div>
+    <div class="mobileTopbarRight">
+      <button onclick="loadReport()" style="background:#111827;">↻</button>
+      <button onclick="logout()" style="background:#ef4444;">Wyloguj</button>
+    </div>
+  </div>
+
+  <div class="mobileStatsGrid">
+    <div class="mobileStatCard fullWidth">
+      <div class="mobileStatLabel">Postęp pakowania</div>
+      <div class="mobileStatValue" id="mobileTotalStat">0 / 0</div>
+      <div class="mobileProgressBar">
+        <div class="mobileProgressFill" id="mobileProgressFill"></div>
+      </div>
+    </div>
+    <div class="mobileStatCard">
+      <div class="mobileStatLabel">Poprawne</div>
+      <div class="mobileStatValue ok" id="mobileCorrectStat">0</div>
+    </div>
+    <div class="mobileStatCard">
+      <div class="mobileStatLabel">Niepoprawne</div>
+      <div class="mobileStatValue bad" id="mobileBadStat">0</div>
+    </div>
+    <div class="mobileStatCard">
+      <div class="mobileStatLabel">Braki</div>
+      <div class="mobileStatValue warn" id="mobileBrakiStat">0</div>
+    </div>
+    <div class="mobileStatCard">
+      <div class="mobileStatLabel">Poprawność</div>
+      <div class="mobileStatValue" id="mobileAccuracyStat">0%</div>
+    </div>
+  </div>
+
+  <div class="mobileHistoryCard">
+    <h2>🧾 Ostatnie torby</h2>
+    <div id="mobileHistoryList"></div>
   </div>
 </div>
 
@@ -934,6 +1767,43 @@ let historyPage = 1;
 const HISTORY_PAGE_SIZE = 1000;
 
 window.workerStats = [];
+
+function showReportTab(tab) {
+  const tabs = ["summary", "history", "workers", "settings"];
+
+  tabs.forEach(name => {
+    document.getElementById(name + "View").classList.toggle("active", name === tab);
+  });
+
+  document.getElementById("tabSummary").classList.toggle("active", tab === "summary");
+  document.getElementById("tabHistory").classList.toggle("active", tab === "history");
+  document.getElementById("tabWorkers").classList.toggle("active", tab === "workers");
+  document.getElementById("tabSettings").classList.toggle("active", tab === "settings");
+
+  if (tab === "history") {
+    setTimeout(() => bagSearch.focus(), 80);
+  }
+
+  if (tab === "workers") {
+    renderEmployeeDirectoryFromStats();
+  }
+}
+
+function openEmployeePanel() {
+  showReportTab("workers");
+  employeePanel.scrollIntoView({ behavior:"smooth", block:"start" });
+}
+
+function closeEmployeePanel() {
+  employeePanel.scrollIntoView({ behavior:"smooth", block:"nearest" });
+}
+
+function clearHistoryFilters() {
+  bagSearch.value = "";
+  statusFilter.value = "";
+  workerFilter.value = "";
+  resetHistoryPageAndRender();
+}
 
 function togglePasswordLogin() {
   const box = document.getElementById("passwordLoginBox");
@@ -1009,6 +1879,11 @@ function statusClass(status) {
   return "bad";
 }
 
+function statusBadgeHtml(status) {
+  const s = normalizeStatus(status) || "-";
+  return `<span class="statusBadge ${escapeHtml(s)}">${escapeHtml(s)}</span>`;
+}
+
 function splitItems(text) {
   if (!text || text === "-") return [];
   return String(text).split("|").map(x => x.trim()).filter(Boolean);
@@ -1058,9 +1933,9 @@ function changeHistoryPage(direction) {
 
   renderHistory(filtered);
 
-  const historyPanel = document.querySelector(".historyPanel");
-  if (historyPanel) {
-    historyPanel.scrollIntoView({ behavior:"smooth", block:"start" });
+  const historyView = document.getElementById("historyView");
+  if (historyView) {
+    historyView.scrollIntoView({ behavior:"smooth", block:"start" });
   }
 }
 
@@ -1093,6 +1968,10 @@ function translateLoginError(errorMessage) {
 
 async function enterReportAfterLogin() {
   loginScreen.classList.add("hidden");
+
+  userAvatar.innerText = displayLogin(currentUserEmail).slice(0, 1).toUpperCase() || "M";
+  sidebarUserName.innerText = displayLogin(currentUserEmail || "manager");
+  sidebarRoleName.innerText = "Rola: " + (currentUserRole || "-");
 
   const isMobile = window.innerWidth <= 700;
 
@@ -1253,6 +2132,7 @@ async function logout() {
   currentUserRole = "";
 
   reportScreen.classList.add("hidden");
+  mobileScreen.classList.add("hidden");
   loginScreen.classList.remove("hidden");
 
   qrLoginInput.disabled = false;
@@ -1364,16 +2244,19 @@ async function loadReport() {
     lastRefresh.innerText = new Date().toLocaleTimeString("pl-PL");
     loadedRows.innerText = String(sessions.length);
 
+    settingsMealDate.innerText = formatMealDate(mealDate) || "-";
+    settingsTotalBags.innerText = String(totalBagsInPlan);
+
     refreshWorkerFilter();
     renderAll();
     renderMobile(sessions);
-    
+
   } catch (err) {
     alert("Błąd pobierania raportu: " + err.message);
   } finally {
     isLoadingReport = false;
     refreshButton.disabled = false;
-    refreshButton.innerText = "Odśwież teraz";
+    refreshButton.innerText = "↻ Odśwież";
   }
 }
 
@@ -1441,6 +2324,8 @@ function renderAll() {
     : 0;
 
   totalProgressFill.style.width = totalPercent + "%";
+  summaryProgressText.innerText = totalPercent + "%";
+  summaryProgressSub.innerText = `Spakowano ${finalPacked} z ${totalBagsInPlan} toreb.`;
 
   correctToday.innerText = correct.length;
   badToday.innerText = bad.length;
@@ -1452,7 +2337,49 @@ function renderAll() {
   renderBrakiBox(braki.length);
   renderWorkers(allSessions);
   renderHistory(filteredHistory);
+  renderSummaryPanels(allSessions);
 }
+
+function renderSummaryPanels(data) {
+  const last = data.slice(0, 6);
+
+  summaryRecentHistory.innerHTML = last.length
+    ? last.map(x => {
+        const status = normalizeStatus(x.status);
+        return `
+          <div class="settingRow">
+            <div>
+              <b class="clickable" onclick="openDetails(${sessions.findIndex(s => s.id === x.id)})">${escapeHtml(x.bag_qr || "-")}</b>
+              <div class="small">${escapeHtml(displayLogin(x.user_login || "-"))} • ${formatDateTime(x.closed_at)}</div>
+            </div>
+            ${statusBadgeHtml(status)}
+          </div>
+        `;
+      }).join("")
+    : `<div class="small">Brak danych.</div>`;
+
+  const workers = window.workerStats.slice(0, 3);
+
+  summaryTopWorkers.innerHTML = workers.length
+    ? workers.map((w, index) => {
+        const finalPacked = w.correct + w.bad;
+        const accuracy = finalPacked
+          ? Math.round((w.correct / finalPacked) * 100)
+          : 0;
+
+        return `
+          <div class="settingRow">
+            <div>
+              <b>${getRankBadge(index)} ${escapeHtml(w.worker)}</b>
+              <div class="small">${w.total} toreb • ${accuracy}% poprawności</div>
+            </div>
+            <span class="pill okPill">${w.correct} OK</span>
+          </div>
+        `;
+      }).join("")
+    : `<div class="small">Brak danych.</div>`;
+}
+
 function renderMobile(data) {
   if (!document.getElementById("mobileScreen")) return;
 
@@ -1518,26 +2445,36 @@ function renderMobile(data) {
       }).join("")
     : `<div class="small" style="padding:12px 0;">Brak danych.</div>`;
 }
+
 function renderAlerts(badCount) {
-  if (badCount >= 20) {
+  const hasBad = badCount >= 20;
+
+  if (hasBad) {
     alertBox.classList.remove("hidden");
-    alertBox.innerText = `⚠️ UWAGA Liczba niepoprawnych toreb: ${badCount}`;
-    return;
+    alertBox.innerText = `⚠️ UWAGA: liczba niepoprawnych toreb: ${badCount}`;
+  } else {
+    alertBox.classList.add("hidden");
+    alertBox.innerText = "";
   }
 
-  alertBox.classList.add("hidden");
-  alertBox.innerText = "";
+  updateSummaryAlertsOk();
 }
 
 function renderBrakiBox(brakiCount) {
   if (brakiCount > 0) {
     brakiBox.classList.remove("hidden");
-    brakiBox.innerText = `🟡 Do dopakowania / BRAKI: ${brakiCount} toreb. Brakujące pozycje znajdziesz w szczegółach torby oraz w eksporcie Excel w zakładce Braki.`;
-    return;
+    brakiBox.innerText = `🟡 Do dopakowania / BRAKI: ${brakiCount} toreb. Brakujące pozycje znajdziesz w historii i eksporcie Excel.`;
+  } else {
+    brakiBox.classList.add("hidden");
+    brakiBox.innerText = "";
   }
 
-  brakiBox.classList.add("hidden");
-  brakiBox.innerText = "";
+  updateSummaryAlertsOk();
+}
+
+function updateSummaryAlertsOk() {
+  const hasAlert = !alertBox.classList.contains("hidden") || !brakiBox.classList.contains("hidden");
+  summaryAlertsOk.classList.toggle("hidden", hasAlert);
 }
 
 function setWorkerSort(key) {
@@ -1615,6 +2552,7 @@ function renderWorkers(data) {
   });
 
   window.workerStats = dataRows;
+  renderEmployeeDirectoryFromStats();
 
   if (!dataRows.length) {
     workersTable.innerHTML = `<div class="small">Brak danych pracowników.</div>`;
@@ -1655,6 +2593,54 @@ function renderWorkers(data) {
             </tr>
           `;
         }).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderEmployeeDirectoryFromStats() {
+  if (!document.getElementById("employeeDirectory")) return;
+
+  const search = String(document.getElementById("employeeSearch")?.value || "").toLowerCase().trim();
+
+  const rows = (window.workerStats || [])
+    .filter(w => !search || String(w.worker).toLowerCase().includes(search));
+
+  if (!rows.length) {
+    employeeDirectory.innerHTML = `
+      <div class="small">
+        Brak pracowników do pokazania. Po pojawieniu się danych z raportu lista sama się uzupełni.
+      </div>
+    `;
+    return;
+  }
+
+  employeeDirectory.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Pracownik</th>
+          <th>Login</th>
+          <th>Rola</th>
+          <th>Kod QR</th>
+          <th>Status</th>
+          <th>Akcje</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.map(w => `
+          <tr>
+            <td><b>${escapeHtml(w.worker)}</b></td>
+            <td>${escapeHtml(w.worker)}</td>
+            <td><span class="pill bluePill">worker</span></td>
+            <td><div class="qrMini" title="Podgląd QR"></div></td>
+            <td><span class="pill okPill">● Aktywny</span></td>
+            <td>
+              <button class="ghostBtn" style="min-height:36px;padding:8px 10px;" disabled>Pokaż QR</button>
+              <button class="lightBtn" style="min-height:36px;padding:8px 10px;" disabled>Edytuj</button>
+            </td>
+          </tr>
+        `).join("")}
       </tbody>
     </table>
   `;
@@ -1725,12 +2711,13 @@ function renderHistory(data) {
     <table>
       <thead>
         <tr>
-          <th>Torba</th>
+          <th>Data zamknięcia</th>
+          <th>QR torby</th>
           <th>Status</th>
-          <th>Pracownik / stanowisko</th>
+          <th>Pracownik</th>
           <th>Postęp</th>
-          <th>Czas pakowania</th>
-          <th>Zapakowana</th>
+          <th>Czas</th>
+          <th>Szczegóły</th>
         </tr>
       </thead>
       <tbody>
@@ -1740,16 +2727,19 @@ function renderHistory(data) {
 
           return `
             <tr>
+              <td>${formatDateTime(x.closed_at)}</td>
               <td>
                 <span class="clickable" onclick="openDetails(${globalIndex})">
                   ${escapeHtml(x.bag_qr || "-")}
                 </span>
               </td>
-              <td class="${statusClass(status)}">${escapeHtml(status || "-")}</td>
+              <td>${statusBadgeHtml(status)}</td>
               <td>${escapeHtml(displayLogin(x.user_login || "-"))}</td>
-              <td>${x.correct_count || 0}/${x.expected_count || 0}</td>
+              <td><b>${x.correct_count || 0}/${x.expected_count || 0}</b></td>
               <td>${formatDuration(x.duration_seconds)}</td>
-              <td>${formatDateTime(x.closed_at)}</td>
+              <td>
+                <button class="ghostBtn" style="min-height:36px;padding:8px 10px;" onclick="openDetails(${globalIndex})">Podgląd</button>
+              </td>
             </tr>
           `;
         }).join("")}
@@ -1762,8 +2752,8 @@ function renderHistory(data) {
       </div>
 
       <div class="historyPagerButtons">
-        <button onclick="changeHistoryPage(-1)" ${historyPage <= 1 ? "disabled" : ""}>⬅ Poprzednia</button>
-        <button onclick="changeHistoryPage(1)" ${historyPage >= totalPages ? "disabled" : ""}>Następna ➜</button>
+        <button class="secondaryBtn" onclick="changeHistoryPage(-1)" ${historyPage <= 1 ? "disabled" : ""}>⬅ Poprzednia</button>
+        <button class="secondaryBtn" onclick="changeHistoryPage(1)" ${historyPage >= totalPages ? "disabled" : ""}>Następna ➜</button>
       </div>
     </div>
   `;
@@ -2207,58 +3197,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   focusQrInput();
 });
-
 </script>
-<div class="mobileView hidden" id="mobileScreen">
 
-  <div id="mobileAlertBox" class="mobileAlertBox hidden"></div>
-  <div id="mobileBrakiBox" class="mobileBrakiBox hidden"></div>
-
-  <div class="mobileTopbar">
-    <div style="display:flex;align-items:center;gap:12px;">
-      <img src="logo.png" class="mobileLogo" alt="logo">
-      <div>
-        <h1 id="mobileTitleEl">Raport pakowania</h1>
-        <div class="small">Odświeżono: <span id="mobileLastRefresh">-</span></div>
-      </div>
-    </div>
-    <div class="mobileTopbarRight">
-      <button onclick="loadReport()" style="background:#111827;">↻</button>
-      <button onclick="logout()" style="background:#ef4444;">Wyloguj</button>
-    </div>
-  </div>
-
-  <div class="mobileStatsGrid">
-    <div class="mobileStatCard fullWidth">
-      <div class="mobileStatLabel">Postęp pakowania</div>
-      <div class="mobileStatValue" id="mobileTotalStat">0 / 0</div>
-      <div class="mobileProgressBar">
-        <div class="mobileProgressFill" id="mobileProgressFill"></div>
-      </div>
-    </div>
-    <div class="mobileStatCard">
-      <div class="mobileStatLabel">Poprawne</div>
-      <div class="mobileStatValue ok" id="mobileCorrectStat">0</div>
-    </div>
-    <div class="mobileStatCard">
-      <div class="mobileStatLabel">Niepoprawne</div>
-      <div class="mobileStatValue bad" id="mobileBadStat">0</div>
-    </div>
-    <div class="mobileStatCard">
-      <div class="mobileStatLabel">Braki</div>
-      <div class="mobileStatValue warn" id="mobileBrakiStat">0</div>
-    </div>
-    <div class="mobileStatCard">
-      <div class="mobileStatLabel">Poprawność</div>
-      <div class="mobileStatValue" id="mobileAccuracyStat">0%</div>
-    </div>
-  </div>
-
-  <div class="mobileHistoryCard">
-    <h2>🧾 Ostatnie torby</h2>
-    <div id="mobileHistoryList"></div>
-  </div>
-
-</div>
 </body>
 </html>
