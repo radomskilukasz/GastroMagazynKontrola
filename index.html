@@ -590,6 +590,18 @@
     .kpiIcon.badIcon { background:var(--redSoft); color:var(--red); }
     .kpiIcon.warnIcon { background:var(--orangeSoft); color:var(--orange); }
 
+    .logoKpiIcon {
+      background:white !important;
+      border:1px solid #dbeafe;
+      box-shadow:0 8px 18px rgba(37,99,235,.12);
+    }
+
+    .logoKpiIcon img {
+      width:30px;
+      height:30px;
+      object-fit:contain;
+    }
+
     .kpiLabel {
       color:var(--muted);
       font-size:13px;
@@ -612,13 +624,6 @@
       margin-top:8px;
       position:relative;
       z-index:1;
-    }
-
-    .summaryGrid {
-      display:grid;
-      grid-template-columns:minmax(0, 1.25fr) minmax(340px, .75fr);
-      gap:18px;
-      align-items:start;
     }
 
     .progressHero {
@@ -661,33 +666,33 @@
       transition:width .35s ease;
     }
 
-    .alertBox,
-    .brakiBox {
-      border-radius:22px;
-      padding:18px 20px;
-      font-weight:900;
-      line-height:1.45;
-      box-shadow:var(--shadow2);
-      margin-bottom:14px;
-    }
-
-    .alertBox {
-      background:#fff1f2;
-      color:#991b1b;
-      border:1px solid #fecaca;
-    }
-
-    .brakiBox {
-      background:#fffbeb;
-      color:#92400e;
-      border:1px solid #fde68a;
-    }
-
     .miniGrid {
       display:grid;
       grid-template-columns:1fr 1fr;
       gap:18px;
       margin-top:18px;
+    }
+
+    .forecastGrid {
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0, 1fr));
+      gap:14px;
+      margin-top:18px;
+    }
+
+    .forecastCard {
+      background:white;
+      border:1px solid rgba(226,232,240,.95);
+      border-radius:22px;
+      padding:18px;
+      box-shadow:var(--shadow2);
+    }
+
+    .forecastValue {
+      font-size:30px;
+      font-weight:950;
+      letter-spacing:-.04em;
+      line-height:1;
     }
 
     .filtersCard {
@@ -791,9 +796,100 @@
       color:#991b1b;
     }
 
+    /* STANOWISKA */
+
+    .stationsGrid {
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+      gap:16px;
+    }
+
+    .stationCard {
+      background:white;
+      border:1px solid rgba(226,232,240,.95);
+      border-radius:24px;
+      padding:20px;
+      box-shadow:var(--shadow2);
+      transition:.15s ease;
+    }
+
+    .stationCard:hover {
+      transform:translateY(-2px);
+      box-shadow:var(--shadow);
+    }
+
+    .stationHead {
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      margin-bottom:16px;
+    }
+
+    .stationName {
+      font-size:22px;
+      font-weight:950;
+      letter-spacing:-.03em;
+    }
+
+    .stationMetaGrid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin:14px 0;
+    }
+
+    .stationMetaBox {
+      background:#f8fafc;
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:12px;
+    }
+
+    .stationMetaValue {
+      font-size:22px;
+      font-weight:950;
+    }
+
+    .stationWorkers {
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:12px;
+    }
+
+    .stationWorkerPill {
+      background:#eff6ff;
+      color:#1d4ed8;
+      border-radius:999px;
+      padding:7px 10px;
+      font-size:13px;
+      font-weight:900;
+    }
+
+    .stationQueue {
+      margin-top:14px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .stationQueueItem {
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      background:#f8fafc;
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:10px 12px;
+      font-size:14px;
+    }
+
+    /* PRACOWNICY */
+
     .workerAdminLayout {
       display:grid;
-      grid-template-columns:minmax(0, 1fr) 360px;
+      grid-template-columns:minmax(0, 1fr) 380px;
       gap:18px;
       align-items:start;
     }
@@ -809,6 +905,30 @@
     .employeeToolbar input {
       min-width:300px;
       flex:1;
+    }
+
+    .employeeNote {
+      background:#eff6ff;
+      border:1px solid #bfdbfe;
+      color:#1e3a8a;
+      border-radius:18px;
+      padding:14px 16px;
+      font-weight:800;
+      line-height:1.45;
+      margin-bottom:16px;
+    }
+
+    .managerQrBox {
+      background:#f8fafc;
+      border:1px solid var(--border);
+      border-radius:22px;
+      padding:18px;
+      margin-bottom:18px;
+    }
+
+    .readonlyInput {
+      background:#f8fafc !important;
+      color:#64748b;
     }
 
     .qrMini,
@@ -851,7 +971,9 @@
       margin-bottom:14px;
     }
 
-    .settingsGrid {
+    /* USTAWIENIA */
+
+    .settingsSlimGrid {
       display:grid;
       grid-template-columns:repeat(2, minmax(0, 1fr));
       gap:18px;
@@ -1019,7 +1141,6 @@
         grid-template-columns:repeat(3, minmax(0, 1fr));
       }
 
-      .summaryGrid,
       .workerAdminLayout {
         grid-template-columns:1fr;
       }
@@ -1029,6 +1150,11 @@
       }
 
       .filtersCard {
+        grid-template-columns:1fr 1fr;
+      }
+
+      .forecastGrid,
+      .stationsGrid {
         grid-template-columns:1fr 1fr;
       }
     }
@@ -1058,8 +1184,10 @@
 
       .kpiGrid,
       .miniGrid,
-      .settingsGrid,
-      .detailsGrid {
+      .detailsGrid,
+      .forecastGrid,
+      .stationsGrid,
+      .settingsSlimGrid {
         grid-template-columns:1fr;
       }
 
@@ -1298,6 +1426,7 @@
     <div class="nav">
       <button id="tabSummary" class="navBtn active" onclick="showReportTab('summary')">📊 Podsumowanie</button>
       <button id="tabHistory" class="navBtn" onclick="showReportTab('history')">🕘 Historia</button>
+      <button id="tabStations" class="navBtn" onclick="showReportTab('stations')">🧑‍🍳 Stanowiska</button>
       <button id="tabWorkers" class="navBtn" onclick="showReportTab('workers')">👥 Pracownicy</button>
       <button id="tabSettings" class="navBtn" onclick="showReportTab('settings')">⚙️ Ustawienia</button>
     </div>
@@ -1318,7 +1447,7 @@
         <div class="heroMeta">
           Monitoruj jakość pakowania, braki, błędy i efektywność zespołu.<br>
           Ostatnie odświeżenie: <b id="lastRefresh">-</b> |
-          Auto odświeżanie: <b>co 30 sekund</b> |
+          Auto odświeżanie: <b id="autoRefreshLabel">co 30 sekund</b> |
           Załadowano wpisów: <b id="loadedRows">0</b>
         </div>
       </div>
@@ -1338,7 +1467,9 @@
               <div class="kpiLabel">Finalnie zapakowane</div>
               <div class="kpiValue" id="totalToday">0 / 0</div>
             </div>
-            <div class="kpiIcon">🛍️</div>
+            <div class="kpiIcon logoKpiIcon">
+              <img src="logo.png" alt="logo">
+            </div>
           </div>
           <div class="kpiHint">Bez statusu BRAKI</div>
         </div>
@@ -1399,76 +1530,62 @@
         </div>
       </div>
 
-      <div class="summaryGrid">
-        <div>
-          <div class="progressHero">
-            <div class="progressMain">
-              <div>
-                <div class="label">Postęp dnia</div>
-                <div class="progressBig" id="summaryProgressText">0%</div>
-                <div class="small" id="summaryProgressSub">Spakowano 0 z 0 toreb.</div>
-              </div>
-              <div class="pill bluePill">● Live</div>
+      <div>
+        <div class="progressHero">
+          <div class="progressMain">
+            <div>
+              <div class="label">Postęp dnia</div>
+              <div class="progressBig" id="summaryProgressText">0%</div>
+              <div class="small" id="summaryProgressSub">Spakowano 0 z 0 toreb.</div>
             </div>
-            <div class="progressBar">
-              <div class="progressFill" id="totalProgressFill"></div>
-            </div>
+            <div class="pill bluePill">● Live</div>
           </div>
-
-          <div class="miniGrid">
-            <div class="card">
-              <div class="cardTitleRow">
-                <h2>🏆 Ranking pracowników</h2>
-                <button class="lightBtn" onclick="showReportTab('workers')">Pełny ranking</button>
-              </div>
-              <div id="summaryTopWorkers" class="small">Brak danych.</div>
-            </div>
-
-            <div class="card">
-              <div class="cardTitleRow">
-                <h2>🕘 Ostatnie torby</h2>
-                <button class="lightBtn" onclick="showReportTab('history')">Historia</button>
-              </div>
-              <div id="summaryRecentHistory" class="small">Brak danych.</div>
-            </div>
+          <div class="progressBar">
+            <div class="progressFill" id="totalProgressFill"></div>
           </div>
         </div>
 
-        <div>
+        <div class="forecastGrid">
+          <div class="forecastCard">
+            <div class="label">Pozostało do spakowania</div>
+            <div class="forecastValue" id="summaryRemainingBags">0</div>
+            <div class="small">Na podstawie planu dnia.</div>
+          </div>
+
+          <div class="forecastCard">
+            <div class="label">Tempo ostatniej godziny</div>
+            <div class="forecastValue" id="summaryHourlyPace">0 / h</div>
+            <div class="small">Finalnie zamknięte torby.</div>
+          </div>
+
+          <div class="forecastCard">
+            <div class="label">Szacowany czas do końca</div>
+            <div class="forecastValue" id="summaryEta">-</div>
+            <div class="small">Według tempa ostatniej godziny.</div>
+          </div>
+
+          <div class="forecastCard">
+            <div class="label">Jakość / ryzyko</div>
+            <div class="forecastValue" id="summaryQualityRisk">0</div>
+            <div class="small">Niepoprawne + braki.</div>
+          </div>
+        </div>
+
+        <div class="miniGrid">
           <div class="card">
             <div class="cardTitleRow">
-              <h2>🚨 Wymaga uwagi</h2>
+              <h2>🕘 Ostatnie torby</h2>
+              <button class="lightBtn" onclick="showReportTab('history')">Historia</button>
             </div>
-            <div id="alertBox" class="alertBox hidden"></div>
-            <div id="brakiBox" class="brakiBox hidden"></div>
-            <div id="summaryAlertsOk" class="small">
-              Brak krytycznych alertów. System wygląda poprawnie.
-            </div>
+            <div id="summaryRecentHistory" class="small">Brak danych.</div>
           </div>
 
           <div class="card">
-            <h2>📌 Szybkie informacje</h2>
-            <div class="settingRow">
-              <div>
-                <b>Status BRAKI</b>
-                <div class="small">Nie liczy się jako finalnie zapakowana torba.</div>
-              </div>
-              <span class="pill warnPill">ważne</span>
+            <div class="cardTitleRow">
+              <h2>🏆 Ranking pracowników</h2>
+              <button class="lightBtn" onclick="showReportTab('workers')">Pełny ranking</button>
             </div>
-            <div class="settingRow">
-              <div>
-                <b>Eksport Excel</b>
-                <div class="small">Eksportuje wszystkie przefiltrowane dane, nie tylko stronę.</div>
-              </div>
-              <span class="pill bluePill">OK</span>
-            </div>
-            <div class="settingRow">
-              <div>
-                <b>Role</b>
-                <div class="small">Docelowo dodamy rolę managera w Supabase.</div>
-              </div>
-              <span class="pill bluePill">później</span>
-            </div>
+            <div id="summaryTopWorkers" class="small">Brak danych.</div>
           </div>
         </div>
       </div>
@@ -1514,6 +1631,170 @@
       </div>
     </section>
 
+    <section id="stationsView" class="view">
+      <div class="card">
+        <div class="cardTitleRow">
+          <div>
+            <h2>🧑‍🍳 Stanowiska</h2>
+            <div class="small">
+              Wizualny panel pod podgląd aktywnych stanowisk, kolejek, pracowników i postępu. Dane podłączymy później z tabel station_lines.
+            </div>
+          </div>
+          <button class="ghostBtn" disabled>Odśwież stanowiska</button>
+        </div>
+
+        <div class="stationsGrid">
+          <div class="stationCard">
+            <div class="stationHead">
+              <div>
+                <div class="stationName">Stanowisko 1</div>
+                <div class="small">Linia kanapek / aktywne</div>
+              </div>
+              <span class="pill okPill">● Online</span>
+            </div>
+
+            <div class="stationMetaGrid">
+              <div class="stationMetaBox">
+                <div class="label">Torby w kolejce</div>
+                <div class="stationMetaValue">8</div>
+              </div>
+              <div class="stationMetaBox">
+                <div class="label">Postęp</div>
+                <div class="stationMetaValue">23/41</div>
+              </div>
+              <div class="stationMetaBox">
+                <div class="label">Braki</div>
+                <div class="stationMetaValue warn">2</div>
+              </div>
+              <div class="stationMetaBox">
+                <div class="label">Błędy</div>
+                <div class="stationMetaValue bad">1</div>
+              </div>
+            </div>
+
+            <div class="label">Pracownicy</div>
+            <div class="stationWorkers">
+              <span class="stationWorkerPill">Anna</span>
+              <span class="stationWorkerPill">Kamil</span>
+              <span class="stationWorkerPill">Piotr</span>
+            </div>
+
+            <div class="stationQueue">
+              <div class="stationQueueItem"><b>GS055GTQ72</b><span>3/5</span></div>
+              <div class="stationQueueItem"><b>GS0WYKE5F4</b><span class="warn">BRAKI</span></div>
+              <div class="stationQueueItem"><b>GS0LEGWUF5</b><span>czeka</span></div>
+            </div>
+
+            <button class="primaryBtn" style="width:100%;margin-top:16px;" disabled>Wejdź w szczegóły</button>
+          </div>
+
+          <div class="stationCard">
+            <div class="stationHead">
+              <div>
+                <div class="stationName">Stanowisko 2</div>
+                <div class="small">Dania główne / aktywne</div>
+              </div>
+              <span class="pill okPill">● Online</span>
+            </div>
+
+            <div class="stationMetaGrid">
+              <div class="stationMetaBox">
+                <div class="label">Torby w kolejce</div>
+                <div class="stationMetaValue">4</div>
+              </div>
+              <div class="stationMetaBox">
+                <div class="label">Postęp</div>
+                <div class="stationMetaValue">31/38</div>
+              </div>
+              <div class="stationMetaBox">
+                <div class="label">Braki</div>
+                <div class="stationMetaValue warn">0</div>
+              </div>
+              <div class="stationMetaBox">
+                <div class="label">Błędy</div>
+                <div class="stationMetaValue bad">0</div>
+              </div>
+            </div>
+
+            <div class="label">Pracownicy</div>
+            <div class="stationWorkers">
+              <span class="stationWorkerPill">Marta</span>
+              <span class="stationWorkerPill">Tomek</span>
+            </div>
+
+            <div class="stationQueue">
+              <div class="stationQueueItem"><b>GS0A18K920</b><span>4/5</span></div>
+              <div class="stationQueueItem"><b>GS0B19L111</b><span>czeka</span></div>
+            </div>
+
+            <button class="primaryBtn" style="width:100%;margin-top:16px;" disabled>Wejdź w szczegóły</button>
+          </div>
+
+          <div class="stationCard">
+            <div class="stationHead">
+              <div>
+                <div class="stationName">Stanowisko 3</div>
+                <div class="small">Dodatki / przerwa</div>
+              </div>
+              <span class="pill warnPill">● Pauza</span>
+            </div>
+
+            <div class="stationMetaGrid">
+              <div class="stationMetaBox">
+                <div class="label">Torby w kolejce</div>
+                <div class="stationMetaValue">0</div>
+              </div>
+              <div class="stationMetaBox">
+                <div class="label">Postęp</div>
+                <div class="stationMetaValue">12/12</div>
+              </div>
+              <div class="stationMetaBox">
+                <div class="label">Braki</div>
+                <div class="stationMetaValue warn">0</div>
+              </div>
+              <div class="stationMetaBox">
+                <div class="label">Błędy</div>
+                <div class="stationMetaValue bad">0</div>
+              </div>
+            </div>
+
+            <div class="label">Pracownicy</div>
+            <div class="stationWorkers">
+              <span class="stationWorkerPill">Ola</span>
+            </div>
+
+            <div class="stationQueue">
+              <div class="stationQueueItem"><b>Brak aktywnych toreb</b><span>OK</span></div>
+            </div>
+
+            <button class="primaryBtn" style="width:100%;margin-top:16px;" disabled>Wejdź w szczegóły</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Co docelowo będzie w szczegółach stanowiska?</h2>
+        <div class="forecastGrid">
+          <div class="forecastCard">
+            <div class="label">Aktywne torby</div>
+            <div class="small">Lista toreb w kolejce z postępem i statusem.</div>
+          </div>
+          <div class="forecastCard">
+            <div class="label">Pracownicy</div>
+            <div class="small">Kto jest dołączony i jakie ma przypisane posiłki.</div>
+          </div>
+          <div class="forecastCard">
+            <div class="label">Problemy</div>
+            <div class="small">Błędne tacki, braki, duplikaty i wymuszone niepoprawne.</div>
+          </div>
+          <div class="forecastCard">
+            <div class="label">Historia</div>
+            <div class="small">Ostatnio zamknięte torby na tym stanowisku.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section id="workersView" class="view">
       <div class="workerAdminLayout">
         <div>
@@ -1521,7 +1802,7 @@
             <div class="employeeToolbar">
               <div>
                 <h2 style="margin:0;">👥 Pracownicy</h2>
-                <div class="small">Wizualny panel pod przyszłe dodawanie workerów, managerów i obsługę QR.</div>
+                <div class="small">Panel pod przyszłe dodawanie workerów i obsługę kodów QR.</div>
               </div>
               <button class="primaryBtn" onclick="openEmployeePanel()">+ Dodaj pracownika</button>
             </div>
@@ -1548,131 +1829,133 @@
             <button class="lightBtn" style="width:auto;" onclick="closeEmployeePanel()">×</button>
           </div>
 
-          <label class="label">Login</label>
+          <div class="employeeNote">
+            Kierownik może tutaj dodawać tylko pracowników z rolą <b>worker</b>.
+            Kod QR managera będzie dostępny wyłącznie do podglądu.
+          </div>
+
+          <label class="label">Login pracownika</label>
           <input placeholder="np. jnowak" disabled>
 
           <label class="label">Imię i nazwisko</label>
           <input placeholder="np. Jan Nowak" disabled>
 
+          <label class="label">Hasło startowe</label>
+          <input type="password" placeholder="Wpisz hasło dla pracownika" disabled>
+
           <label class="label">Rola</label>
-          <select disabled>
-            <option>worker</option>
-            <option>manager — dodamy później w Supabase</option>
-            <option>admin</option>
-          </select>
+          <input class="readonlyInput" value="worker" disabled>
 
           <div class="card" style="box-shadow:none;background:#f8fafc;margin-top:10px;">
             <h3 style="margin-bottom:6px;">Kod QR pracownika</h3>
             <div class="qrPreview"></div>
-            <div class="small" style="text-align:center;">QR zostanie spięty z Supabase w kolejnym etapie.</div>
+            <div class="small" style="text-align:center;">
+              QR zostanie wygenerowany po zapisaniu pracownika.
+            </div>
           </div>
 
-          <button class="primaryBtn" style="width:100%;" disabled>Generuj QR</button>
-          <button class="ghostBtn" style="width:100%;margin-top:10px;" disabled>Drukuj</button>
+          <button class="primaryBtn" style="width:100%;" disabled>Zapisz pracownika i wygeneruj QR</button>
+          <button class="ghostBtn" style="width:100%;margin-top:10px;" disabled>Drukuj QR</button>
+
+          <div class="managerQrBox" style="margin-top:18px;">
+            <h3 style="margin-bottom:6px;">Podgląd QR managera</h3>
+            <div class="small">
+              Manager może podejrzeć swój kod QR, ale nie może dodawać innych managerów.
+            </div>
+            <div class="qrPreview" style="width:130px;height:130px;"></div>
+            <button class="ghostBtn" style="width:100%;" disabled>Pokaż mój QR managera</button>
+          </div>
 
           <div class="small" style="margin-top:14px;">
-            Na razie to tylko wygląd. Funkcje dodawania pracownika, roli managera i generowania QR podłączymy później.
+            Na razie to tylko wygląd. Funkcje dodawania workerów, ustawiania hasła i generowania QR podłączymy później do Supabase.
           </div>
         </div>
       </div>
     </section>
 
     <section id="settingsView" class="view">
-      <div class="settingsGrid">
+      <div class="settingsSlimGrid">
         <div class="card">
           <h2>📅 Dzień pakowania</h2>
+
           <div class="settingRow">
             <div>
               <b>Data pakowania</b>
               <div class="small" id="settingsMealDate">-</div>
             </div>
-            <button class="lightBtn" disabled>Zmień</button>
+            <span class="pill bluePill">tylko podgląd</span>
           </div>
-          <div class="settingRow">
-            <div>
-              <b>Aktywny import</b>
-              <div class="small">Plan pobierany z aktualnej tabeli packing_plan.</div>
-            </div>
-            <span class="pill bluePill">aktywny</span>
-          </div>
+
           <div class="settingRow">
             <div>
               <b>Liczba toreb w planie</b>
-              <div class="small" id="settingsTotalBags">0</div>
+              <div class="small">Łączna liczba unikalnych toreb z planu.</div>
             </div>
+            <div style="font-size:28px;font-weight:950;" id="settingsTotalBags">0</div>
           </div>
         </div>
 
         <div class="card">
           <h2>📊 Raport</h2>
+
           <div class="settingRow">
             <div>
-              <b>Odświeżanie</b>
-              <div class="small">Raport odświeża się co 30 sekund.</div>
+              <b>Odświeżanie raportu</b>
+              <div class="small">Możesz zmienić, jak często raport ma pobierać dane.</div>
             </div>
-            <div class="switchMock"></div>
+            <select id="reportRefreshSelect" style="width:150px;" onchange="updateRefreshInterval()">
+              <option value="30">30 sek.</option>
+              <option value="60">60 sek.</option>
+              <option value="120">120 sek.</option>
+            </select>
           </div>
+
           <div class="settingRow">
             <div>
               <b>Historia na stronę</b>
-              <div class="small">1000 wpisów na stronę.</div>
+              <div class="small">Liczba wpisów pokazywana jednocześnie w Historii.</div>
             </div>
-            <span class="pill bluePill">1000</span>
-          </div>
-          <div class="settingRow">
-            <div>
-              <b>Eksport Excel</b>
-              <div class="small">Wszystkie przefiltrowane dane.</div>
-            </div>
-            <span class="pill okPill">OK</span>
+            <span class="pill bluePill">1000 wpisów</span>
           </div>
         </div>
 
         <div class="card">
-          <h2>🔐 Dostęp i role</h2>
+          <h2>🎧 Ekran kontroli</h2>
+
           <div class="settingRow">
             <div>
-              <b>worker</b>
-              <div class="small">Pakowanie solo i stanowiskowe.</div>
+              <b>Tryb kierownika</b>
+              <div class="small">Duże karty, szybki podgląd jakości i postępu.</div>
             </div>
+            <span class="pill okPill">aktywny</span>
           </div>
+
           <div class="settingRow">
             <div>
-              <b>manager</b>
-              <div class="small">Docelowo raport, kontrola, pracownicy i QR.</div>
+              <b>Zakładka Stanowiska</b>
+              <div class="small">Widok przygotowany pod późniejsze podłączenie RPC stanowisk.</div>
             </div>
-            <span class="pill warnPill">do dodania</span>
-          </div>
-          <div class="settingRow">
-            <div>
-              <b>admin</b>
-              <div class="small">Pełny dostęp techniczny.</div>
-            </div>
+            <span class="pill warnPill">do podłączenia</span>
           </div>
         </div>
 
         <div class="card">
-          <h2>🧰 Narzędzia techniczne</h2>
+          <h2>👥 Pracownicy</h2>
+
           <div class="settingRow">
             <div>
-              <b>Wyczyść testowe sesje</b>
-              <div class="small">Przycisk pojawi się dopiero po podłączeniu funkcji admina.</div>
+              <b>Dodawanie workerów</b>
+              <div class="small">Docelowo manager będzie mógł dodać tylko rolę worker.</div>
             </div>
-            <button class="dangerBtn" disabled>Wyczyść</button>
+            <span class="pill bluePill">planowane</span>
           </div>
+
           <div class="settingRow">
             <div>
-              <b>Zamknij stanowiska</b>
-              <div class="small">Do spięcia z funkcjami RPC.</div>
+              <b>QR managera</b>
+              <div class="small">Podgląd kodu QR managera bez edycji roli.</div>
             </div>
-            <button class="dangerBtn" disabled>Zamknij</button>
-          </div>
-          <div class="settingRow">
-            <div>
-              <b>Test dźwięku</b>
-              <div class="small">Możemy dodać później ustawienia dźwięków.</div>
-            </div>
-            <button class="lightBtn" disabled>Test</button>
+            <span class="pill bluePill">podgląd</span>
           </div>
         </div>
       </div>
@@ -1766,17 +2049,21 @@ let workerSortDirection = "desc";
 let historyPage = 1;
 const HISTORY_PAGE_SIZE = 1000;
 
+let reportRefreshSeconds = 30;
+
 window.workerStats = [];
 
 function showReportTab(tab) {
-  const tabs = ["summary", "history", "workers", "settings"];
+  const tabs = ["summary", "history", "stations", "workers", "settings"];
 
   tabs.forEach(name => {
-    document.getElementById(name + "View").classList.toggle("active", name === tab);
+    const view = document.getElementById(name + "View");
+    if (view) view.classList.toggle("active", name === tab);
   });
 
   document.getElementById("tabSummary").classList.toggle("active", tab === "summary");
   document.getElementById("tabHistory").classList.toggle("active", tab === "history");
+  document.getElementById("tabStations").classList.toggle("active", tab === "stations");
   document.getElementById("tabWorkers").classList.toggle("active", tab === "workers");
   document.getElementById("tabSettings").classList.toggle("active", tab === "settings");
 
@@ -1786,6 +2073,18 @@ function showReportTab(tab) {
 
   if (tab === "workers") {
     renderEmployeeDirectoryFromStats();
+  }
+}
+
+function updateRefreshInterval() {
+  const value = Number(reportRefreshSelect.value || 30);
+  reportRefreshSeconds = value;
+
+  autoRefreshLabel.innerText = "co " + value + " sekund";
+
+  if (refreshTimer) {
+    clearInterval(refreshTimer);
+    refreshTimer = setInterval(loadReport, reportRefreshSeconds * 1000);
   }
 }
 
@@ -1898,6 +2197,19 @@ function formatDuration(seconds) {
   return `${m}m ${s}s`;
 }
 
+function formatEtaFromHours(hours) {
+  if (!Number.isFinite(hours) || hours <= 0) return "-";
+
+  const totalMinutes = Math.round(hours * 60);
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
+
+  if (h <= 0) return `${m} min`;
+  if (m <= 0) return `${h} h`;
+
+  return `${h} h ${m} min`;
+}
+
 function formatMealDate(dateText) {
   if (!dateText) return "";
 
@@ -1983,10 +2295,8 @@ async function enterReportAfterLogin() {
 
   await loadReport();
 
-  const mobileInterval = isMobile ? 120000 : 30000;
-
   if (!refreshTimer) {
-    refreshTimer = setInterval(loadReport, mobileInterval);
+    refreshTimer = setInterval(loadReport, reportRefreshSeconds * 1000);
   }
 }
 
@@ -2333,11 +2643,36 @@ function renderAll() {
   accuracyToday.innerText = accuracy + "%";
   avgTime.innerText = formatDuration(avg);
 
-  renderAlerts(bad.length);
-  renderBrakiBox(braki.length);
+  renderForecastCards(allSessions, finalPacked, bad.length, braki.length);
   renderWorkers(allSessions);
   renderHistory(filteredHistory);
   renderSummaryPanels(allSessions);
+}
+
+function renderForecastCards(data, finalPacked, badCount, brakiCount) {
+  const remaining = Math.max(0, Number(totalBagsInPlan || 0) - finalPacked);
+  summaryRemainingBags.innerText = remaining;
+
+  const now = Date.now();
+  const oneHourAgo = now - 60 * 60 * 1000;
+
+  const lastHourFinal = data.filter(x => {
+    const status = normalizeStatus(x.status);
+    const closed = new Date(x.closed_at || 0).getTime();
+    return ["POPRAWNA", "NIEPOPRAWNA"].includes(status) && closed >= oneHourAgo;
+  }).length;
+
+  summaryHourlyPace.innerText = lastHourFinal + " / h";
+
+  if (lastHourFinal > 0 && remaining > 0) {
+    summaryEta.innerText = formatEtaFromHours(remaining / lastHourFinal);
+  } else if (remaining === 0 && totalBagsInPlan > 0) {
+    summaryEta.innerText = "gotowe";
+  } else {
+    summaryEta.innerText = "-";
+  }
+
+  summaryQualityRisk.innerText = badCount + brakiCount;
 }
 
 function renderSummaryPanels(data) {
@@ -2444,37 +2779,6 @@ function renderMobile(data) {
         `;
       }).join("")
     : `<div class="small" style="padding:12px 0;">Brak danych.</div>`;
-}
-
-function renderAlerts(badCount) {
-  const hasBad = badCount >= 20;
-
-  if (hasBad) {
-    alertBox.classList.remove("hidden");
-    alertBox.innerText = `⚠️ UWAGA: liczba niepoprawnych toreb: ${badCount}`;
-  } else {
-    alertBox.classList.add("hidden");
-    alertBox.innerText = "";
-  }
-
-  updateSummaryAlertsOk();
-}
-
-function renderBrakiBox(brakiCount) {
-  if (brakiCount > 0) {
-    brakiBox.classList.remove("hidden");
-    brakiBox.innerText = `🟡 Do dopakowania / BRAKI: ${brakiCount} toreb. Brakujące pozycje znajdziesz w historii i eksporcie Excel.`;
-  } else {
-    brakiBox.classList.add("hidden");
-    brakiBox.innerText = "";
-  }
-
-  updateSummaryAlertsOk();
-}
-
-function updateSummaryAlertsOk() {
-  const hasAlert = !alertBox.classList.contains("hidden") || !brakiBox.classList.contains("hidden");
-  summaryAlertsOk.classList.toggle("hidden", hasAlert);
 }
 
 function setWorkerSort(key) {
