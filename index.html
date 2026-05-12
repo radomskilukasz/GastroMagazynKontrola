@@ -1374,6 +1374,52 @@
         white-space:nowrap;
       }
     }
+   /* POPRAWKA WYŚRODKOWANIA LICZB W KAFELKACH PODSUMOWANIA */
+
+.kpiCard {
+  min-height:150px;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+  position:relative;
+}
+
+.kpiTop {
+  display:contents;
+}
+
+.kpiTop > div:first-child {
+  display:contents;
+}
+
+.kpiLabel {
+  grid-row:1;
+  padding-right:54px;
+  min-height:34px;
+}
+
+.kpiValue {
+  grid-row:2;
+  align-self:center;
+  justify-self:center;
+  width:100%;
+  text-align:center;
+  margin:0;
+  padding:0 4px;
+}
+
+.kpiHint {
+  grid-row:3;
+  text-align:center;
+  margin-top:0;
+  min-height:20px;
+}
+
+.kpiIcon {
+  position:absolute;
+  top:16px;
+  right:16px;
+  z-index:2;
+} 
   </style>
 </head>
 
