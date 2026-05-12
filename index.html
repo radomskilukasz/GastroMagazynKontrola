@@ -1595,163 +1595,95 @@
       </div>
     </section>
 
-    <section id="workersView" class="view">
-      <div class="workerAdminLayout">
+<section id="workersView" class="view">
+  <div class="workerAdminLayout">
+    <div>
+      <div class="card">
+        <div class="employeeToolbar">
+          <div>
+            <h2 style="margin:0;">👥 Pracownicy</h2>
+            <div class="small">Lista pracowników z rolą worker.</div>
+          </div>
+          <button class="ghostBtn" onclick="loadWorkersList()">↻ Odśwież listę</button>
+        </div>
+
+        <input id="employeeSearch" placeholder="Szukaj pracownika..." oninput="renderEmployeeDirectory()">
+        <div style="height:14px;"></div>
+        <div id="employeeDirectory"></div>
+      </div>
+
+      <div class="card">
+        <div class="cardTitleRow">
+          <div>
+            <h2>🏆 Ranking z raportu</h2>
+            <div class="small">Kliknij nagłówki, żeby sortować.</div>
+          </div>
+        </div>
+        <div id="workersTable"></div>
+      </div>
+    </div>
+
+    <div id="employeePanel" class="sidePanelMock">
+      <div class="cardTitleRow">
+        <h2>Dodaj pracownika</h2>
+      </div>
+
+      <label class="label">Login pracownika</label>
+      <input id="employeeLogin" placeholder="np. worker4" autocomplete="off">
+
+      <label class="label">Imię i nazwisko / nazwa</label>
+      <input id="employeeName" placeholder="np. Jan Nowak" autocomplete="off">
+
+      <label class="label">Hasło startowe</label>
+      <input id="employeePassword" type="password" placeholder="Minimum 6 znaków" autocomplete="new-password">
+
+      <label class="label">Rola</label>
+      <input class="readonlyInput" value="worker" readonly>
+
+      <button id="createEmployeeBtn" class="primaryBtn" style="width:100%;margin-top:6px;" onclick="createWorkerFromPanel()">
+        Dodaj pracownika
+      </button>
+
+      <button class="ghostBtn" style="width:100%;margin-top:10px;" onclick="clearWorkerForm()">
+        Wyczyść formularz
+      </button>
+
+      <div id="employeeStatus" class="formStatus"></div>
+    </div>
+  </div>
+</section>
+
+<section id="settingsView" class="view">
+  <div class="settingsSlimGrid">
+    <div class="card">
+      <h2>📊 Raport</h2>
+
+      <div class="settingRow">
         <div>
-          <div class="card">
-            <div class="employeeToolbar">
-              <div>
-                <h2 style="margin:0;">👥 Pracownicy</h2>
-                <div class="small">Manager może dodawać i obsługiwać tylko pracowników z rolą worker.</div>
-              </div>
-              <button class="ghostBtn" onclick="loadWorkersList()">↻ Odśwież listę</button>
-            </div>
-
-            <input id="employeeSearch" placeholder="Szukaj pracownika..." oninput="renderEmployeeDirectory()">
-            <div style="height:14px;"></div>
-            <div id="employeeDirectory"></div>
-          </div>
-
-          <div class="card">
-            <div class="cardTitleRow">
-              <div>
-                <h2>🏆 Ranking z raportu</h2>
-                <div class="small">Kliknij nagłówki, żeby sortować.</div>
-              </div>
-            </div>
-            <div id="workersTable"></div>
-          </div>
+          <b>Odświeżanie raportu</b>
+          <div class="small">Jak często raport ma automatycznie pobierać nowe dane.</div>
         </div>
-
-        <div id="employeePanel" class="sidePanelMock">
-          <div class="cardTitleRow">
-            <h2>Nowy worker</h2>
-          </div>
-
-          <div class="employeeNote">
-            Ten panel tworzy tylko konto <b>worker</b>. Managerów i adminów zostawiamy wyłącznie dla strony admina.
-          </div>
-
-          <label class="label">Login pracownika</label>
-          <input id="employeeLogin" placeholder="np. worker4">
-
-          <label class="label">Imię i nazwisko / nazwa</label>
-          <input id="employeeName" placeholder="np. Jan Nowak">
-
-          <label class="label">Hasło startowe</label>
-          <input id="employeePassword" type="password" placeholder="Minimum 6 znaków">
-
-          <label class="label">Rola</label>
-          <input class="readonlyInput" value="worker" disabled>
-
-          <button id="createEmployeeBtn" class="primaryBtn" style="width:100%;margin-top:6px;" onclick="createWorkerFromPanel()">
-            Utwórz workera
-          </button>
-
-          <button class="ghostBtn" style="width:100%;margin-top:10px;" onclick="clearWorkerForm()">
-            Wyczyść formularz
-          </button>
-
-          <div id="employeeStatus" class="formStatus"></div>
-
-          <div class="small" style="margin-top:14px;">
-            Po utworzeniu pracownika system spróbuje od razu wygenerować kod QR i pokazać go do wydruku.
-          </div>
-        </div>
+        <select id="reportRefreshSelect" style="width:150px;" onchange="updateRefreshInterval()">
+          <option value="30">30 sek.</option>
+          <option value="60">60 sek.</option>
+          <option value="120">120 sek.</option>
+        </select>
       </div>
-    </section>
 
-    <section id="settingsView" class="view">
-      <div class="settingsSlimGrid">
-        <div class="card">
-          <h2>📅 Dzień pakowania</h2>
-
-          <div class="settingRow">
-            <div>
-              <b>Data pakowania</b>
-              <div class="small" id="settingsMealDate">-</div>
-            </div>
-            <span class="pill bluePill">tylko podgląd</span>
-          </div>
-
-          <div class="settingRow">
-            <div>
-              <b>Liczba toreb w planie</b>
-              <div class="small">Łączna liczba unikalnych toreb z planu.</div>
-            </div>
-            <div style="font-size:28px;font-weight:950;" id="settingsTotalBags">0</div>
-          </div>
+      <div class="settingRow">
+        <div>
+          <b>Historia na stronę</b>
+          <div class="small">Ile wpisów ma być pokazywane jednocześnie w zakładce Historia.</div>
         </div>
-
-        <div class="card">
-          <h2>📊 Raport</h2>
-
-          <div class="settingRow">
-            <div>
-              <b>Odświeżanie raportu</b>
-              <div class="small">Możesz zmienić, jak często raport ma pobierać dane.</div>
-            </div>
-            <select id="reportRefreshSelect" style="width:150px;" onchange="updateRefreshInterval()">
-              <option value="30">30 sek.</option>
-              <option value="60">60 sek.</option>
-              <option value="120">120 sek.</option>
-            </select>
-          </div>
-
-          <div class="settingRow">
-            <div>
-              <b>Historia na stronę</b>
-              <div class="small">Liczba wpisów pokazywana jednocześnie w Historii.</div>
-            </div>
-            <select id="historyPageSizeSelect" style="width:150px;" onchange="updateHistoryPageSize()">
-              <option value="100">100 wpisów</option>
-              <option value="500">500 wpisów</option>
-              <option value="1000" selected>1000 wpisów</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="card">
-          <h2>🎧 Ekran kontroli</h2>
-
-          <div class="settingRow">
-            <div>
-              <b>Tryb kierownika</b>
-              <div class="small">Duże karty, szybki podgląd jakości i postępu.</div>
-            </div>
-            <span class="pill okPill">aktywny</span>
-          </div>
-
-          <div class="settingRow">
-            <div>
-              <b>Zakładka Stanowiska</b>
-              <div class="small">Podłączona pod funkcje stanowiskowe Supabase.</div>
-            </div>
-            <span class="pill okPill">podłączona</span>
-          </div>
-        </div>
-
-        <div class="card">
-          <h2>👥 Pracownicy</h2>
-
-          <div class="settingRow">
-            <div>
-              <b>Dodawanie workerów</b>
-              <div class="small">Manager tworzy tylko rolę worker.</div>
-            </div>
-            <span class="pill okPill">aktywne</span>
-          </div>
-
-          <div class="settingRow">
-            <div>
-              <b>QR managera</b>
-              <div class="small">Wyłączone w tym panelu. Managerami zajmuje się admin.</div>
-            </div>
-            <span class="pill warnPill">admin panel</span>
-          </div>
-        </div>
+        <select id="historyPageSizeSelect" style="width:150px;" onchange="updateHistoryPageSize()">
+          <option value="100">100 wpisów</option>
+          <option value="500">500 wpisów</option>
+          <option value="1000" selected>1000 wpisów</option>
+        </select>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
   </main>
 </div>
 
@@ -2823,7 +2755,7 @@ function renderEmployeeDirectory() {
   if (!rows.length) {
     setHtml("employeeDirectory", `
       <div class="small">
-        Brak workerów do pokazania.
+        Brak pracowników do pokazania.
       </div>
     `);
     return;
@@ -2833,10 +2765,10 @@ function renderEmployeeDirectory() {
     <table>
       <thead>
         <tr>
-          <th>Worker</th>
+          <th>Pracownik</th>
           <th>Rola</th>
-          <th>QR</th>
-          <th>Ostatnie użycie</th>
+          <th>Status QR</th>
+          <th>Ostatnie użycie QR</th>
           <th>Akcje</th>
         </tr>
       </thead>
@@ -2844,7 +2776,6 @@ function renderEmployeeDirectory() {
         ${rows.map(u => {
           const email = String(u.user_email || "");
           const active = !!u.qr_active;
-          const cachedToken = workerQrTokens[email];
 
           return `
             <tr>
@@ -2852,27 +2783,29 @@ function renderEmployeeDirectory() {
                 <b>${escapeHtml(displayLogin(email))}</b>
                 <div class="small">${escapeHtml(email)}</div>
               </td>
-              <td><span class="pill bluePill">worker</span></td>
+
               <td>
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <div class="qrMini"></div>
-                  <div>
-                    <div>${active ? `<span class="pill okPill">aktywny</span>` : `<span class="pill badPill">wyłączony</span>`}</div>
-                    <div class="small">${escapeHtml(u.token_hint || "brak QR")}</div>
-                  </div>
-                </div>
+                <span class="pill bluePill">worker</span>
               </td>
-              <td>${formatDateTime(u.qr_last_used_at)}</td>
+
               <td>
-                ${cachedToken
-                  ? `<button class="ghostBtn" style="min-height:36px;padding:8px 10px;" onclick="showWorkerQr('${escapeHtml(email)}')">Pokaż QR</button>`
-                  : ``
-                }
-                <button class="primaryBtn" style="min-height:36px;padding:8px 10px;" onclick="regenerateWorkerQr('${escapeHtml(email)}')">
-                  ${active ? "Nowy QR" : "Włącz QR"}
-                </button>
                 ${active
-                  ? `<button class="dangerBtn" style="min-height:36px;padding:8px 10px;" onclick="disableWorkerQr('${escapeHtml(email)}')">Wyłącz</button>`
+                  ? `<span class="pill okPill">aktywny</span>`
+                  : `<span class="pill badPill">wyłączony</span>`
+                }
+              </td>
+
+              <td>
+                ${formatDateTime(u.qr_last_used_at)}
+              </td>
+
+              <td>
+                <button class="primaryBtn" style="min-height:36px;padding:8px 10px;" onclick="regenerateWorkerQr('${escapeHtml(email)}')">
+                  ${active ? "Wygeneruj nowy QR" : "Włącz QR"}
+                </button>
+
+                ${active
+                  ? `<button class="dangerBtn" style="min-height:36px;padding:8px 10px;" onclick="disableWorkerQr('${escapeHtml(email)}')">Wyłącz QR</button>`
                   : ``
                 }
               </td>
