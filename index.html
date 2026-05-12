@@ -6,10 +6,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Raport pakowania</title>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
   <style>
     :root {
@@ -87,9 +85,11 @@
       color:var(--text);
     }
 
-    input:disabled {
+    input:disabled,
+    select:disabled {
       background:#f8fafc;
       color:#94a3b8;
+      cursor:not-allowed;
     }
 
     input:focus, select:focus {
@@ -183,6 +183,8 @@
     }
 
     .ghostBtn:hover { background:#eff6ff; }
+
+    /* LOGIN */
 
     .loginCard {
       background:rgba(255,255,255,.88);
@@ -314,8 +316,7 @@
       margin:0;
     }
 
-    .loginStatus,
-    .formStatus {
+    .loginStatus {
       margin-top:18px;
       padding:13px 14px;
       border-radius:14px;
@@ -325,14 +326,11 @@
       white-space:pre-wrap;
     }
 
-    .loginStatus.error,
-    .formStatus.error { display:block; background:#fee2e2; color:#991b1b; }
+    .loginStatus.error { display:block; background:#fee2e2; color:#991b1b; }
+    .loginStatus.ok { display:block; background:#dcfce7; color:#166534; }
+    .loginStatus.info { display:block; background:#eff6ff; color:#1d4ed8; }
 
-    .loginStatus.ok,
-    .formStatus.ok { display:block; background:#dcfce7; color:#166534; }
-
-    .loginStatus.info,
-    .formStatus.info { display:block; background:#eff6ff; color:#1d4ed8; }
+    /* APP */
 
     .appShell {
       display:grid;
@@ -503,6 +501,8 @@
       letter-spacing:-.03em;
     }
 
+    /* PODSUMOWANIE KPI */
+
     .kpiGrid {
       display:grid;
       grid-template-columns:repeat(6, minmax(0, 1fr));
@@ -608,6 +608,8 @@
       width:100%;
       line-height:1.25;
     }
+
+    /* POSTĘP DNIA */
 
     .progressHero {
       background:
@@ -724,9 +726,7 @@
     }
 
     .filterGroup input,
-    .filterGroup select {
-      width:100%;
-    }
+    .filterGroup select { width:100%; }
 
     .clickable,
     .workerName {
@@ -791,37 +791,11 @@
       font-weight:950;
     }
 
-    .statusBadge.POPRAWNA,
-    .statusBadge.done,
-    .statusBadge.ok {
-      background:var(--greenSoft);
-      color:#166534;
-    }
+    .statusBadge.POPRAWNA { background:var(--greenSoft); color:#166534; }
+    .statusBadge.BRAKI { background:var(--orangeSoft); color:#92400e; }
+    .statusBadge.NIEPOPRAWNA { background:var(--redSoft); color:#991b1b; }
 
-    .statusBadge.BRAKI,
-    .statusBadge.braki,
-    .statusBadge.queued,
-    .statusBadge.in_progress {
-      background:var(--orangeSoft);
-      color:#92400e;
-    }
-
-    .statusBadge.NIEPOPRAWNA,
-    .statusBadge.bad,
-    .statusBadge.cancelled,
-    .statusBadge.replaced {
-      background:var(--redSoft);
-      color:#991b1b;
-    }
-
-    .stationsHeader {
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
-      align-items:center;
-      margin-bottom:16px;
-    }
+    /* STANOWISKA */
 
     .stationsGrid {
       display:grid;
@@ -910,9 +884,11 @@
       font-size:14px;
     }
 
+    /* PRACOWNICY */
+
     .workerAdminLayout {
       display:grid;
-      grid-template-columns:minmax(0, 1fr) 390px;
+      grid-template-columns:minmax(0, 1fr) 380px;
       gap:18px;
       align-items:start;
     }
@@ -930,34 +906,19 @@
       flex:1;
     }
 
-    .employeeNote {
-      background:#eff6ff;
-      border:1px solid #bfdbfe;
-      color:#1e3a8a;
-      border-radius:18px;
-      padding:14px 16px;
-      font-weight:800;
-      line-height:1.45;
-      margin-bottom:16px;
+    .employeeStatus {
+      margin-top:14px;
+      padding:13px 14px;
+      border-radius:14px;
+      font-weight:900;
+      display:none;
+      line-height:1.35;
+      white-space:pre-wrap;
     }
 
-    .readonlyInput {
-      background:#f8fafc !important;
-      color:#64748b;
-    }
-
-    .qrMini {
-      width:42px;
-      height:42px;
-      border-radius:8px;
-      background:
-        linear-gradient(90deg, #111 20%, transparent 20% 40%, #111 40% 60%, transparent 60% 80%, #111 80%),
-        linear-gradient(#111 20%, transparent 20% 40%, #111 40% 60%, transparent 60% 80%, #111 80%);
-      background-size:11px 11px;
-      border:5px solid white;
-      box-shadow:0 0 0 1px #dbe4f0;
-      image-rendering:pixelated;
-    }
+    .employeeStatus.error { display:block; background:#fee2e2; color:#991b1b; }
+    .employeeStatus.ok { display:block; background:#dcfce7; color:#166534; }
+    .employeeStatus.info { display:block; background:#eff6ff; color:#1d4ed8; }
 
     .sidePanelMock {
       background:white;
@@ -975,6 +936,8 @@
       margin-bottom:14px;
     }
 
+    /* USTAWIENIA */
+
     .settingsSlimGrid {
       display:grid;
       grid-template-columns:repeat(2, minmax(0, 1fr));
@@ -991,6 +954,8 @@
     }
 
     .settingRow:last-child { border-bottom:none; }
+
+    /* MODAL */
 
     .modalBg {
       position:fixed;
@@ -1078,34 +1043,7 @@
     .itemStatusBrak { background:#fffbeb; }
     .itemStatusBad { background:#fff1f2; }
 
-    .qrModalBox {
-      text-align:center;
-    }
-
-    .qrCanvasWrap {
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      padding:18px;
-      background:#f8fafc;
-      border:1px solid var(--border);
-      border-radius:24px;
-      margin:16px auto;
-      width:max-content;
-      max-width:100%;
-    }
-
-    .qrTokenText {
-      background:#0f172a;
-      color:white;
-      border-radius:14px;
-      padding:12px;
-      word-break:break-all;
-      font-family:Consolas, monospace;
-      font-size:13px;
-      text-align:left;
-      margin:14px 0;
-    }
+    /* MOBILE */
 
     .mobileView { display:none; }
 
@@ -1128,18 +1066,21 @@
       }
 
       .nav { flex-direction:row; }
+
       .navBtn { white-space:nowrap; }
+
       .sidebarFooter { display:none; }
 
       .kpiGrid { grid-template-columns:repeat(3, minmax(0, 1fr)); }
+
       .workerAdminLayout { grid-template-columns:1fr; }
+
       .sidePanelMock { position:static; }
+
       .filtersCard { grid-template-columns:1fr 1fr; }
 
       .forecastGrid,
-      .stationsGrid {
-        grid-template-columns:1fr 1fr;
-      }
+      .stationsGrid { grid-template-columns:1fr 1fr; }
     }
 
     @media(max-width:900px) {
@@ -1175,7 +1116,9 @@
       th, td { padding:10px 8px; }
 
       .progressBig { font-size:42px; }
+
       .forecastValue { font-size:31px; }
+
       .detailsTable th { width:130px; }
     }
 
@@ -1414,7 +1357,7 @@
       </div>
 
       <div class="heroActions">
-        <button id="refreshButton" class="ghostBtn" onclick="refreshAll()">↻ Odśwież</button>
+        <button id="refreshButton" class="ghostBtn" onclick="loadReport()">↻ Odśwież</button>
         <button id="exportButton" class="secondaryBtn" onclick="exportExcel()">Eksport Excel</button>
         <button class="dangerBtn" onclick="logout()">Wyloguj</button>
       </div>
@@ -1582,142 +1525,123 @@
 
     <section id="stationsView" class="view">
       <div class="card">
-        <div class="stationsHeader">
+        <div class="cardTitleRow">
           <div>
-            <h2 style="margin-bottom:6px;">🧑‍🍳 Stanowiska</h2>
-            <div class="small">Prawdziwy podgląd aktywnych stanowisk, kolejek, pracowników i postępu.</div>
+            <h2>🧑‍🍳 Stanowiska</h2>
+            <div class="small">Podgląd aktywnych stanowisk, kolejek, pracowników i postępu.</div>
           </div>
-          <button class="ghostBtn" onclick="loadStations()">↻ Odśwież stanowiska</button>
+          <button class="ghostBtn" onclick="loadStations()">Odśwież stanowiska</button>
         </div>
 
-        <div id="stationsStatus" class="formStatus"></div>
-        <div id="stationsGrid" class="stationsGrid"></div>
+        <div id="stationsGrid" class="stationsGrid">
+          <div class="small">Ładuję stanowiska...</div>
+        </div>
       </div>
     </section>
 
-<section id="workersView" class="view">
-  <div class="workerAdminLayout">
-    <div>
-      <div class="card">
-        <div class="employeeToolbar">
-          <div>
-            <h2 style="margin:0;">👥 Pracownicy</h2>
-            <div class="small">Lista pracowników z rolą worker.</div>
-          </div>
-          <button class="ghostBtn" onclick="loadWorkersList()">↻ Odśwież listę</button>
-        </div>
-
-        <input id="employeeSearch" placeholder="Szukaj pracownika..." oninput="renderEmployeeDirectory()">
-        <div style="height:14px;"></div>
-        <div id="employeeDirectory"></div>
-      </div>
-
-      <div class="card">
-        <div class="cardTitleRow">
-          <div>
-            <h2>🏆 Ranking z raportu</h2>
-            <div class="small">Kliknij nagłówki, żeby sortować.</div>
-          </div>
-        </div>
-        <div id="workersTable"></div>
-      </div>
-    </div>
-
-    <div id="employeePanel" class="sidePanelMock">
-      <div class="cardTitleRow">
-        <h2>Dodaj pracownika</h2>
-      </div>
-
-      <label class="label">Login pracownika</label>
-      <input id="employeeLogin" placeholder="np. worker4" autocomplete="off">
-
-      <label class="label">Imię i nazwisko / nazwa</label>
-      <input id="employeeName" placeholder="np. Jan Nowak" autocomplete="off">
-
-      <label class="label">Hasło startowe</label>
-      <input id="employeePassword" type="password" placeholder="Minimum 6 znaków" autocomplete="new-password">
-
-      <label class="label">Rola</label>
-      <input class="readonlyInput" value="worker" readonly>
-
-      <button id="createEmployeeBtn" class="primaryBtn" style="width:100%;margin-top:6px;" onclick="createWorkerFromPanel()">
-        Dodaj pracownika
-      </button>
-
-      <button class="ghostBtn" style="width:100%;margin-top:10px;" onclick="clearWorkerForm()">
-        Wyczyść formularz
-      </button>
-
-      <div id="employeeStatus" class="formStatus"></div>
-    </div>
-  </div>
-</section>
-
-<section id="settingsView" class="view">
-  <div class="settingsSlimGrid">
-    <div class="card">
-      <h2>📊 Raport</h2>
-
-      <div class="settingRow">
+    <section id="workersView" class="view">
+      <div class="workerAdminLayout">
         <div>
-          <b>Odświeżanie raportu</b>
-          <div class="small">Jak często raport ma automatycznie pobierać nowe dane.</div>
-        </div>
-        <select id="reportRefreshSelect" style="width:150px;" onchange="updateRefreshInterval()">
-          <option value="30">30 sek.</option>
-          <option value="60">60 sek.</option>
-          <option value="120">120 sek.</option>
-        </select>
-      </div>
+          <div class="card">
+            <div class="employeeToolbar">
+              <div>
+                <h2 style="margin:0;">👥 Pracownicy</h2>
+                <div class="small">Lista workerów, ich nazwy wyświetlane oraz status kodu QR.</div>
+              </div>
+              <button class="primaryBtn" onclick="openEmployeePanel()">+ Dodaj pracownika</button>
+            </div>
 
-      <div class="settingRow">
-        <div>
-          <b>Historia na stronę</b>
-          <div class="small">Ile wpisów ma być pokazywane jednocześnie w zakładce Historia.</div>
+            <input id="employeeSearch" placeholder="Szukaj po nazwie lub loginie..." oninput="renderEmployeeDirectory()">
+            <div style="height:14px;"></div>
+            <div id="employeeDirectory"></div>
+          </div>
+
+          <div class="card">
+            <div class="cardTitleRow">
+              <div>
+                <h2>🏆 Ranking z raportu</h2>
+                <div class="small">Kliknij nagłówki, żeby sortować.</div>
+              </div>
+            </div>
+            <div id="workersTable"></div>
+          </div>
         </div>
-        <select id="historyPageSizeSelect" style="width:150px;" onchange="updateHistoryPageSize()">
-          <option value="100">100 wpisów</option>
-          <option value="500">500 wpisów</option>
-          <option value="1000" selected>1000 wpisów</option>
-        </select>
+
+        <div id="employeePanel" class="sidePanelMock">
+          <div class="cardTitleRow">
+            <h2>Nowy pracownik</h2>
+            <button class="lightBtn" style="width:auto;" onclick="clearEmployeeForm()">Wyczyść</button>
+          </div>
+
+          <label class="label">Login pracownika</label>
+          <input id="newWorkerLogin" placeholder="np. daria">
+
+          <label class="label">Nazwa wyświetlana</label>
+          <input id="newWorkerDisplayName" placeholder="np. Daria Malczewska">
+
+          <label class="label">Hasło startowe</label>
+          <input id="newWorkerPassword" type="password" placeholder="Wpisz hasło dla pracownika">
+
+          <label class="label">Rola</label>
+          <input value="worker" disabled>
+
+          <button id="createWorkerButton" class="primaryBtn" style="width:100%;" onclick="createWorker()">
+            Zapisz pracownika
+          </button>
+
+          <p id="employeeStatus" class="employeeStatus"></p>
+
+          <div class="small" style="margin-top:14px;">
+            Po zapisaniu pracownik będzie miał rolę <b>worker</b>. Kod QR, jeśli Edge Function go generuje, zostanie ustawiony w tle.
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
+
+    <section id="settingsView" class="view">
+      <div class="settingsSlimGrid">
+        <div class="card">
+          <h2>📊 Raport</h2>
+
+          <div class="settingRow">
+            <div>
+              <b>Odświeżanie raportu</b>
+              <div class="small">Jak często raport ma pobierać nowe dane.</div>
+            </div>
+            <select id="reportRefreshSelect" style="width:150px;" onchange="updateRefreshInterval()">
+              <option value="30">30 sek.</option>
+              <option value="60">60 sek.</option>
+              <option value="120">120 sek.</option>
+            </select>
+          </div>
+
+          <div class="settingRow">
+            <div>
+              <b>Historia na stronę</b>
+              <div class="small">Liczba wpisów pokazywana jednocześnie w Historii.</div>
+            </div>
+            <select id="historyPageSizeSelect" style="width:150px;" onchange="updateHistoryPageSize()">
+              <option value="50">50</option>
+              <option value="100">100</option>
+              <option value="250">250</option>
+              <option value="500">500</option>
+              <option value="1000" selected>1000</option>
+              <option value="2000">2000</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 </div>
 
 <div id="detailsModal" class="modalBg hidden">
   <div class="modal">
     <div class="modalHeader">
-      <h2 id="detailsTitle">📦 Szczegóły</h2>
+      <h2 id="detailsModalTitle">📦 Szczegóły</h2>
       <button class="closeBtn" onclick="closeDetails()">Zamknij</button>
     </div>
     <div id="detailsContent"></div>
-  </div>
-</div>
-
-<div id="qrModal" class="modalBg hidden">
-  <div class="modal" style="max-width:620px;">
-    <div class="modalHeader">
-      <h2 id="qrModalTitle">Kod QR pracownika</h2>
-      <button class="closeBtn" onclick="closeQrModal()">Zamknij</button>
-    </div>
-
-    <div class="qrModalBox">
-      <div class="small" id="qrModalSubtitle"></div>
-
-      <div class="qrCanvasWrap">
-        <canvas id="qrCanvas"></canvas>
-      </div>
-
-      <div class="qrTokenText" id="qrTokenText"></div>
-
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-        <button class="ghostBtn" onclick="copyCurrentQrToken()">Kopiuj token</button>
-        <button class="secondaryBtn" onclick="printCurrentQr()">Drukuj QR</button>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -1734,7 +1658,7 @@
       </div>
     </div>
     <div class="mobileTopbarRight">
-      <button onclick="refreshAll()" style="background:#111827;">↻</button>
+      <button onclick="loadReport()" style="background:#111827;">↻</button>
       <button onclick="logout()" style="background:#ef4444;">Wyloguj</button>
     </div>
   </div>
@@ -1775,12 +1699,19 @@
 const PROJECT_URL = "https://lanmmbpqxmenyjwvwpkt.supabase.co";
 const PUBLISHABLE_KEY = "sb_publishable_sYrinkI1u2zr9uXZwsERNg_HE0wQKsC";
 const QR_LOGIN_FUNCTION_URL = PROJECT_URL + "/functions/v1/qr-login-session";
+
+/*
+  Jeżeli Twoja Edge Function do tworzenia workera ma inną nazwę,
+  zmień tylko tę jedną linijkę.
+*/
 const CREATE_WORKER_FUNCTION_URL = PROJECT_URL + "/functions/v1/manager-create-worker";
 
-const supabaseClient = window.supabase.createClient(PROJECT_URL, PUBLISHABLE_KEY);
-const LOGIN_DOMAIN = "@pakowanie.local";
+const supabaseClient = window.supabase.createClient(
+  PROJECT_URL,
+  PUBLISHABLE_KEY
+);
 
-const $ = id => document.getElementById(id);
+const LOGIN_DOMAIN = "@pakowanie.local";
 
 let sessions = [];
 let brakiRows = [];
@@ -1797,37 +1728,107 @@ let historyPage = 1;
 let historyPageSize = 1000;
 let reportRefreshSeconds = 30;
 
-let workerQrUsers = [];
-let workerQrTokens = {};
-let currentQrToken = "";
-let currentQrEmail = "";
+let workerDirectory = [];
+let workerNameMap = new Map();
 
-let stationCache = new Map();
+let stationLinesData = [];
 
 window.workerStats = [];
 
-function setText(id, value) {
-  const node = $(id);
-  if (node) node.innerText = value;
+/* ---------- NAWIGACJA ---------- */
+
+function showReportTab(tab) {
+  const tabs = ["summary", "history", "stations", "workers", "settings"];
+
+  tabs.forEach(name => {
+    const view = document.getElementById(name + "View");
+    if (view) view.classList.toggle("active", name === tab);
+  });
+
+  tabSummary.classList.toggle("active", tab === "summary");
+  tabHistory.classList.toggle("active", tab === "history");
+  tabStations.classList.toggle("active", tab === "stations");
+  tabWorkers.classList.toggle("active", tab === "workers");
+  tabSettings.classList.toggle("active", tab === "settings");
+
+  if (tab === "history") {
+    setTimeout(() => bagSearch.focus(), 80);
+  }
+
+  if (tab === "workers") {
+    renderEmployeeDirectory();
+  }
+
+  if (tab === "stations") {
+    loadStations();
+  }
 }
 
-function setHtml(id, value) {
-  const node = $(id);
-  if (node) node.innerHTML = value;
+function updateRefreshInterval() {
+  const value = Number(reportRefreshSelect.value || 30);
+  reportRefreshSeconds = value;
+
+  autoRefreshLabel.innerText = "co " + value + " sekund";
+
+  if (refreshTimer) {
+    clearInterval(refreshTimer);
+    refreshTimer = setInterval(loadReport, reportRefreshSeconds * 1000);
+  }
 }
 
-function setStatusBox(id, text, type = "info") {
-  const node = $(id);
-  if (!node) return;
+function updateHistoryPageSize() {
+  historyPageSize = Number(historyPageSizeSelect.value || 1000);
+  historyPage = 1;
+  renderAll();
+}
+
+function openEmployeePanel() {
+  showReportTab("workers");
+  employeePanel.scrollIntoView({ behavior:"smooth", block:"start" });
+}
+
+function clearHistoryFilters() {
+  bagSearch.value = "";
+  statusFilter.value = "";
+  workerFilter.value = "";
+  resetHistoryPageAndRender();
+}
+
+/* ---------- LOGIN ---------- */
+
+function togglePasswordLogin() {
+  const box = document.getElementById("passwordLoginBox");
+  const btn = document.getElementById("togglePasswordLoginBtn");
+  const willOpen = box.classList.contains("hidden");
+
+  box.classList.toggle("hidden", !willOpen);
+  btn.innerText = willOpen
+    ? "Ukryj logowanie login / hasło"
+    : "Logowanie login / hasło";
+
+  if (willOpen) {
+    setTimeout(() => loginInput.focus(), 80);
+  } else {
+    setTimeout(() => qrLoginInput.focus(), 80);
+  }
+}
+
+function setLoginStatus(text, type = "error") {
+  loginStatus.innerText = text || "";
 
   if (!text) {
-    node.className = "formStatus";
-    node.innerText = "";
+    loginStatus.className = "loginStatus";
     return;
   }
 
-  node.className = "formStatus " + type;
-  node.innerText = text;
+  loginStatus.className = "loginStatus " + type;
+}
+
+function focusQrInput() {
+  setTimeout(() => {
+    qrLoginInput.focus();
+    qrLoginInput.click();
+  }, 80);
 }
 
 function normalizeQrToken(value) {
@@ -1874,11 +1875,6 @@ function statusBadgeHtml(status) {
   return `<span class="statusBadge ${escapeHtml(s)}">${escapeHtml(s)}</span>`;
 }
 
-function stationStatusBadgeHtml(status) {
-  const s = String(status || "-").toLowerCase();
-  return `<span class="statusBadge ${escapeHtml(s)}">${escapeHtml(status || "-")}</span>`;
-}
-
 function splitItems(text) {
   if (!text || text === "-") return [];
   return String(text).split("|").map(x => x.trim()).filter(Boolean);
@@ -1886,8 +1882,6 @@ function splitItems(text) {
 
 function formatDuration(seconds) {
   if (!seconds && seconds !== 0) return "-";
-  seconds = Number(seconds);
-  if (!Number.isFinite(seconds)) return "-";
   if (seconds < 60) return seconds + "s";
 
   const m = Math.floor(seconds / 60);
@@ -1927,107 +1921,234 @@ function formatDateTime(dateText) {
   return d.toLocaleString("pl-PL");
 }
 
-function showReportTab(tab) {
-  const tabs = ["summary", "history", "stations", "workers", "settings"];
+/* ---------- DISPLAY NAME MAP ---------- */
 
-  tabs.forEach(name => {
-    const view = $(name + "View");
-    if (view) view.classList.toggle("active", name === tab);
-  });
+function registerWorkerName(email, displayName) {
+  const fullEmail = String(email || "").toLowerCase().trim();
+  const loginOnly = displayLogin(fullEmail);
+  const name = String(displayName || "").trim();
 
-  $("tabSummary").classList.toggle("active", tab === "summary");
-  $("tabHistory").classList.toggle("active", tab === "history");
-  $("tabStations").classList.toggle("active", tab === "stations");
-  $("tabWorkers").classList.toggle("active", tab === "workers");
-  $("tabSettings").classList.toggle("active", tab === "settings");
+  if (!name) return;
 
-  if (tab === "history") {
-    setTimeout(() => $("bagSearch")?.focus(), 80);
-  }
-
-  if (tab === "workers") {
-    loadWorkersList(false);
-  }
-
-  if (tab === "stations") {
-    loadStations(false);
-  }
+  if (fullEmail) workerNameMap.set(fullEmail, name);
+  if (loginOnly) workerNameMap.set(loginOnly, name);
 }
 
-function updateRefreshInterval() {
-  const value = Number($("reportRefreshSelect")?.value || 30);
-  reportRefreshSeconds = value;
-  setText("autoRefreshLabel", "co " + value + " sekund");
-  restartAutoRefresh();
+function getWorkerDisplayName(value) {
+  const rawOriginal = String(value || "").trim();
+  const raw = rawOriginal.toLowerCase();
+
+  if (!raw || raw === "-") return "-";
+
+  if (raw.startsWith("stanowisko:")) return rawOriginal;
+
+  const loginOnly = displayLogin(raw);
+
+  return (
+    workerNameMap.get(raw) ||
+    workerNameMap.get(loginOnly) ||
+    displayLogin(raw)
+  );
 }
 
-function updateHistoryPageSize() {
-  historyPageSize = Number($("historyPageSizeSelect")?.value || 1000);
-  historyPage = 1;
-  renderAll();
+function getWorkerEmailFromSessionValue(value) {
+  const raw = String(value || "").trim().toLowerCase();
+  if (!raw || raw.includes(":")) return raw;
+  if (raw.includes("@")) return raw;
+  return raw + LOGIN_DOMAIN;
 }
 
-function restartAutoRefresh() {
-  if (refreshTimer) {
-    clearInterval(refreshTimer);
-  }
+/* ---------- KATALOG PRACOWNIKÓW ---------- */
 
-  refreshTimer = setInterval(() => {
-    loadReport();
-    loadStations(true);
-  }, reportRefreshSeconds * 1000);
-}
+async function loadWorkerDirectory() {
+  const { data, error } = await supabaseClient.rpc("report_list_worker_directory");
 
-async function refreshAll() {
-  await Promise.allSettled([
-    loadReport(),
-    loadStations(true),
-    loadWorkersList(true)
-  ]);
-}
-
-function clearHistoryFilters() {
-  $("bagSearch").value = "";
-  $("statusFilter").value = "";
-  $("workerFilter").value = "";
-  resetHistoryPageAndRender();
-}
-
-function togglePasswordLogin() {
-  const box = $("passwordLoginBox");
-  const btn = $("togglePasswordLoginBtn");
-  const willOpen = box.classList.contains("hidden");
-
-  box.classList.toggle("hidden", !willOpen);
-  btn.innerText = willOpen
-    ? "Ukryj logowanie login / hasło"
-    : "Logowanie login / hasło";
-
-  if (willOpen) {
-    setTimeout(() => $("loginInput").focus(), 80);
-  } else {
-    setTimeout(() => $("qrLoginInput").focus(), 80);
-  }
-}
-
-function setLoginStatus(text, type = "error") {
-  const loginStatus = $("loginStatus");
-  loginStatus.innerText = text || "";
-
-  if (!text) {
-    loginStatus.className = "loginStatus";
+  if (error) {
+    console.warn("Nie udało się pobrać katalogu workerów:", error.message);
+    workerDirectory = [];
+    workerNameMap = new Map();
     return;
   }
 
-  loginStatus.className = "loginStatus " + type;
+  workerDirectory = data || [];
+  workerNameMap = new Map();
+
+  workerDirectory.forEach(row => {
+    registerWorkerName(row.user_email, row.display_name);
+  });
 }
 
-function focusQrInput() {
-  setTimeout(() => {
-    $("qrLoginInput").focus();
-    $("qrLoginInput").click();
-  }, 80);
+function qrStatusPill(row) {
+  if (row.qr_active) {
+    return `<span class="pill okPill">● Aktywny</span>`;
+  }
+
+  return `<span class="pill warnPill">● Wyłączony</span>`;
 }
+
+function renderEmployeeDirectory() {
+  if (!document.getElementById("employeeDirectory")) return;
+
+  const search = String(employeeSearch?.value || "").toLowerCase().trim();
+
+  let rows = workerDirectory || [];
+
+  rows = rows.filter(row => {
+    const displayName = String(row.display_name || "").toLowerCase();
+    const email = String(row.user_email || "").toLowerCase();
+    const login = displayLogin(email).toLowerCase();
+
+    return !search ||
+      displayName.includes(search) ||
+      email.includes(search) ||
+      login.includes(search);
+  });
+
+  if (!rows.length) {
+    employeeDirectory.innerHTML = `
+      <div class="small">
+        Brak workerów do pokazania albo nie udało się pobrać katalogu pracowników.
+      </div>
+    `;
+    return;
+  }
+
+  employeeDirectory.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Nazwa</th>
+          <th>Login</th>
+          <th>Rola</th>
+          <th>QR</th>
+          <th>Ostatnie użycie QR</th>
+          <th>Użyć</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.map(row => {
+          const displayName = row.display_name || displayLogin(row.user_email || "-");
+          const login = displayLogin(row.user_email || "-");
+
+          return `
+            <tr>
+              <td><b>${escapeHtml(displayName)}</b></td>
+              <td>${escapeHtml(login)}</td>
+              <td><span class="pill bluePill">worker</span></td>
+              <td>${qrStatusPill(row)}</td>
+              <td>${row.qr_last_used_at ? formatDateTime(row.qr_last_used_at) : "-"}</td>
+              <td>${Number(row.qr_use_count || 0)}</td>
+            </tr>
+          `;
+        }).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function setEmployeeStatus(text, type = "error") {
+  employeeStatus.innerText = text || "";
+
+  if (!text) {
+    employeeStatus.className = "employeeStatus";
+    return;
+  }
+
+  employeeStatus.className = "employeeStatus " + type;
+}
+
+function clearEmployeeForm() {
+  newWorkerLogin.value = "";
+  newWorkerDisplayName.value = "";
+  newWorkerPassword.value = "";
+  setEmployeeStatus("");
+  setTimeout(() => newWorkerLogin.focus(), 80);
+}
+
+async function createWorker() {
+  const login = String(newWorkerLogin.value || "").trim().toLowerCase();
+  const displayName = String(newWorkerDisplayName.value || "").trim();
+  const password = String(newWorkerPassword.value || "");
+
+  if (!login) {
+    setEmployeeStatus("Wpisz login pracownika.", "error");
+    newWorkerLogin.focus();
+    return;
+  }
+
+  if (!displayName) {
+    setEmployeeStatus("Wpisz nazwę wyświetlaną pracownika.", "error");
+    newWorkerDisplayName.focus();
+    return;
+  }
+
+  if (!password || password.length < 6) {
+    setEmployeeStatus("Wpisz hasło startowe. Minimum 6 znaków.", "error");
+    newWorkerPassword.focus();
+    return;
+  }
+
+  const email = getLoginEmail(login);
+
+  createWorkerButton.disabled = true;
+  createWorkerButton.innerText = "Zapisuję...";
+  setEmployeeStatus("⏳ Tworzę pracownika...", "info");
+
+  try {
+    const { data: sessionData } = await supabaseClient.auth.getSession();
+    const accessToken = sessionData?.session?.access_token;
+
+    if (!accessToken) {
+      setEmployeeStatus("Brak aktywnej sesji. Zaloguj się ponownie.", "error");
+      return;
+    }
+
+    const res = await fetch(CREATE_WORKER_FUNCTION_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": PUBLISHABLE_KEY,
+        "Authorization": "Bearer " + accessToken
+      },
+      body: JSON.stringify({
+        login,
+        email,
+        password,
+        display_name: displayName,
+        full_name: displayName,
+        role: "worker"
+      })
+    });
+
+    const json = await res.json().catch(() => ({}));
+
+    if (!res.ok || json.ok === false || (json.status && json.status !== "OK")) {
+      setEmployeeStatus(
+        "❌ Nie udało się utworzyć pracownika: " +
+        (json.message || json.error || json.status || "Nieznany błąd."),
+        "error"
+      );
+      return;
+    }
+
+    setEmployeeStatus("✅ Pracownik został utworzony: " + displayName, "ok");
+
+    clearEmployeeForm();
+
+    await loadWorkerDirectory();
+    refreshWorkerFilter();
+    renderEmployeeDirectory();
+    renderAll();
+
+  } catch (err) {
+    setEmployeeStatus("❌ Błąd tworzenia pracownika: " + err.message, "error");
+  } finally {
+    createWorkerButton.disabled = false;
+    createWorkerButton.innerText = "Zapisz pracownika";
+  }
+}
+
+/* ---------- AUTH ---------- */
 
 async function getUserRole(userId) {
   const { data, error } = await supabaseClient
@@ -2057,31 +2178,29 @@ function translateLoginError(errorMessage) {
 }
 
 async function enterReportAfterLogin() {
-  $("loginScreen").classList.add("hidden");
+  loginScreen.classList.add("hidden");
 
-  setText("userAvatar", displayLogin(currentUserEmail).slice(0, 1).toUpperCase() || "M");
-  setText("sidebarUserName", displayLogin(currentUserEmail || "manager"));
-  setText("sidebarRoleName", "Rola: " + (currentUserRole || "-"));
+  userAvatar.innerText = displayLogin(currentUserEmail).slice(0, 1).toUpperCase() || "M";
+  sidebarUserName.innerText = displayLogin(currentUserEmail || "manager");
+  sidebarRoleName.innerText = "Rola: " + (currentUserRole || "-");
 
   const isMobile = window.innerWidth <= 700;
 
   if (isMobile) {
-    $("mobileScreen").classList.remove("hidden");
+    mobileScreen.classList.remove("hidden");
   } else {
-    $("reportScreen").classList.remove("hidden");
+    reportScreen.classList.remove("hidden");
   }
 
-  await Promise.allSettled([
-    loadReport(),
-    loadWorkersList(true),
-    loadStations(true)
-  ]);
+  await loadReport();
 
-  restartAutoRefresh();
+  if (!refreshTimer) {
+    refreshTimer = setInterval(loadReport, reportRefreshSeconds * 1000);
+  }
 }
 
 async function qrLogin() {
-  const rawToken = normalizeQrToken($("qrLoginInput").value);
+  const rawToken = normalizeQrToken(qrLoginInput.value);
 
   if (!rawToken) {
     setLoginStatus("Zeskanuj kod QR pracownika.", "error");
@@ -2090,9 +2209,9 @@ async function qrLogin() {
   }
 
   setLoginStatus("⏳ Sprawdzam kod QR...", "info");
-  $("qrLoginInput").disabled = true;
-  $("qrLoginBtn").disabled = true;
-  $("qrLoginBtn").innerText = "Sprawdzam QR...";
+  qrLoginInput.disabled = true;
+  qrLoginBtn.disabled = true;
+  qrLoginBtn.innerText = "Sprawdzam QR...";
 
   try {
     const res = await fetch(QR_LOGIN_FUNCTION_URL, {
@@ -2112,7 +2231,7 @@ async function qrLogin() {
 
     if (!res.ok) {
       setLoginStatus("❌ Nie udało się zalogować QR: " + (json.error || json.message || "Nieznany błąd."), "error");
-      $("qrLoginInput").value = "";
+      qrLoginInput.value = "";
       focusQrInput();
       return;
     }
@@ -2123,7 +2242,7 @@ async function qrLogin() {
 
     if (!accessToken || !refreshToken) {
       setLoginStatus("❌ Funkcja QR nie zwróciła pełnej sesji.", "error");
-      $("qrLoginInput").value = "";
+      qrLoginInput.value = "";
       focusQrInput();
       return;
     }
@@ -2135,7 +2254,7 @@ async function qrLogin() {
 
     if (setError || !setData?.session?.user) {
       setLoginStatus("❌ Nie udało się ustawić sesji: " + (setError?.message || "brak użytkownika"), "error");
-      $("qrLoginInput").value = "";
+      qrLoginInput.value = "";
       focusQrInput();
       return;
     }
@@ -2146,7 +2265,7 @@ async function qrLogin() {
     if (!hasAccess(role, ["manager", "admin"])) {
       setLoginStatus("❌ Brak dostępu do raportu dla tego kodu QR.", "error");
       await supabaseClient.auth.signOut();
-      $("qrLoginInput").value = "";
+      qrLoginInput.value = "";
       focusQrInput();
       return;
     }
@@ -2155,39 +2274,39 @@ async function qrLogin() {
     currentUserRole = role;
 
     setLoginStatus("✅ Zalogowano kodem QR: " + displayLogin(user.email), "ok");
-    $("qrLoginInput").value = "";
+    qrLoginInput.value = "";
 
     await enterReportAfterLogin();
 
   } catch (err) {
     setLoginStatus("❌ Błąd logowania QR: " + err.message, "error");
-    $("qrLoginInput").value = "";
+    qrLoginInput.value = "";
     focusQrInput();
   } finally {
-    $("qrLoginInput").disabled = false;
-    $("qrLoginBtn").disabled = false;
-    $("qrLoginBtn").innerText = "Zaloguj kodem QR";
+    qrLoginInput.disabled = false;
+    qrLoginBtn.disabled = false;
+    qrLoginBtn.innerText = "Zaloguj kodem QR";
   }
 }
 
 async function login() {
   setLoginStatus("");
 
-  const email = getLoginEmail($("loginInput").value);
-  const password = $("passwordInput").value;
+  const email = getLoginEmail(loginInput.value);
+  const password = passwordInput.value;
 
   if (!email || !password) {
     setLoginStatus("Wpisz login i hasło.", "error");
     return;
   }
 
-  $("loginButton").disabled = true;
-  $("loginButton").innerText = "Loguję...";
+  loginButton.disabled = true;
+  loginButton.innerText = "Loguję...";
 
   const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
-  $("loginButton").disabled = false;
-  $("loginButton").innerText = "Zaloguj loginem i hasłem";
+  loginButton.disabled = false;
+  loginButton.innerText = "Zaloguj loginem i hasłem";
 
   if (error) {
     setLoginStatus(translateLoginError(error.message), "error");
@@ -2221,17 +2340,19 @@ async function logout() {
   currentUserEmail = "";
   currentUserRole = "";
 
-  $("reportScreen").classList.add("hidden");
-  $("mobileScreen").classList.add("hidden");
-  $("loginScreen").classList.remove("hidden");
+  reportScreen.classList.add("hidden");
+  mobileScreen.classList.add("hidden");
+  loginScreen.classList.remove("hidden");
 
-  $("qrLoginInput").disabled = false;
-  $("qrLoginInput").value = "";
-  $("passwordInput").value = "";
+  qrLoginInput.disabled = false;
+  qrLoginInput.value = "";
+  passwordInput.value = "";
   setLoginStatus("");
 
   focusQrInput();
 }
+
+/* ---------- RAPORT ---------- */
 
 async function fetchAllSessionsFallback() {
   const pageSize = 1000;
@@ -2281,11 +2402,8 @@ async function loadReport() {
   if (isLoadingReport) return;
 
   isLoadingReport = true;
-
-  if ($("refreshButton")) {
-    $("refreshButton").disabled = true;
-    $("refreshButton").innerText = "Ładuję...";
-  }
+  refreshButton.disabled = true;
+  refreshButton.innerText = "Ładuję...";
 
   try {
     let reportRows = [];
@@ -2333,54 +2451,56 @@ async function loadReport() {
       console.warn("Nie udało się pobrać meal_date:", mealError.message);
     }
 
+    await loadWorkerDirectory();
+
+    if (currentUserEmail) {
+      sidebarUserName.innerText = getWorkerDisplayName(currentUserEmail);
+    }
+
     updateTitle();
-    setText("lastRefresh", new Date().toLocaleTimeString("pl-PL"));
-    setText("loadedRows", String(sessions.length));
-    setText("settingsMealDate", formatMealDate(mealDate) || "-");
-    setText("settingsTotalBags", String(totalBagsInPlan));
+    lastRefresh.innerText = new Date().toLocaleTimeString("pl-PL");
+    loadedRows.innerText = String(sessions.length);
 
     refreshWorkerFilter();
     renderAll();
     renderMobile(sessions);
+    loadStations(false);
 
   } catch (err) {
     alert("Błąd pobierania raportu: " + err.message);
   } finally {
     isLoadingReport = false;
-
-    if ($("refreshButton")) {
-      $("refreshButton").disabled = false;
-      $("refreshButton").innerText = "↻ Odśwież";
-    }
+    refreshButton.disabled = false;
+    refreshButton.innerText = "↻ Odśwież";
   }
 }
 
 function updateTitle() {
   const formatted = formatMealDate(mealDate);
 
-  setText("reportTitle", formatted
+  reportTitle.innerText = formatted
     ? `Raport pakowania ${formatted}`
-    : "Raport pakowania"
-  );
+    : "Raport pakowania";
 }
 
 function refreshWorkerFilter() {
-  const filter = $("workerFilter");
-  if (!filter) return;
+  const current = workerFilter.value;
+  const workers = [...new Set(sessions.map(x => x.user_login).filter(Boolean))];
 
-  const current = filter.value;
-  const workers = [...new Set(sessions.map(x => x.user_login).filter(Boolean))].sort();
+  workers.sort((a, b) =>
+    getWorkerDisplayName(a).localeCompare(getWorkerDisplayName(b), "pl")
+  );
 
-  filter.innerHTML = `<option value="">Wszyscy pracownicy</option>` +
-    workers.map(w => `<option value="${escapeHtml(w)}">${escapeHtml(displayLogin(w))}</option>`).join("");
+  workerFilter.innerHTML = `<option value="">Wszyscy pracownicy</option>` +
+    workers.map(w => `<option value="${escapeHtml(w)}">${escapeHtml(getWorkerDisplayName(w))}</option>`).join("");
 
-  filter.value = current;
+  workerFilter.value = current;
 }
 
 function getFilteredSessions() {
-  const search = $("bagSearch")?.value.trim().toLowerCase() || "";
-  const status = $("statusFilter")?.value || "";
-  const worker = $("workerFilter")?.value || "";
+  const search = bagSearch.value.trim().toLowerCase();
+  const status = statusFilter.value;
+  const worker = workerFilter.value;
 
   return sessions.filter(x => {
     if (search && !String(x.bag_qr || "").toLowerCase().includes(search)) return false;
@@ -2393,23 +2513,6 @@ function getFilteredSessions() {
 function resetHistoryPageAndRender() {
   historyPage = 1;
   renderAll();
-}
-
-function changeHistoryPage(direction) {
-  const filtered = getFilteredSessions();
-  const totalPages = Math.max(1, Math.ceil(filtered.length / historyPageSize));
-
-  historyPage += direction;
-
-  if (historyPage < 1) historyPage = 1;
-  if (historyPage > totalPages) historyPage = totalPages;
-
-  renderHistory(filtered);
-
-  const historyView = $("historyView");
-  if (historyView) {
-    historyView.scrollIntoView({ behavior:"smooth", block:"start" });
-  }
 }
 
 function renderAll() {
@@ -2438,31 +2541,32 @@ function renderAll() {
     ? Math.round((correct.length / finalPacked) * 100)
     : 0;
 
-  setText("totalToday", `${finalPacked} / ${totalBagsInPlan}`);
+  totalToday.innerText = `${finalPacked} / ${totalBagsInPlan}`;
 
   const totalPercent = totalBagsInPlan
     ? Math.min(100, Math.round((finalPacked / totalBagsInPlan) * 100))
     : 0;
 
-  if ($("totalProgressFill")) $("totalProgressFill").style.width = totalPercent + "%";
-  setText("summaryProgressText", totalPercent + "%");
-  setText("summaryProgressSub", `Spakowano ${finalPacked} z ${totalBagsInPlan} toreb.`);
+  totalProgressFill.style.width = totalPercent + "%";
+  summaryProgressText.innerText = totalPercent + "%";
+  summaryProgressSub.innerText = `Spakowano ${finalPacked} z ${totalBagsInPlan} toreb.`;
 
-  setText("correctToday", correct.length);
-  setText("badToday", bad.length);
-  setText("brakiToday", braki.length);
-  setText("accuracyToday", accuracy + "%");
-  setText("avgTime", formatDuration(avg));
+  correctToday.innerText = correct.length;
+  badToday.innerText = bad.length;
+  brakiToday.innerText = braki.length;
+  accuracyToday.innerText = accuracy + "%";
+  avgTime.innerText = formatDuration(avg);
 
   renderForecastCards(allSessions, finalPacked, bad.length, braki.length);
   renderWorkers(allSessions);
   renderHistory(filteredHistory);
   renderSummaryPanels(allSessions);
+  renderEmployeeDirectory();
 }
 
 function renderForecastCards(data, finalPacked, badCount, brakiCount) {
   const remaining = Math.max(0, Number(totalBagsInPlan || 0) - finalPacked);
-  setText("summaryRemainingBags", remaining);
+  summaryRemainingBags.innerText = remaining;
 
   const now = Date.now();
   const oneHourAgo = now - 60 * 60 * 1000;
@@ -2473,41 +2577,40 @@ function renderForecastCards(data, finalPacked, badCount, brakiCount) {
     return ["POPRAWNA", "NIEPOPRAWNA"].includes(status) && closed >= oneHourAgo;
   }).length;
 
-  setText("summaryHourlyPace", lastHourFinal + " / h");
+  summaryHourlyPace.innerText = lastHourFinal + " / h";
 
   if (lastHourFinal > 0 && remaining > 0) {
-    setText("summaryEta", formatEtaFromHours(remaining / lastHourFinal));
+    summaryEta.innerText = formatEtaFromHours(remaining / lastHourFinal);
   } else if (remaining === 0 && totalBagsInPlan > 0) {
-    setText("summaryEta", "gotowe");
+    summaryEta.innerText = "gotowe";
   } else {
-    setText("summaryEta", "-");
+    summaryEta.innerText = "-";
   }
 
-  setText("summaryQualityRisk", badCount + brakiCount);
+  summaryQualityRisk.innerText = badCount + brakiCount;
 }
 
 function renderSummaryPanels(data) {
   const last = data.slice(0, 6);
 
-  setHtml("summaryRecentHistory", last.length
+  summaryRecentHistory.innerHTML = last.length
     ? last.map(x => {
         const status = normalizeStatus(x.status);
         return `
           <div class="settingRow">
             <div>
               <b class="clickable" onclick="openDetails(${sessions.findIndex(s => s.id === x.id)})">${escapeHtml(x.bag_qr || "-")}</b>
-              <div class="small">${escapeHtml(displayLogin(x.user_login || "-"))} • ${formatDateTime(x.closed_at)}</div>
+              <div class="small">${escapeHtml(getWorkerDisplayName(x.user_login || "-"))} • ${formatDateTime(x.closed_at)}</div>
             </div>
             ${statusBadgeHtml(status)}
           </div>
         `;
       }).join("")
-    : `<div class="small">Brak danych.</div>`
-  );
+    : `<div class="small">Brak danych.</div>`;
 
   const workers = window.workerStats.slice(0, 3);
 
-  setHtml("summaryTopWorkers", workers.length
+  summaryTopWorkers.innerHTML = workers.length
     ? workers.map((w, index) => {
         const finalPacked = w.correct + w.bad;
         const accuracy = finalPacked
@@ -2524,12 +2627,13 @@ function renderSummaryPanels(data) {
           </div>
         `;
       }).join("")
-    : `<div class="small">Brak danych.</div>`
-  );
+    : `<div class="small">Brak danych.</div>`;
 }
 
+/* ---------- MOBILE ---------- */
+
 function renderMobile(data) {
-  if (!$("mobileScreen")) return;
+  if (!document.getElementById("mobileScreen")) return;
 
   const correct = data.filter(x => normalizeStatus(x.status) === "POPRAWNA").length;
   const bad = data.filter(x => normalizeStatus(x.status) === "NIEPOPRAWNA").length;
@@ -2541,36 +2645,36 @@ function renderMobile(data) {
     : 0;
 
   const formatted = formatMealDate(mealDate);
-  setText("mobileTitleEl", formatted ? "Raport " + formatted : "Raport pakowania");
-  setText("mobileLastRefresh", new Date().toLocaleTimeString("pl-PL"));
-  setText("mobileTotalStat", finalPacked + " / " + totalBagsInPlan);
+  mobileTitleEl.innerText = formatted
+    ? "Raport " + formatted
+    : "Raport pakowania";
 
-  if ($("mobileProgressFill")) $("mobileProgressFill").style.width = totalPercent + "%";
+  mobileLastRefresh.innerText = new Date().toLocaleTimeString("pl-PL");
 
-  setText("mobileCorrectStat", correct);
-  setText("mobileBadStat", bad);
-  setText("mobileBrakiStat", braki);
-  setText("mobileAccuracyStat", accuracy + "%");
+  mobileTotalStat.innerText = finalPacked + " / " + totalBagsInPlan;
+  mobileProgressFill.style.width = totalPercent + "%";
+  mobileCorrectStat.innerText = correct;
+  mobileBadStat.innerText = bad;
+  mobileBrakiStat.innerText = braki;
+  mobileAccuracyStat.innerText = accuracy + "%";
 
-  const mobileAlert = $("mobileAlertBox");
   if (bad >= 20) {
-    mobileAlert.classList.remove("hidden");
-    mobileAlert.innerText = "⚠️ Niepoprawnych toreb: " + bad;
+    mobileAlertBox.classList.remove("hidden");
+    mobileAlertBox.innerText = "⚠️ Niepoprawnych toreb: " + bad;
   } else {
-    mobileAlert.classList.add("hidden");
+    mobileAlertBox.classList.add("hidden");
   }
 
-  const mobileBraki = $("mobileBrakiBox");
   if (braki > 0) {
-    mobileBraki.classList.remove("hidden");
-    mobileBraki.innerText = "🟡 Do dopakowania: " + braki + " toreb";
+    mobileBrakiBox.classList.remove("hidden");
+    mobileBrakiBox.innerText = "🟡 Do dopakowania: " + braki + " toreb";
   } else {
-    mobileBraki.classList.add("hidden");
+    mobileBrakiBox.classList.add("hidden");
   }
 
   const last30 = data.slice(0, 30);
 
-  setHtml("mobileHistoryList", last30.length
+  mobileHistoryList.innerHTML = last30.length
     ? last30.map(x => {
         const status = normalizeStatus(x.status);
         const cls = status === "POPRAWNA" ? "ok" : status === "BRAKI" ? "warn" : "bad";
@@ -2579,7 +2683,7 @@ function renderMobile(data) {
             <div>
               <div class="mobileHistoryBag">${escapeHtml(x.bag_qr || "-")}</div>
               <div class="mobileHistoryMeta">
-                ${escapeHtml(displayLogin(x.user_login || "-"))} &bull;
+                ${escapeHtml(getWorkerDisplayName(x.user_login || "-"))} &bull;
                 ${formatDateTime(x.closed_at)}
               </div>
             </div>
@@ -2587,9 +2691,10 @@ function renderMobile(data) {
           </div>
         `;
       }).join("")
-    : `<div class="small" style="padding:12px 0;">Brak danych.</div>`
-  );
+    : `<div class="small" style="padding:12px 0;">Brak danych.</div>`;
 }
+
+/* ---------- WORKERS / RANKING ---------- */
 
 function setWorkerSort(key) {
   workerSortKey = key;
@@ -2613,11 +2718,14 @@ function renderWorkers(data) {
   const workers = {};
 
   data.forEach(x => {
-    const worker = displayLogin(x.user_login || "brak użytkownika");
+    const rawWorker = String(x.user_login || "brak użytkownika").trim();
+    const workerKey = rawWorker.toLowerCase();
+    const workerName = getWorkerDisplayName(rawWorker);
 
-    if (!workers[worker]) {
-      workers[worker] = {
-        worker,
+    if (!workers[workerKey]) {
+      workers[workerKey] = {
+        worker: workerName,
+        rawWorker,
         total: 0,
         correct: 0,
         bad: 0,
@@ -2631,21 +2739,21 @@ function renderWorkers(data) {
       };
     }
 
-    workers[worker].total++;
+    workers[workerKey].total++;
 
     const status = normalizeStatus(x.status);
 
-    if (status === "POPRAWNA") workers[worker].correct++;
-    if (status === "NIEPOPRAWNA") workers[worker].bad++;
-    if (status === "BRAKI") workers[worker].braki++;
+    if (status === "POPRAWNA") workers[workerKey].correct++;
+    if (status === "NIEPOPRAWNA") workers[workerKey].bad++;
+    if (status === "BRAKI") workers[workerKey].braki++;
 
-    workers[worker].wrong += splitItems(x.wrong_trays).length;
-    workers[worker].missing += splitItems(x.missing_trays).length;
-    workers[worker].duplicates += splitItems(x.duplicate_trays).length;
+    workers[workerKey].wrong += splitItems(x.wrong_trays).length;
+    workers[workerKey].missing += splitItems(x.missing_trays).length;
+    workers[workerKey].duplicates += splitItems(x.duplicate_trays).length;
 
     if (typeof x.duration_seconds === "number") {
-      workers[worker].duration += x.duration_seconds;
-      workers[worker].durationCount++;
+      workers[workerKey].duration += x.duration_seconds;
+      workers[workerKey].durationCount++;
     }
   });
 
@@ -2668,11 +2776,11 @@ function renderWorkers(data) {
   window.workerStats = dataRows;
 
   if (!dataRows.length) {
-    setHtml("workersTable", `<div class="small">Brak danych pracowników.</div>`);
+    workersTable.innerHTML = `<div class="small">Brak danych pracowników.</div>`;
     return;
   }
 
-  setHtml("workersTable", `
+  workersTable.innerHTML = `
     <table>
       <thead>
         <tr>
@@ -2708,732 +2816,7 @@ function renderWorkers(data) {
         }).join("")}
       </tbody>
     </table>
-  `);
-}
-
-async function loadWorkersList(silent = false) {
-  try {
-    if (!silent) {
-      setHtml("employeeDirectory", `<div class="small">Ładuję pracowników...</div>`);
-    }
-
-    const { data, error } = await supabaseClient.rpc("manager_list_worker_qr_users");
-
-    if (error) throw new Error(error.message);
-
-    workerQrUsers = (data || [])
-      .filter(u => String(u.user_role || "").toLowerCase() === "worker")
-      .sort((a, b) => String(a.user_email).localeCompare(String(b.user_email)));
-
-    renderEmployeeDirectory();
-
-  } catch (err) {
-    setHtml("employeeDirectory", `
-      <div class="formStatus error" style="display:block;">
-        Nie udało się pobrać workerów: ${escapeHtml(err.message)}
-      </div>
-    `);
-  }
-}
-
-function renderEmployeeDirectory() {
-  if (!$("employeeDirectory")) return;
-
-  const search = String($("employeeSearch")?.value || "").toLowerCase().trim();
-
-  const rows = workerQrUsers.filter(u => {
-    const haystack = [
-      u.user_email,
-      displayLogin(u.user_email),
-      u.user_role,
-      u.token_hint
-    ].join(" ").toLowerCase();
-
-    return !search || haystack.includes(search);
-  });
-
-  if (!rows.length) {
-    setHtml("employeeDirectory", `
-      <div class="small">
-        Brak pracowników do pokazania.
-      </div>
-    `);
-    return;
-  }
-
-  setHtml("employeeDirectory", `
-    <table>
-      <thead>
-        <tr>
-          <th>Pracownik</th>
-          <th>Rola</th>
-          <th>Status QR</th>
-          <th>Ostatnie użycie QR</th>
-          <th>Akcje</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${rows.map(u => {
-          const email = String(u.user_email || "");
-          const active = !!u.qr_active;
-
-          return `
-            <tr>
-              <td>
-                <b>${escapeHtml(displayLogin(email))}</b>
-                <div class="small">${escapeHtml(email)}</div>
-              </td>
-
-              <td>
-                <span class="pill bluePill">worker</span>
-              </td>
-
-              <td>
-                ${active
-                  ? `<span class="pill okPill">aktywny</span>`
-                  : `<span class="pill badPill">wyłączony</span>`
-                }
-              </td>
-
-              <td>
-                ${formatDateTime(u.qr_last_used_at)}
-              </td>
-
-              <td>
-                <button class="primaryBtn" style="min-height:36px;padding:8px 10px;" onclick="regenerateWorkerQr('${escapeHtml(email)}')">
-                  ${active ? "Wygeneruj nowy QR" : "Włącz QR"}
-                </button>
-
-                ${active
-                  ? `<button class="dangerBtn" style="min-height:36px;padding:8px 10px;" onclick="disableWorkerQr('${escapeHtml(email)}')">Wyłącz QR</button>`
-                  : ``
-                }
-              </td>
-            </tr>
-          `;
-        }).join("")}
-      </tbody>
-    </table>
-  `);
-}
-
-function setEmployeeStatus(text, type = "info") {
-  setStatusBox("employeeStatus", text, type);
-}
-
-function clearWorkerForm() {
-  $("employeeLogin").value = "";
-  $("employeeName").value = "";
-  $("employeePassword").value = "";
-  setEmployeeStatus("");
-  $("employeeLogin").focus();
-}
-
-async function createWorkerFromPanel() {
-  const loginRaw = String($("employeeLogin").value || "").trim();
-  const fullName = String($("employeeName").value || "").trim();
-  const password = String($("employeePassword").value || "");
-
-  if (!loginRaw) {
-    setEmployeeStatus("Wpisz login pracownika.", "error");
-    return;
-  }
-
-  if (!password || password.length < 6) {
-    setEmployeeStatus("Hasło musi mieć minimum 6 znaków.", "error");
-    return;
-  }
-
-  const userEmail = getLoginEmail(loginRaw);
-  const login = displayLogin(userEmail);
-
-  $("createEmployeeBtn").disabled = true;
-  $("createEmployeeBtn").innerText = "Tworzę workera...";
-  setEmployeeStatus("⏳ Tworzę konto workera...", "info");
-
-  try {
-    const { data: sessionData } = await supabaseClient.auth.getSession();
-    const accessToken = sessionData?.session?.access_token;
-
-    if (!accessToken) {
-      throw new Error("Brak aktywnej sesji managera.");
-    }
-
-    const res = await fetch(CREATE_WORKER_FUNCTION_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": PUBLISHABLE_KEY,
-        "Authorization": "Bearer " + accessToken
-      },
-      body: JSON.stringify({
-        login,
-        email: userEmail,
-        user_email: userEmail,
-        full_name: fullName || login,
-        name: fullName || login,
-        password,
-        role: "worker"
-      })
-    });
-
-    const json = await res.json().catch(() => ({}));
-
-    if (!res.ok || json.ok === false) {
-      throw new Error(json.error || json.message || "Nie udało się utworzyć workera.");
-    }
-
-    const createdEmail = json.user_email || json.email || userEmail;
-
-    setEmployeeStatus("✅ Pracownik został utworzony. Generuję QR...", "ok");
-
-    let token =
-      json.qr_token ||
-      json.qrToken ||
-      json.token ||
-      json.data?.qr_token ||
-      json.data?.token ||
-      "";
-
-    if (!token) {
-      token = await regenerateWorkerQr(createdEmail, true);
-    }
-
-    await loadWorkersList(true);
-
-    if (token) {
-      workerQrTokens[createdEmail] = token;
-      showQrModal(createdEmail, token, "Nowy worker: " + displayLogin(createdEmail));
-      setEmployeeStatus("✅ Pracownik utworzony i QR wygenerowany.", "ok");
-    } else {
-      setEmployeeStatus("✅ Pracownik utworzony. QR możesz wygenerować przyciskiem „Nowy QR”.", "ok");
-    }
-
-    $("employeePassword").value = "";
-
-  } catch (err) {
-    setEmployeeStatus("❌ " + err.message, "error");
-  } finally {
-    $("createEmployeeBtn").disabled = false;
-    $("createEmployeeBtn").innerText = "Utwórz workera";
-  }
-}
-
-async function regenerateWorkerQr(email, silent = false) {
-  try {
-    if (!silent) {
-      setEmployeeStatus("⏳ Generuję nowy QR dla " + displayLogin(email) + "...", "info");
-    }
-
-    const { data, error } = await supabaseClient.rpc("manager_regenerate_worker_qr", {
-      target_user_email: email
-    });
-
-    if (error) throw new Error(error.message);
-
-    const row = Array.isArray(data) ? data[0] : data;
-
-    if (!row || row.status !== "OK") {
-      throw new Error(row?.status || "Nie udało się wygenerować QR.");
-    }
-
-    const token = row.qr_token || row.token || "";
-    if (!token) {
-      throw new Error("Funkcja nie zwróciła pełnego tokenu QR.");
-    }
-
-    workerQrTokens[email] = token;
-
-    if (!silent) {
-      await loadWorkersList(true);
-      setEmployeeStatus("✅ Wygenerowano nowy QR dla " + displayLogin(email) + ".", "ok");
-      showQrModal(email, token, "Worker: " + displayLogin(email));
-    }
-
-    return token;
-
-  } catch (err) {
-    if (!silent) {
-      setEmployeeStatus("❌ " + err.message, "error");
-    }
-    return "";
-  }
-}
-
-async function disableWorkerQr(email) {
-  if (!confirm("Wyłączyć QR dla pracownika " + displayLogin(email) + "?")) return;
-
-  try {
-    setEmployeeStatus("⏳ Wyłączam QR...", "info");
-
-    const { data, error } = await supabaseClient.rpc("manager_disable_worker_qr", {
-      target_user_email: email
-    });
-
-    if (error) throw new Error(error.message);
-
-    const result = Array.isArray(data) ? data[0] : data;
-
-    if (result !== "OK" && result?.status !== "OK") {
-      throw new Error(String(result || "Nie udało się wyłączyć QR."));
-    }
-
-    delete workerQrTokens[email];
-
-    await loadWorkersList(true);
-    setEmployeeStatus("✅ QR został wyłączony dla " + displayLogin(email) + ".", "ok");
-
-  } catch (err) {
-    setEmployeeStatus("❌ " + err.message, "error");
-  }
-}
-
-function showWorkerQr(email) {
-  const token = workerQrTokens[email];
-
-  if (!token) {
-    setEmployeeStatus("Pełny QR jest dostępny tylko zaraz po wygenerowaniu. Kliknij „Nowy QR”.", "error");
-    return;
-  }
-
-  showQrModal(email, token, "Worker: " + displayLogin(email));
-}
-
-function showQrModal(email, token, subtitle = "") {
-  currentQrToken = token;
-  currentQrEmail = email;
-
-  setText("qrModalTitle", "Kod QR pracownika");
-  setText("qrModalSubtitle", subtitle);
-  setText("qrTokenText", token);
-
-  $("qrModal").classList.remove("hidden");
-
-  setTimeout(() => {
-    const canvas = $("qrCanvas");
-    if (!canvas || !window.QRCode) return;
-
-    QRCode.toCanvas(canvas, token, {
-      width: 260,
-      margin: 2
-    }, err => {
-      if (err) {
-        console.error(err);
-        alert("Nie udało się narysować QR.");
-      }
-    });
-  }, 50);
-}
-
-function closeQrModal() {
-  $("qrModal").classList.add("hidden");
-}
-
-async function copyCurrentQrToken() {
-  if (!currentQrToken) return;
-
-  try {
-    await navigator.clipboard.writeText(currentQrToken);
-    alert("Skopiowano token QR.");
-  } catch(e) {
-    alert("Nie udało się skopiować. Token możesz zaznaczyć ręcznie.");
-  }
-}
-
-function printCurrentQr() {
-  const canvas = $("qrCanvas");
-  if (!canvas || !currentQrToken) return;
-
-  const img = canvas.toDataURL("image/png");
-  const email = currentQrEmail || "";
-  const login = displayLogin(email);
-
-  const win = window.open("", "_blank");
-  if (!win) {
-    alert("Przeglądarka zablokowała okno drukowania.");
-    return;
-  }
-
-  win.document.write(`
-    <!DOCTYPE html>
-    <html lang="pl">
-    <head>
-      <meta charset="UTF-8">
-      <title>QR ${escapeHtml(login)}</title>
-      <style>
-        body {
-          font-family: Arial, sans-serif;
-          text-align:center;
-          padding:30px;
-        }
-        .card {
-          border:1px solid #ddd;
-          border-radius:18px;
-          padding:24px;
-          display:inline-block;
-        }
-        img {
-          width:260px;
-          height:260px;
-          image-rendering:pixelated;
-        }
-        h1 {
-          margin:0 0 8px;
-          font-size:26px;
-        }
-        .small {
-          color:#555;
-          margin-top:10px;
-          font-size:14px;
-          word-break:break-all;
-          max-width:320px;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="card">
-        <h1>${escapeHtml(login)}</h1>
-        <div>QR logowania worker</div>
-        <img src="${img}">
-        <div class="small">${escapeHtml(currentQrToken)}</div>
-      </div>
-      <script>
-        window.onload = () => {
-          window.print();
-        };
-      <\/script>
-    </body>
-    </html>
-  `);
-
-  win.document.close();
-}
-
-async function loadStations(silent = false) {
-  try {
-    if (!silent) {
-      setStatusBox("stationsStatus", "⏳ Ładuję stanowiska...", "info");
-    }
-
-    const { data: lines, error } = await supabaseClient.rpc("get_active_station_lines");
-
-    if (error) throw new Error(error.message);
-
-    const activeLines = lines || [];
-    stationCache.clear();
-
-    if (!activeLines.length) {
-      setStatusBox("stationsStatus", "");
-      setHtml("stationsGrid", `
-        <div class="stationCard" style="grid-column:1 / -1;">
-          <div class="stationName">Brak aktywnych stanowisk</div>
-          <div class="small">Gdy pojawi się aktywna linia, zobaczysz ją tutaj.</div>
-        </div>
-      `);
-      return;
-    }
-
-    for (const line of activeLines) {
-      const [queueRes, membersRes, historyRes] = await Promise.allSettled([
-        supabaseClient.rpc("get_station_queue", { target_line_id: line.id }),
-        supabaseClient.rpc("get_station_line_members", { target_line_id: line.id }),
-        supabaseClient.rpc("get_station_line_history", { target_line_id: line.id, row_limit: 50 })
-      ]);
-
-      const queue = queueRes.status === "fulfilled" && !queueRes.value.error ? (queueRes.value.data || []) : [];
-      const members = membersRes.status === "fulfilled" && !membersRes.value.error ? (membersRes.value.data || []) : [];
-      const history = historyRes.status === "fulfilled" && !historyRes.value.error ? (historyRes.value.data || []) : [];
-
-      stationCache.set(line.id, {
-        line,
-        queue,
-        members,
-        history
-      });
-    }
-
-    setStatusBox("stationsStatus", "");
-    renderStations();
-
-  } catch (err) {
-    setStatusBox("stationsStatus", "❌ Nie udało się pobrać stanowisk: " + err.message, "error");
-  }
-}
-
-function renderStations() {
-  const rows = [...stationCache.values()];
-
-  if (!rows.length) {
-    setHtml("stationsGrid", `<div class="small">Brak stanowisk.</div>`);
-    return;
-  }
-
-  setHtml("stationsGrid", rows.map(data => {
-    const line = data.line;
-    const queue = data.queue || [];
-    const members = data.members || [];
-    const history = data.history || [];
-
-    const activeBags = queue.length;
-    const errors = queue.filter(x => x.has_error).length;
-    const done = history.filter(x => String(x.status || "").toLowerCase() === "done").length;
-    const bad = history.filter(x => String(x.status || "").toLowerCase() === "bad").length;
-    const braki = history.filter(x => String(x.status || "").toLowerCase() === "braki").length;
-
-    const firstQueue = queue.slice(0, 3);
-
-    return `
-      <div class="stationCard">
-        <div class="stationHead">
-          <div>
-            <div class="stationName">${escapeHtml(line.name || "-")}</div>
-            <div class="small">Utworzone przez: ${escapeHtml(displayLogin(line.created_by_email || "-"))}</div>
-          </div>
-          <span class="pill okPill">● Online</span>
-        </div>
-
-        <div class="stationMetaGrid">
-          <div class="stationMetaBox">
-            <div class="label">Torby w kolejce</div>
-            <div class="stationMetaValue">${activeBags}</div>
-          </div>
-          <div class="stationMetaBox">
-            <div class="label">Pracownicy</div>
-            <div class="stationMetaValue">${members.length}</div>
-          </div>
-          <div class="stationMetaBox">
-            <div class="label">Braki</div>
-            <div class="stationMetaValue warn">${braki}</div>
-          </div>
-          <div class="stationMetaBox">
-            <div class="label">Błędy</div>
-            <div class="stationMetaValue bad">${errors + bad}</div>
-          </div>
-        </div>
-
-        <div class="label">Pracownicy</div>
-        <div class="stationWorkers">
-          ${members.length
-            ? members.slice(0, 6).map(m => `<span class="stationWorkerPill">${escapeHtml(displayLogin(m.user_email))}</span>`).join("")
-            : `<span class="small">Brak aktywnych pracowników</span>`
-          }
-        </div>
-
-        <div class="stationQueue">
-          ${firstQueue.length
-            ? firstQueue.map(q => `
-              <div class="stationQueueItem">
-                <b>${escapeHtml(q.bag_qr || "-")}</b>
-                <span>${q.correct_count || 0}/${q.expected_count || 0}</span>
-              </div>
-            `).join("")
-            : `<div class="stationQueueItem"><b>Brak aktywnych toreb</b><span>OK</span></div>`
-          }
-        </div>
-
-        <button class="primaryBtn" style="width:100%;margin-top:16px;" onclick="openStationDetails('${escapeHtml(line.id)}')">
-          Wejdź w szczegóły
-        </button>
-      </div>
-    `;
-  }).join(""));
-}
-
-function openStationDetails(lineId) {
-  const data = stationCache.get(lineId);
-  if (!data) return;
-
-  const line = data.line;
-  const queue = data.queue || [];
-  const members = data.members || [];
-  const history = data.history || [];
-
-  setText("detailsTitle", "🧑‍🍳 Stanowisko: " + (line.name || "-"));
-
-  setHtml("detailsContent", `
-    <div class="detailsGrid">
-      <div class="detailsCard">
-        <div class="label">Nazwa</div>
-        <div class="detailsValue">${escapeHtml(line.name || "-")}</div>
-      </div>
-      <div class="detailsCard">
-        <div class="label">Aktywne torby</div>
-        <div class="detailsValue">${queue.length}</div>
-      </div>
-      <div class="detailsCard">
-        <div class="label">Pracownicy</div>
-        <div class="detailsValue">${members.length}</div>
-      </div>
-      <div class="detailsCard">
-        <div class="label">Utworzono</div>
-        <div class="detailsValue">${formatDateTime(line.created_at)}</div>
-      </div>
-    </div>
-
-    <h2>Pracownicy na stanowisku</h2>
-    ${members.length ? `
-      <table>
-        <thead>
-          <tr>
-            <th>Email</th>
-            <th>Przypisane posiłki</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${members.map(m => `
-            <tr>
-              <td><b>${escapeHtml(displayLogin(m.user_email || "-"))}</b><div class="small">${escapeHtml(m.user_email || "-")}</div></td>
-              <td>${Array.isArray(m.meals) && m.meals.length ? m.meals.map(escapeHtml).join(", ") : "-"}</td>
-            </tr>
-          `).join("")}
-        </tbody>
-      </table>
-    ` : `<div class="small">Brak aktywnych pracowników.</div>`}
-
-    <h2 style="margin-top:22px;">Aktywna kolejka</h2>
-    ${queue.length ? `
-      <table>
-        <thead>
-          <tr>
-            <th>Pozycja</th>
-            <th>QR torby</th>
-            <th>Status</th>
-            <th>Postęp</th>
-            <th>Błąd</th>
-            <th>Utworzono</th>
-            <th>Szczegóły</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${queue.map(q => `
-            <tr>
-              <td>${q.queue_position || "-"}</td>
-              <td><b>${escapeHtml(q.bag_qr || "-")}</b></td>
-              <td>${stationStatusBadgeHtml(q.status)}</td>
-              <td><b>${q.finished_count || 0}/${q.expected_count || 0}</b></td>
-              <td>${q.has_error ? `<span class="pill badPill">tak</span>` : `<span class="pill okPill">nie</span>`}</td>
-              <td>${formatDateTime(q.created_at)}</td>
-              <td>
-                <button class="ghostBtn" style="min-height:36px;padding:8px 10px;" onclick="openStationBagDetails('${escapeHtml(lineId)}','${escapeHtml(q.bag_id)}')">
-                  Podgląd
-                </button>
-              </td>
-            </tr>
-          `).join("")}
-        </tbody>
-      </table>
-    ` : `<div class="small">Brak aktywnych toreb.</div>`}
-
-    <h2 style="margin-top:22px;">Historia stanowiska</h2>
-    ${history.length ? `
-      <table>
-        <thead>
-          <tr>
-            <th>QR torby</th>
-            <th>Status</th>
-            <th>Postęp</th>
-            <th>Utworzono</th>
-            <th>Zamknięto</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${history.map(h => `
-            <tr>
-              <td><b>${escapeHtml(h.bag_qr || "-")}</b></td>
-              <td>${stationStatusBadgeHtml(h.status)}</td>
-              <td><b>${h.correct_count || 0}/${h.expected_count || 0}</b></td>
-              <td>${formatDateTime(h.created_at)}</td>
-              <td>${formatDateTime(h.closed_at)}</td>
-            </tr>
-          `).join("")}
-        </tbody>
-      </table>
-    ` : `<div class="small">Brak historii stanowiska.</div>`}
-  `);
-
-  $("detailsModal").classList.remove("hidden");
-}
-
-async function openStationBagDetails(lineId, bagId) {
-  const data = stationCache.get(lineId);
-  const line = data?.line;
-
-  try {
-    setText("detailsTitle", "📦 Szczegóły torby stanowiskowej");
-
-    const { data: rows, error } = await supabaseClient.rpc("get_station_bag_details", {
-      target_bag_id: bagId
-    });
-
-    if (error) throw new Error(error.message);
-
-    const list = rows || [];
-    const bagQr = list[0]?.bag_qr || "-";
-
-    setHtml("detailsContent", `
-      <button class="lightBtn" onclick="openStationDetails('${escapeHtml(lineId)}')" style="margin-bottom:16px;">
-        ⬅ Wróć do stanowiska ${escapeHtml(line?.name || "")}
-      </button>
-
-      <div class="detailsGrid">
-        <div class="detailsCard">
-          <div class="label">QR torby</div>
-          <div class="detailsValue">${escapeHtml(bagQr)}</div>
-        </div>
-        <div class="detailsCard">
-          <div class="label">Pozycji</div>
-          <div class="detailsValue">${list.length}</div>
-        </div>
-        <div class="detailsCard">
-          <div class="label">OK</div>
-          <div class="detailsValue ok">${list.filter(x => x.scan_status === "ok").length}</div>
-        </div>
-        <div class="detailsCard">
-          <div class="label">Problemy</div>
-          <div class="detailsValue bad">${list.filter(x => ["wrong","duplicate","forced_bad","brak"].includes(x.scan_status)).length}</div>
-        </div>
-      </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Status</th>
-            <th>Posiłek</th>
-            <th>Kod</th>
-            <th>Rozmiar</th>
-            <th>Oczekiwany QR</th>
-            <th>Zeskanowany QR</th>
-            <th>Pracownik</th>
-            <th>Czas</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${list.map(i => {
-            const status = String(i.scan_status || "pending").toLowerCase();
-            const cls = status === "ok" ? "ok" : status === "pending" ? "" : status === "brak" ? "warn" : "bad";
-
-            return `
-              <tr>
-                <td class="${cls}"><b>${escapeHtml(status.toUpperCase())}</b></td>
-                <td>${escapeHtml(i.meal || "-")}</td>
-                <td>${escapeHtml(i.code || "-")}</td>
-                <td>${escapeHtml(i.size || "-")}</td>
-                <td>${escapeHtml(i.expected_tray_qr || "-")}</td>
-                <td>${escapeHtml(i.scanned_tray_qr || "-")}</td>
-                <td>${escapeHtml(displayLogin(i.scanned_by_email || "-"))}</td>
-                <td>${formatDateTime(i.scanned_at)}</td>
-              </tr>
-            `;
-          }).join("")}
-        </tbody>
-      </table>
-    `);
-
-    $("detailsModal").classList.remove("hidden");
-
-  } catch (err) {
-    alert("Nie udało się pobrać szczegółów torby: " + err.message);
-  }
+  `;
 }
 
 function openWorkerDetails(index) {
@@ -3450,9 +2833,9 @@ function openWorkerDetails(index) {
     ? Math.round((w.correct / finalPacked) * 100)
     : 0;
 
-  setText("detailsTitle", "👤 Szczegóły pracownika");
+  detailsModalTitle.innerText = "👤 Szczegóły pracownika";
 
-  setHtml("detailsContent", `
+  detailsContent.innerHTML = `
     <div class="detailsGrid">
       <div class="detailsCard">
         <div class="label">Pracownik</div>
@@ -3479,10 +2862,30 @@ function openWorkerDetails(index) {
       <tr><th>Błędne tacki</th><td>${w.wrong}</td></tr>
       <tr><th>Brakujące tacki</th><td>${w.missing}</td></tr>
       <tr><th>Duplikaty</th><td>${w.duplicates}</td></tr>
+      <tr><th>Login techniczny</th><td>${escapeHtml(w.rawWorker || "-")}</td></tr>
     </table>
-  `);
+  `;
 
-  $("detailsModal").classList.remove("hidden");
+  detailsModal.classList.remove("hidden");
+}
+
+/* ---------- HISTORIA ---------- */
+
+function changeHistoryPage(direction) {
+  const filtered = getFilteredSessions();
+  const totalPages = Math.max(1, Math.ceil(filtered.length / historyPageSize));
+
+  historyPage += direction;
+
+  if (historyPage < 1) historyPage = 1;
+  if (historyPage > totalPages) historyPage = totalPages;
+
+  renderHistory(filtered);
+
+  const historyView = document.getElementById("historyView");
+  if (historyView) {
+    historyView.scrollIntoView({ behavior:"smooth", block:"start" });
+  }
 }
 
 function renderHistory(data) {
@@ -3499,7 +2902,7 @@ function renderHistory(data) {
   const fromLabel = totalRows ? start + 1 : 0;
   const toLabel = Math.min(end, totalRows);
 
-  setHtml("historyTable", `
+  historyTable.innerHTML = `
     <table>
       <thead>
         <tr>
@@ -3526,7 +2929,7 @@ function renderHistory(data) {
                 </span>
               </td>
               <td>${statusBadgeHtml(status)}</td>
-              <td>${escapeHtml(displayLogin(x.user_login || "-"))}</td>
+              <td>${escapeHtml(getWorkerDisplayName(x.user_login || "-"))}</td>
               <td><b>${x.correct_count || 0}/${x.expected_count || 0}</b></td>
               <td>${formatDuration(x.duration_seconds)}</td>
               <td>
@@ -3548,8 +2951,244 @@ function renderHistory(data) {
         <button class="secondaryBtn" onclick="changeHistoryPage(1)" ${historyPage >= totalPages ? "disabled" : ""}>Następna ➜</button>
       </div>
     </div>
-  `);
+  `;
 }
+
+/* ---------- STANOWISKA ---------- */
+
+async function loadStations(showErrors = true) {
+  if (!document.getElementById("stationsGrid")) return;
+
+  try {
+    const { data: lines, error } = await supabaseClient.rpc("get_active_station_lines");
+
+    if (error) throw error;
+
+    const activeLines = lines || [];
+
+    stationLinesData = await Promise.all(activeLines.map(async line => {
+      const [queueRes, membersRes, historyRes] = await Promise.all([
+        supabaseClient.rpc("get_station_queue", { target_line_id: line.id }),
+        supabaseClient.rpc("get_station_line_members", { target_line_id: line.id }),
+        supabaseClient.rpc("get_station_line_history", { target_line_id: line.id, row_limit: 50 })
+      ]);
+
+      return {
+        ...line,
+        queue: queueRes.data || [],
+        members: membersRes.data || [],
+        history: historyRes.data || [],
+        errors: {
+          queue: queueRes.error,
+          members: membersRes.error,
+          history: historyRes.error
+        }
+      };
+    }));
+
+    renderStations();
+
+  } catch (err) {
+    if (showErrors) alert("Błąd pobierania stanowisk: " + err.message);
+    stationsGrid.innerHTML = `<div class="small">Nie udało się pobrać stanowisk.</div>`;
+  }
+}
+
+function renderStations() {
+  if (!stationLinesData.length) {
+    stationsGrid.innerHTML = `
+      <div class="stationCard">
+        <div class="stationName">Brak aktywnych stanowisk</div>
+        <div class="small" style="margin-top:8px;">Gdy stanowiska będą aktywne, pojawią się tutaj automatycznie.</div>
+      </div>
+    `;
+    return;
+  }
+
+  stationsGrid.innerHTML = stationLinesData.map(line => {
+    const activeBags = line.queue.length;
+    const doneBags = line.history.filter(x => String(x.status).toLowerCase() === "done").length;
+    const badBags = line.history.filter(x => ["bad", "braki"].includes(String(x.status).toLowerCase())).length;
+    const workers = line.members || [];
+    const queue = line.queue || [];
+
+    return `
+      <div class="stationCard">
+        <div class="stationHead">
+          <div>
+            <div class="stationName">${escapeHtml(line.name || "-")}</div>
+            <div class="small">Utworzył: ${escapeHtml(getWorkerDisplayName(line.created_by_email || "-"))}</div>
+          </div>
+          <span class="pill okPill">● Online</span>
+        </div>
+
+        <div class="stationMetaGrid">
+          <div class="stationMetaBox">
+            <div class="label">Torby w kolejce</div>
+            <div class="stationMetaValue">${activeBags}</div>
+          </div>
+          <div class="stationMetaBox">
+            <div class="label">Zamknięte</div>
+            <div class="stationMetaValue">${doneBags}</div>
+          </div>
+          <div class="stationMetaBox">
+            <div class="label">Problemy</div>
+            <div class="stationMetaValue ${badBags ? "warn" : ""}">${badBags}</div>
+          </div>
+          <div class="stationMetaBox">
+            <div class="label">Pracownicy</div>
+            <div class="stationMetaValue">${workers.length}</div>
+          </div>
+        </div>
+
+        <div class="label">Pracownicy</div>
+        <div class="stationWorkers">
+          ${
+            workers.length
+              ? workers.map(w => `<span class="stationWorkerPill">${escapeHtml(getWorkerDisplayName(w.user_email || "-"))}</span>`).join("")
+              : `<span class="small">Brak pracowników.</span>`
+          }
+        </div>
+
+        <div class="stationQueue">
+          ${
+            queue.length
+              ? queue.slice(0, 4).map(q => `
+                <div class="stationQueueItem">
+                  <b>${escapeHtml(q.bag_qr || "-")}</b>
+                  <span>${Number(q.correct_count || 0)}/${Number(q.expected_count || 0)}</span>
+                </div>
+              `).join("")
+              : `<div class="stationQueueItem"><b>Brak aktywnych toreb</b><span>OK</span></div>`
+          }
+        </div>
+
+        <button class="primaryBtn" style="width:100%;margin-top:16px;" onclick="openStationDetails('${line.id}')">Wejdź w szczegóły</button>
+      </div>
+    `;
+  }).join("");
+}
+
+async function openStationDetails(lineId) {
+  const line = stationLinesData.find(x => x.id === lineId);
+
+  detailsModalTitle.innerText = "🧑‍🍳 Szczegóły stanowiska";
+
+  if (!line) {
+    detailsContent.innerHTML = `<div class="small">Nie znaleziono stanowiska.</div>`;
+    detailsModal.classList.remove("hidden");
+    return;
+  }
+
+  const queue = line.queue || [];
+  const members = line.members || [];
+  const history = line.history || [];
+
+  detailsContent.innerHTML = `
+    <div class="detailsGrid">
+      <div class="detailsCard">
+        <div class="label">Stanowisko</div>
+        <div class="detailsValue">${escapeHtml(line.name || "-")}</div>
+      </div>
+      <div class="detailsCard">
+        <div class="label">Torby w kolejce</div>
+        <div class="detailsValue">${queue.length}</div>
+      </div>
+      <div class="detailsCard">
+        <div class="label">Pracownicy</div>
+        <div class="detailsValue">${members.length}</div>
+      </div>
+      <div class="detailsCard">
+        <div class="label">Utworzono</div>
+        <div class="detailsValue">${formatDateTime(line.created_at)}</div>
+      </div>
+    </div>
+
+    <h2>Pracownicy</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Pracownik</th>
+          <th>Przypisane posiłki</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${
+          members.length
+            ? members.map(m => `
+              <tr>
+                <td><b>${escapeHtml(getWorkerDisplayName(m.user_email || "-"))}</b></td>
+                <td>${escapeHtml((m.meals || []).join(", ") || "-")}</td>
+              </tr>
+            `).join("")
+            : `<tr><td colspan="2">Brak pracowników.</td></tr>`
+        }
+      </tbody>
+    </table>
+
+    <h2 style="margin-top:22px;">Aktywna kolejka</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Pozycja</th>
+          <th>QR torby</th>
+          <th>Status</th>
+          <th>Postęp</th>
+          <th>Błąd</th>
+          <th>Utworzono</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${
+          queue.length
+            ? queue.map(q => `
+              <tr>
+                <td>${q.queue_position || "-"}</td>
+                <td><b>${escapeHtml(q.bag_qr || "-")}</b></td>
+                <td>${escapeHtml(q.status || "-")}</td>
+                <td>${Number(q.correct_count || 0)}/${Number(q.expected_count || 0)}</td>
+                <td>${q.has_error ? '<span class="pill badPill">TAK</span>' : '<span class="pill okPill">NIE</span>'}</td>
+                <td>${formatDateTime(q.created_at)}</td>
+              </tr>
+            `).join("")
+            : `<tr><td colspan="6">Brak aktywnych toreb.</td></tr>`
+        }
+      </tbody>
+    </table>
+
+    <h2 style="margin-top:22px;">Ostatnia historia stanowiska</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>QR torby</th>
+          <th>Status</th>
+          <th>Postęp</th>
+          <th>Start</th>
+          <th>Zamknięcie</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${
+          history.length
+            ? history.slice(0, 30).map(h => `
+              <tr>
+                <td><b>${escapeHtml(h.bag_qr || "-")}</b></td>
+                <td>${escapeHtml(h.status || "-")}</td>
+                <td>${Number(h.correct_count || 0)}/${Number(h.expected_count || 0)}</td>
+                <td>${formatDateTime(h.created_at)}</td>
+                <td>${formatDateTime(h.closed_at)}</td>
+              </tr>
+            `).join("")
+            : `<tr><td colspan="5">Brak historii.</td></tr>`
+        }
+      </tbody>
+    </table>
+  `;
+
+  detailsModal.classList.remove("hidden");
+}
+
+/* ---------- SZCZEGÓŁY SESJI ---------- */
 
 async function openDetails(index) {
   const x = sessions[index];
@@ -3620,7 +3259,7 @@ async function openDetails(index) {
               <td>${escapeHtml(i.size || "-")}</td>
               <td>${escapeHtml(i.tray_qr || "-")}</td>
               <td>${escapeHtml(i.scanned_tray_qr || "-")}</td>
-              <td>${escapeHtml(displayLogin(i.scanned_by_email || i.missing_by_email || "-"))}</td>
+              <td>${escapeHtml(getWorkerDisplayName(i.scanned_by_email || i.missing_by_email || "-"))}</td>
               <td>${formatDateTime(i.scanned_at || i.missing_at)}</td>
             </tr>
           `;
@@ -3651,7 +3290,7 @@ async function openDetails(index) {
             <td>${escapeHtml(e.previous_status || "-")}</td>
             <td>${escapeHtml(e.new_status || "-")}</td>
             <td>${escapeHtml(e.tray_qr || "-")}</td>
-            <td>${escapeHtml(displayLogin(e.user_email || "-"))}</td>
+            <td>${escapeHtml(getWorkerDisplayName(e.user_email || "-"))}</td>
             <td>${escapeHtml(e.details || "-")}</td>
           </tr>
         `).join("")}
@@ -3659,9 +3298,9 @@ async function openDetails(index) {
     </table>
   ` : "";
 
-  setText("detailsTitle", "📦 Szczegóły torby");
+  detailsModalTitle.innerText = "📦 Szczegóły torby";
 
-  setHtml("detailsContent", `
+  detailsContent.innerHTML = `
     <div class="detailsGrid">
       <div class="detailsCard">
         <div class="label">QR torby</div>
@@ -3677,7 +3316,7 @@ async function openDetails(index) {
 
       <div class="detailsCard">
         <div class="label">Pracownik / stanowisko</div>
-        <div class="detailsValue">${escapeHtml(displayLogin(x.user_login || "-"))}</div>
+        <div class="detailsValue">${escapeHtml(getWorkerDisplayName(x.user_login || "-"))}</div>
       </div>
 
       <div class="detailsCard">
@@ -3698,14 +3337,16 @@ async function openDetails(index) {
 
     ${itemsHtml}
     ${historyHtml}
-  `);
+  `;
 
-  $("detailsModal").classList.remove("hidden");
+  detailsModal.classList.remove("hidden");
 }
 
 function closeDetails() {
-  $("detailsModal").classList.add("hidden");
+  detailsModal.classList.add("hidden");
 }
+
+/* ---------- EXCEL ---------- */
 
 function sheetFromRows(rows) {
   return XLSX.utils.aoa_to_sheet(rows);
@@ -3727,8 +3368,8 @@ function exportExcel() {
     return;
   }
 
-  $("exportButton").disabled = true;
-  $("exportButton").innerText = "Generuję...";
+  exportButton.disabled = true;
+  exportButton.innerText = "Generuję...";
 
   try {
     const total = data.length;
@@ -3753,11 +3394,13 @@ function exportExcel() {
     const workers = {};
 
     data.forEach(x => {
-      const worker = displayLogin(x.user_login || "brak użytkownika");
+      const workerRaw = String(x.user_login || "brak użytkownika").trim();
+      const workerKey = workerRaw.toLowerCase();
+      const workerName = getWorkerDisplayName(workerRaw);
 
-      if (!workers[worker]) {
-        workers[worker] = {
-          worker,
+      if (!workers[workerKey]) {
+        workers[workerKey] = {
+          worker: workerName,
           total: 0,
           correct: 0,
           bad: 0,
@@ -3770,21 +3413,21 @@ function exportExcel() {
         };
       }
 
-      workers[worker].total++;
+      workers[workerKey].total++;
 
       const status = normalizeStatus(x.status);
 
-      if (status === "POPRAWNA") workers[worker].correct++;
-      if (status === "NIEPOPRAWNA") workers[worker].bad++;
-      if (status === "BRAKI") workers[worker].braki++;
+      if (status === "POPRAWNA") workers[workerKey].correct++;
+      if (status === "NIEPOPRAWNA") workers[workerKey].bad++;
+      if (status === "BRAKI") workers[workerKey].braki++;
 
-      workers[worker].wrong += splitItems(x.wrong_trays).length;
-      workers[worker].missing += splitItems(x.missing_trays).length;
-      workers[worker].duplicates += splitItems(x.duplicate_trays).length;
+      workers[workerKey].wrong += splitItems(x.wrong_trays).length;
+      workers[workerKey].missing += splitItems(x.missing_trays).length;
+      workers[workerKey].duplicates += splitItems(x.duplicate_trays).length;
 
       if (typeof x.duration_seconds === "number") {
-        workers[worker].duration += x.duration_seconds;
-        workers[worker].durationCount++;
+        workers[workerKey].duration += x.duration_seconds;
+        workers[workerKey].durationCount++;
       }
     });
 
@@ -3818,7 +3461,7 @@ function exportExcel() {
     const historyRows = data.map(x => [
       x.bag_qr || "",
       normalizeStatus(x.status) || "",
-      displayLogin(x.user_login || ""),
+      getWorkerDisplayName(x.user_login || ""),
       x.expected_count || 0,
       x.correct_count || 0,
       formatDuration(x.duration_seconds),
@@ -3852,7 +3495,7 @@ function exportExcel() {
       ...brakiExportRows.map(x => [
         x.bag_qr || "",
         normalizeStatus(x.status) || "",
-        displayLogin(x.user_login || ""),
+        getWorkerDisplayName(x.user_login || ""),
         `${x.correct_count || 0}/${x.expected_count || 0}`,
         x.missing_count || splitItems(x.missing_trays).length || 0,
         x.missing_trays || "",
@@ -3942,36 +3585,53 @@ function exportExcel() {
     XLSX.writeFile(workbook, `raport_pakowania_${date}.xlsx`);
 
   } finally {
-    $("exportButton").disabled = false;
-    $("exportButton").innerText = "Eksport Excel";
+    exportButton.disabled = false;
+    exportButton.innerText = "Eksport Excel";
   }
 }
 
-$("qrLoginInput").addEventListener("keydown", e => {
+/* ---------- EVENTY ---------- */
+
+qrLoginInput.addEventListener("keydown", e => {
   if (e.key === "Enter") qrLogin();
 });
 
-$("loginInput").addEventListener("keydown", e => {
-  if (e.key === "Enter") $("passwordInput").focus();
+loginInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") passwordInput.focus();
 });
 
-$("passwordInput").addEventListener("keydown", e => {
+passwordInput.addEventListener("keydown", e => {
   if (e.key === "Enter") login();
+});
+
+newWorkerLogin.addEventListener("keydown", e => {
+  if (e.key === "Enter") newWorkerDisplayName.focus();
+});
+
+newWorkerDisplayName.addEventListener("keydown", e => {
+  if (e.key === "Enter") newWorkerPassword.focus();
+});
+
+newWorkerPassword.addEventListener("keydown", e => {
+  if (e.key === "Enter") createWorker();
 });
 
 document.addEventListener("click", event => {
   if (event.target.closest("button,input,select,textarea,label")) return;
 
   setTimeout(() => {
-    if (!$("loginScreen").classList.contains("hidden")) {
-      if ($("passwordLoginBox").classList.contains("hidden")) {
-        $("qrLoginInput").focus();
+    if (!loginScreen.classList.contains("hidden")) {
+      if (passwordLoginBox.classList.contains("hidden")) {
+        qrLoginInput.focus();
       }
     }
   }, 50);
 });
 
 window.addEventListener("DOMContentLoaded", async () => {
+  historyPageSize = Number(historyPageSizeSelect.value || 1000);
+  reportRefreshSeconds = Number(reportRefreshSelect.value || 30);
+
   try {
     const { data } = await supabaseClient.auth.getSession();
 
