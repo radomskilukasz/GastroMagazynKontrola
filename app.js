@@ -40,7 +40,7 @@ window.workerStats = [];
 /* ---------- NAWIGACJA ---------- */
 
 function showReportTab(tab) {
-  const tabs = ["summary", "history", "stations", "workers", "settings"];
+  const tabs = ["summary", "history", "stations", "workers", "archive", "settings"];
 
   tabs.forEach(name => {
     const view = document.getElementById(name + "View");
@@ -51,6 +51,7 @@ function showReportTab(tab) {
   tabHistory.classList.toggle("active", tab === "history");
   tabStations.classList.toggle("active", tab === "stations");
   tabWorkers.classList.toggle("active", tab === "workers");
+  if (typeof tabArchive !== "undefined") tabArchive.classList.toggle("active", tab === "archive");
   tabSettings.classList.toggle("active", tab === "settings");
 
   if (tab === "history") {
@@ -63,6 +64,11 @@ function showReportTab(tab) {
 
   if (tab === "stations") {
     loadStations();
+  }
+
+  if (tab === "archive") {
+    ensureArchiveDefaultDates();
+    loadArchive();
   }
 }
 
@@ -1953,3 +1959,427 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   focusQrInput();
 });
+
+
+/* ---------- ARCHIWUM ---------- */
+
+let archiveLoaded = false;
+let archiveDays = [];
+let archiveHistoryRows = [];
+let archiveWorkersRows = [];
+let archiveSummaryRow = null;
+
+function setArchiveStatus(text, type = "info") {
+  const box = document.getElementById("archiveStatusBox");
+  if (!box) return;
+  box.innerText = text || "";
+  box.className = "archiveStatusBox " + type;
+}
+
+function toIsoDate(date) {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) return "";
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+function formatDateOnly(dateText) {
+  if (!dateText) return "-";
+  const d = new Date(dateText + "T00:00:00");
+  if (Number.isNaN(d.getTime())) return dateText;
+  return d.toLocaleDateString("pl-PL");
+}
+
+function ensureArchiveDefaultDates() {
+  const fromEl = document.getElementById("archiveDateFrom");
+  const toEl = document.getElementById("archiveDateTo");
+  if (!fromEl || !toEl) return;
+
+  if (fromEl.value || toEl.value) return;
+
+  const now = new Date();
+  const first = new Date(now.getFullYear(), now.getMonth(), 1);
+  const last = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+  fromEl.value = toIsoDate(first);
+  toEl.value = toIsoDate(last);
+}
+
+function clearArchiveFilters() {
+  const fromEl = document.getElementById("archiveDateFrom");
+  const toEl = document.getElementById("archiveDateTo");
+  const statusEl = document.getElementById("archiveStatusFilter");
+  const workerEl = document.getElementById("archiveWorkerFilter");
+  const bagEl = document.getElementById("archiveBagSearch");
+
+  if (fromEl) fromEl.value = "";
+  if (toEl) toEl.value = "";
+  if (statusEl) statusEl.value = "";
+  if (workerEl) workerEl.value = "";
+  if (bagEl) bagEl.value = "";
+
+  loadArchive();
+}
+
+function getArchiveFilters() {
+  return {
+    dateFrom: document.getElementById("archiveDateFrom")?.value || null,
+    dateTo: document.getElementById("archiveDateTo")?.value || null,
+    status: document.getElementById("archiveStatusFilter")?.value || null,
+    worker: document.getElementById("archiveWorkerFilter")?.value || null,
+    bag: document.getElementById("archiveBagSearch")?.value?.trim() || null
+  };
+}
+
+function renderArchiveSummary(row) {
+  archiveSummaryRow = row || {};
+
+  const daysCount = Number(row?.days_count || 0);
+  const planned = Number(row?.planned_bags_count || 0);
+  const finalPacked = Number(row?.final_packed_count || 0);
+  const correct = Number(row?.correct_count || 0);
+  const bad = Number(row?.bad_count || 0);
+  const braki = Number(row?.braki_count || 0);
+  const accuracy = Number(row?.accuracy || 0);
+
+  archiveDaysCount.innerText = String(daysCount);
+  archiveFinalPacked.innerText = `${finalPacked} / ${planned}`;
+  archiveCorrect.innerText = String(correct);
+  archiveBad.innerText = String(bad);
+  archiveBraki.innerText = String(braki);
+  archiveAccuracy.innerText = accuracy + "%";
+}
+
+function renderArchiveDays(rows) {
+  archiveDays = rows || [];
+
+  if (!archiveDays.length) {
+    archiveDaysTable.innerHTML = `<div class="small">Brak zarchiwizowanych dni w wybranym zakresie.</div>`;
+    return;
+  }
+
+  archiveDaysTable.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Dzień jedzony</th>
+          <th>Finalnie</th>
+          <th>OK</th>
+          <th>Błędy</th>
+          <th>Braki</th>
+          <th>Śr. czas</th>
+          <th>Archiwizacja</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${archiveDays.map(d => `
+          <tr>
+            <td><span class="archiveDatePill">${escapeHtml(formatDateOnly(d.meal_date))}</span></td>
+            <td><b>${Number(d.final_packed_count || 0)} / ${Number(d.planned_bags_count || 0)}</b></td>
+            <td class="ok">${Number(d.correct_count || 0)}</td>
+            <td class="bad">${Number(d.bad_count || 0)}</td>
+            <td class="warn">${Number(d.braki_count || 0)}</td>
+            <td>${formatDuration(Number(d.avg_duration_seconds || 0))}</td>
+            <td>${formatDateTime(d.archived_at)}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderArchiveWorkers(rows) {
+  archiveWorkersRows = rows || [];
+  const workerFilter = document.getElementById("archiveWorkerFilter");
+  const current = workerFilter?.value || "";
+
+  if (workerFilter) {
+    const workers = archiveWorkersRows.map(w => String(w.worker_login || "")).filter(Boolean);
+    workerFilter.innerHTML = `<option value="">Wszyscy pracownicy</option>` +
+      workers.map(w => `<option value="${escapeHtml(w)}">${escapeHtml(getWorkerDisplayName(w))}</option>`).join("");
+    workerFilter.value = current;
+  }
+
+  if (!archiveWorkersRows.length) {
+    archiveWorkersTable.innerHTML = `<div class="small">Brak pracowników w wybranym zakresie.</div>`;
+    return;
+  }
+
+  archiveWorkersTable.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Pracownik</th>
+          <th>Razem</th>
+          <th>OK</th>
+          <th>Błędy</th>
+          <th>Braki</th>
+          <th>Poprawność</th>
+          <th>Śr. czas</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${archiveWorkersRows.map(w => `
+          <tr>
+            <td><b>${escapeHtml(getWorkerDisplayName(w.worker_login || "-"))}</b></td>
+            <td>${Number(w.total_count || 0)}</td>
+            <td class="ok">${Number(w.correct_count || 0)}</td>
+            <td class="bad">${Number(w.bad_count || 0)}</td>
+            <td class="warn">${Number(w.braki_count || 0)}</td>
+            <td><b>${Number(w.accuracy || 0)}%</b></td>
+            <td>${formatDuration(Number(w.avg_duration_seconds || 0))}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderArchiveHistory(rows) {
+  archiveHistoryRows = rows || [];
+
+  if (!archiveHistoryRows.length) {
+    archiveHistoryTable.innerHTML = `<div class="small">Brak historii w wybranym zakresie.</div>`;
+    return;
+  }
+
+  archiveHistoryTable.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Dzień jedzony</th>
+          <th>Data zamknięcia</th>
+          <th>QR torby</th>
+          <th>Status</th>
+          <th>Pracownik</th>
+          <th>Postęp</th>
+          <th>Czas</th>
+          <th>Szczegóły</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${archiveHistoryRows.map((x, index) => {
+          const status = normalizeStatus(x.status);
+          return `
+            <tr>
+              <td>${escapeHtml(formatDateOnly(x.meal_date))}</td>
+              <td>${formatDateTime(x.closed_at)}</td>
+              <td><span class="clickable" onclick="openArchiveDetails(${index})">${escapeHtml(x.bag_qr || "-")}</span></td>
+              <td>${statusBadgeHtml(status)}</td>
+              <td>${escapeHtml(getWorkerDisplayName(x.user_login || "-"))}</td>
+              <td><b>${Number(x.correct_count || 0)}/${Number(x.expected_count || 0)}</b></td>
+              <td>${formatDuration(x.duration_seconds)}</td>
+              <td><button class="ghostBtn" onclick="openArchiveDetails(${index})">Podgląd</button></td>
+            </tr>
+          `;
+        }).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+async function loadArchive() {
+  try {
+    ensureArchiveDefaultDates();
+    setArchiveStatus("⏳ Ładuję archiwum po meal_date...", "info");
+
+    const filters = getArchiveFilters();
+
+    const [summaryRes, daysRes, historyRes, workersRes] = await Promise.all([
+      supabaseClient.rpc("archive_summary", {
+        date_from: filters.dateFrom,
+        date_to: filters.dateTo
+      }),
+      supabaseClient.rpc("archive_list_days", {
+        date_from: filters.dateFrom,
+        date_to: filters.dateTo
+      }),
+      supabaseClient.rpc("archive_history", {
+        date_from: filters.dateFrom,
+        date_to: filters.dateTo,
+        status_filter: filters.status,
+        worker_filter: filters.worker,
+        bag_search: filters.bag,
+        row_limit: 1000
+      }),
+      supabaseClient.rpc("archive_workers", {
+        date_from: filters.dateFrom,
+        date_to: filters.dateTo
+      })
+    ]);
+
+    const firstError = summaryRes.error || daysRes.error || historyRes.error || workersRes.error;
+    if (firstError) throw firstError;
+
+    renderArchiveSummary((summaryRes.data || [])[0] || null);
+    renderArchiveDays(daysRes.data || []);
+    renderArchiveWorkers(workersRes.data || []);
+    renderArchiveHistory(historyRes.data || []);
+
+    archiveLoaded = true;
+    setArchiveStatus(
+      `✅ Archiwum załadowane.\nZakres meal_date: ${filters.dateFrom || "od początku"} — ${filters.dateTo || "do końca"}\nHistoria: ${archiveHistoryRows.length} wpisów`,
+      "ok"
+    );
+  } catch (err) {
+    console.error(err);
+    setArchiveStatus("❌ Nie udało się załadować archiwum: " + (err.message || err), "bad");
+  }
+}
+
+async function openArchiveDetails(index) {
+  const x = archiveHistoryRows[index];
+  if (!x) return;
+
+  let rows = [];
+
+  try {
+    const { data, error } = await supabaseClient.rpc("archive_bag_details", {
+      target_meal_date: x.meal_date,
+      target_bag_qr: x.bag_qr,
+      target_session_id: x.source_id || null
+    });
+
+    if (error) throw error;
+    rows = data || [];
+  } catch (err) {
+    alert("Nie udało się pobrać szczegółów archiwalnej torby: " + (err.message || err));
+    return;
+  }
+
+  const sessionRow = rows.find(r => r.section === "session") || x;
+  const items = rows.filter(r => r.section === "item");
+  const status = normalizeStatus(sessionRow.status || x.status);
+
+  const itemsHtml = items.length ? `
+    <h2 style="margin-top:22px;">Pozycje torby</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Status</th>
+          <th>Posiłek</th>
+          <th>Kod</th>
+          <th>Rozmiar</th>
+          <th>QR tacki</th>
+          <th>Zeskanowano</th>
+          <th>Pracownik</th>
+          <th>Czas</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${items.map(i => `
+          <tr>
+            <td>${escapeHtml(i.item_status || "-")}</td>
+            <td><b>${escapeHtml(i.meal || "-")}</b><br><span class="small">${escapeHtml(i.dish_name || "")}</span></td>
+            <td>${escapeHtml(i.code || "-")}</td>
+            <td>${escapeHtml(i.size || "-")}</td>
+            <td>${escapeHtml(i.tray_qr || "-")}</td>
+            <td>${escapeHtml(i.scanned_tray_qr || "-")}</td>
+            <td>${escapeHtml(getWorkerDisplayName(i.scanned_by_email || "-"))}</td>
+            <td>${formatDateTime(i.scanned_at)}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  ` : `<div class="small" style="margin-top:18px;">Brak archiwalnych pozycji torby.</div>`;
+
+  detailsModalTitle.innerText = `📦 Archiwum: ${x.bag_qr || "-"}`;
+  detailsContent.innerHTML = `
+    <div class="detailsGrid">
+      <div class="detailsCard"><div class="label">Dzień jedzony</div><div class="detailsValue">${escapeHtml(formatDateOnly(x.meal_date))}</div></div>
+      <div class="detailsCard"><div class="label">Status</div><div class="detailsStatus ${statusClass(status)}">${escapeHtml(status)}</div></div>
+      <div class="detailsCard"><div class="label">Pracownik</div><div class="detailsValue">${escapeHtml(getWorkerDisplayName(sessionRow.user_login || x.user_login || "-"))}</div></div>
+      <div class="detailsCard"><div class="label">Czas</div><div class="detailsValue">${formatDuration(sessionRow.duration_seconds || x.duration_seconds)}</div></div>
+    </div>
+
+    <table class="detailsTable">
+      <tr><th>QR torby</th><td>${escapeHtml(x.bag_qr || "-")}</td></tr>
+      <tr><th>Postęp</th><td><b>${Number(sessionRow.correct_count || x.correct_count || 0)} / ${Number(sessionRow.expected_count || x.expected_count || 0)}</b></td></tr>
+      <tr><th>Start</th><td>${formatDateTime(sessionRow.started_at || x.started_at)}</td></tr>
+      <tr><th>Zamknięcie</th><td>${formatDateTime(sessionRow.closed_at || x.closed_at)}</td></tr>
+    </table>
+
+    ${itemsHtml}
+  `;
+
+  detailsModal.classList.remove("hidden");
+}
+
+function exportArchiveExcel() {
+  if (!archiveLoaded || (!archiveHistoryRows.length && !archiveDays.length)) {
+    alert("Brak danych archiwum do eksportu.");
+    return;
+  }
+
+  const summary = archiveSummaryRow || {};
+
+  const summaryRows = [
+    ["ARCHIWUM PAKOWANIA"],
+    ["Filtr", "meal_date"],
+    ["Dni", Number(summary.days_count || 0)],
+    ["Planowane torby", Number(summary.planned_bags_count || 0)],
+    ["Finalnie zapakowane", Number(summary.final_packed_count || 0)],
+    ["Poprawne", Number(summary.correct_count || 0)],
+    ["Niepoprawne", Number(summary.bad_count || 0)],
+    ["Braki", Number(summary.braki_count || 0)],
+    ["Poprawność", Number(summary.accuracy || 0) + "%"],
+    ["Średni czas", formatDuration(Number(summary.avg_duration_seconds || 0))]
+  ];
+
+  const daysRows = [
+    ["Dzień jedzony", "Plan", "Finalnie", "OK", "Błędy", "Braki", "Śr. czas", "Archiwizacja"],
+    ...archiveDays.map(d => [
+      formatDateOnly(d.meal_date),
+      Number(d.planned_bags_count || 0),
+      Number(d.final_packed_count || 0),
+      Number(d.correct_count || 0),
+      Number(d.bad_count || 0),
+      Number(d.braki_count || 0),
+      formatDuration(Number(d.avg_duration_seconds || 0)),
+      formatDateTime(d.archived_at)
+    ])
+  ];
+
+  const workerRows = [
+    ["Pracownik", "Razem", "OK", "Błędy", "Braki", "Finalnie", "Poprawność", "Śr. czas", "Brakujące", "Błędne", "Duplikaty"],
+    ...archiveWorkersRows.map(w => [
+      getWorkerDisplayName(w.worker_login || "-"),
+      Number(w.total_count || 0),
+      Number(w.correct_count || 0),
+      Number(w.bad_count || 0),
+      Number(w.braki_count || 0),
+      Number(w.final_packed_count || 0),
+      Number(w.accuracy || 0) + "%",
+      formatDuration(Number(w.avg_duration_seconds || 0)),
+      Number(w.missing_count || 0),
+      Number(w.wrong_count || 0),
+      Number(w.duplicate_count || 0)
+    ])
+  ];
+
+  const historyRows = [
+    ["Dzień jedzony", "Data zamknięcia", "QR torby", "Status", "Pracownik", "Oczekiwane", "Poprawne", "Czas", "Brakujące", "Błędne", "Duplikaty", "Wszystkie skany"],
+    ...archiveHistoryRows.map(x => [
+      formatDateOnly(x.meal_date),
+      formatDateTime(x.closed_at),
+      x.bag_qr || "",
+      normalizeStatus(x.status),
+      getWorkerDisplayName(x.user_login || ""),
+      Number(x.expected_count || 0),
+      Number(x.correct_count || 0),
+      formatDuration(x.duration_seconds),
+      x.missing_trays || "",
+      x.wrong_trays || "",
+      x.duplicate_trays || "",
+      x.all_scans || ""
+    ])
+  ];
+
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, sheetFromRows(summaryRows), "Podsumowanie");
+  XLSX.utils.book_append_sheet(workbook, sheetFromRows(daysRows), "Dni");
+  XLSX.utils.book_append_sheet(workbook, sheetFromRows(workerRows), "Pracownicy");
+  XLSX.utils.book_append_sheet(workbook, sheetFromRows(historyRows), "Historia");
+  XLSX.writeFile(workbook, `archiwum_pakowania_${new Date().toISOString().slice(0,10)}.xlsx`);
+}

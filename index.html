@@ -62,6 +62,7 @@
       <button id="tabHistory" class="navBtn" onclick="showReportTab('history')">🕘 Historia</button>
       <button id="tabStations" class="navBtn" onclick="showReportTab('stations')">🧑‍🍳 Stanowiska</button>
       <button id="tabWorkers" class="navBtn" onclick="showReportTab('workers')">👥 Pracownicy</button>
+      <button id="tabArchive" class="navBtn" onclick="showReportTab('archive')">📦 Archiwum</button>
       <button id="tabSettings" class="navBtn" onclick="showReportTab('settings')">⚙️ Ustawienia</button>
     </div>
 
@@ -325,6 +326,124 @@
             Po zapisaniu pracownik będzie miał rolę <b>worker</b>. Kod QR, jeśli Edge Function go generuje, zostanie ustawiony w tle.
           </div>
         </div>
+      </div>
+    </section>
+
+
+
+    <section id="archiveView" class="view">
+      <div class="card">
+        <div class="cardTitleRow">
+          <div>
+            <h2>📦 Archiwum</h2>
+            <div class="small">Raport historyczny filtrowany wyłącznie po dniu jedzonym <b>meal_date</b>.</div>
+          </div>
+          <button class="ghostBtn" onclick="loadArchive()">↻ Odśwież archiwum</button>
+        </div>
+
+        <div class="filtersCard archiveFiltersCard">
+          <div class="filterGroup">
+            <label>Dzień jedzony od</label>
+            <input type="date" id="archiveDateFrom" onchange="loadArchive()">
+          </div>
+
+          <div class="filterGroup">
+            <label>Dzień jedzony do</label>
+            <input type="date" id="archiveDateTo" onchange="loadArchive()">
+          </div>
+
+          <div class="filterGroup">
+            <label>Status</label>
+            <select id="archiveStatusFilter" onchange="loadArchive()">
+              <option value="">Wszystkie statusy</option>
+              <option value="POPRAWNA">Tylko poprawne</option>
+              <option value="NIEPOPRAWNA">Tylko niepoprawne</option>
+              <option value="BRAKI">Tylko braki</option>
+            </select>
+          </div>
+
+          <div class="filterGroup">
+            <label>Pracownik</label>
+            <select id="archiveWorkerFilter" onchange="loadArchive()">
+              <option value="">Wszyscy pracownicy</option>
+            </select>
+          </div>
+
+          <div class="filterGroup">
+            <label>QR torby</label>
+            <input id="archiveBagSearch" placeholder="Szukaj QR torby..." onkeydown="if(event.key==='Enter') loadArchive()">
+          </div>
+
+          <button class="lightBtn" onclick="clearArchiveFilters()">Wyczyść</button>
+          <button class="secondaryBtn" onclick="exportArchiveExcel()">Eksport</button>
+        </div>
+
+        <div id="archiveStatusBox" class="archiveStatusBox">Archiwum: wybierz zakres i kliknij odśwież.</div>
+      </div>
+
+      <div class="kpiGrid archiveKpiGrid">
+        <div class="kpiCard">
+          <div class="kpiTop"><div class="kpiLabel">Dni w archiwum</div><div class="kpiIcon">📅</div></div>
+          <div class="kpiValue" id="archiveDaysCount">0</div>
+          <div class="kpiHint">Według meal_date</div>
+        </div>
+        <div class="kpiCard">
+          <div class="kpiTop"><div class="kpiLabel">Finalnie zapakowane</div><div class="kpiIcon logoKpiIcon"><img src="logo.png" alt="logo"></div></div>
+          <div class="kpiValue" id="archiveFinalPacked">0 / 0</div>
+          <div class="kpiHint">Bez statusu BRAKI</div>
+        </div>
+        <div class="kpiCard">
+          <div class="kpiTop"><div class="kpiLabel">Poprawne</div><div class="kpiIcon okIcon">✓</div></div>
+          <div class="kpiValue ok" id="archiveCorrect">0</div>
+          <div class="kpiHint">Torby zamknięte OK</div>
+        </div>
+        <div class="kpiCard">
+          <div class="kpiTop"><div class="kpiLabel">Niepoprawne</div><div class="kpiIcon badIcon">!</div></div>
+          <div class="kpiValue bad" id="archiveBad">0</div>
+          <div class="kpiHint">Wymaga kontroli</div>
+        </div>
+        <div class="kpiCard">
+          <div class="kpiTop"><div class="kpiLabel">Braki</div><div class="kpiIcon warnIcon">●</div></div>
+          <div class="kpiValue warn" id="archiveBraki">0</div>
+          <div class="kpiHint">Do dopakowania</div>
+        </div>
+        <div class="kpiCard">
+          <div class="kpiTop"><div class="kpiLabel">Poprawność</div><div class="kpiIcon okIcon">◎</div></div>
+          <div class="kpiValue" id="archiveAccuracy">0%</div>
+          <div class="kpiHint">Poprawne / finalne</div>
+        </div>
+      </div>
+
+      <div class="miniGrid archiveMiniGrid">
+        <div class="card">
+          <div class="cardTitleRow">
+            <div>
+              <h2>📅 Dni jedzone</h2>
+              <div class="small">Podsumowanie każdego zarchiwizowanego dnia.</div>
+            </div>
+          </div>
+          <div id="archiveDaysTable" class="archiveTableBox">Brak danych.</div>
+        </div>
+
+        <div class="card">
+          <div class="cardTitleRow">
+            <div>
+              <h2>🏆 Pracownicy</h2>
+              <div class="small">Ranking z wybranego zakresu meal_date.</div>
+            </div>
+          </div>
+          <div id="archiveWorkersTable" class="archiveTableBox">Brak danych.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cardTitleRow">
+          <div>
+            <h2>🧾 Historia archiwalna</h2>
+            <div class="small">Kliknij QR torby, żeby zobaczyć archiwalne szczegóły.</div>
+          </div>
+        </div>
+        <div id="archiveHistoryTable" class="archiveTableBox">Brak danych.</div>
       </div>
     </section>
 
