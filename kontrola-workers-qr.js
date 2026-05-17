@@ -2,7 +2,8 @@
   Dodatkowe poprawki zakładki Pracownicy w kontroli:
   - usuwa potrzebę przycisku „+ Dodaj pracownika” z nagłówka,
   - dodaje akcję generowania nowego QR dla workera,
-  - zostawia panel dodawania pracownika po prawej stronie.
+  - zostawia panel dodawania pracownika po prawej stronie,
+  - druk QR jest taki sam jak w panelu admina.
 */
 
 function escapeJsForWorkerQr(value) {
@@ -13,102 +14,144 @@ function escapeJsForWorkerQr(value) {
     .replace(/\r/g, "");
 }
 
+function makeWorkerQrSvg(token, cellSize = 8, margin = 2) {
+  if (!window.qrcode) {
+    throw new Error("Biblioteka qrcode-generator nie wczytała się.");
+  }
+
+  const qr = window.qrcode(0, "M");
+  qr.addData(String(token));
+  qr.make();
+
+  return qr.createSvgTag(cellSize, margin);
+}
+
 function printWorkerQrToken(qrToken, displayName, userEmail) {
   const token = String(qrToken || "").trim();
   if (!token) return;
 
+  let qrSvg = "";
+
+  try {
+    qrSvg = makeWorkerQrSvg(token, 8, 2);
+  } catch (err) {
+    alert("Wygenerowano nowy QR, ale nie udało się narysować QR do druku: " + err.message + "\n\nToken: " + token);
+    return;
+  }
+
   const name = String(displayName || displayLogin(userEmail || "")).trim() || displayLogin(userEmail || "worker");
-  const qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=1&data=" + encodeURIComponent(token);
+  const safeUser = escapeHtml(name);
+  const safeToken = escapeHtml(token);
 
-  const win = window.open("", "_blank", "width=520,height=720");
+  const printWindow = window.open("", "_blank", "width=720,height=900");
 
-  if (!win) {
+  if (!printWindow) {
     alert("Wygenerowano nowy QR, ale przeglądarka zablokowała okno wydruku. Token: " + token);
     return;
   }
 
-  win.document.open();
-  win.document.write(`
+  printWindow.document.write(`
     <!DOCTYPE html>
     <html lang="pl">
     <head>
       <meta charset="UTF-8">
-      <title>Kod QR logowania</title>
+      <title>QR logowania</title>
       <style>
-        @page { size: 80mm 110mm; margin: 0; }
-        * { box-sizing: border-box; }
         body {
-          margin: 0;
           font-family: Arial, sans-serif;
-          background: #fff;
-          color: #111;
-        }
-        .label {
-          width: 80mm;
-          height: 110mm;
-          padding: 6mm;
-          border: 2px solid #111;
-          border-radius: 6mm;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: flex-start;
           text-align: center;
-          overflow: hidden;
+          padding: 30px;
+          color: #111827;
         }
-        .logo {
-          width: 16mm;
+
+        .card {
+          border: 3px solid #111827;
+          border-radius: 24px;
+          padding: 28px;
+          display: inline-block;
+          width: 420px;
+          max-width: 100%;
+        }
+
+        img.logo {
+          width: 80px;
           height: auto;
-          margin-bottom: 4mm;
+          margin-bottom: 10px;
         }
+
         h1 {
-          font-size: 16px;
-          line-height: 1.15;
-          margin: 0 0 3mm;
-          font-weight: 900;
+          margin: 0 0 10px;
+          font-size: 28px;
         }
-        .name {
-          font-size: 20px;
-          line-height: 1.1;
+
+        .login {
+          font-size: 32px;
           font-weight: 900;
-          margin-bottom: 5mm;
+          margin: 12px 0 18px;
           word-break: break-word;
         }
-        .qr {
-          width: 42mm;
-          height: 42mm;
-          image-rendering: pixelated;
-          margin-bottom: 5mm;
+
+        .qrBox {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin: 18px 0;
         }
-        .help {
-          font-size: 10px;
-          line-height: 1.25;
-          margin: 0 0 4mm;
+
+        .qrBox svg {
+          width: 300px !important;
+          height: 300px !important;
+          display: block;
         }
+
+        .hint {
+          margin-top: 18px;
+          font-size: 15px;
+          color: #374151;
+          line-height: 1.45;
+        }
+
         .token {
-          font-size: 7px;
-          line-height: 1.15;
+          margin-top: 14px;
+          font-size: 11px;
+          color: #6b7280;
           word-break: break-all;
-          max-width: 100%;
+        }
+
+        @media print {
+          body { padding: 0; }
+          .card { margin: 0; }
         }
       </style>
     </head>
     <body>
-      <div class="label">
-        <img class="logo" src="logo.png" alt="logo">
+      <div class="card">
+        <img src="logo.png" class="logo" onerror="this.style.display='none'">
         <h1>Kod QR logowania</h1>
-        <div class="name">${escapeHtml(name)}</div>
-        <img class="qr" src="${qrUrl}" alt="QR">
-        <p class="help">Zeskanuj kod QR na ekranie logowania programu pakowania lub kontroli. Login i hasło nadal działają awaryjnie.</p>
-        <div class="token">${escapeHtml(token)}</div>
+        <div class="login">${safeUser}</div>
+
+        <div class="qrBox">
+          ${qrSvg}
+        </div>
+
+        <div class="hint">
+          Zeskanuj kod QR na ekranie logowania programu pakowania lub kontroli.
+          Login i hasło nadal działają awaryjnie.
+        </div>
+
+        <div class="token">${safeToken}</div>
       </div>
+
       <script>
-        window.onload = () => setTimeout(() => window.print(), 500);
+        setTimeout(function() {
+          window.print();
+        }, 300);
       <\/script>
     </body>
     </html>
   `);
-  win.document.close();
+
+  printWindow.document.close();
 }
 
 async function regenerateWorkerQr(userEmail, displayName) {
